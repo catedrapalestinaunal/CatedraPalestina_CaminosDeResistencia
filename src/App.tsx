@@ -1,6 +1,7 @@
 import { lazy, Suspense, useEffect, useState } from 'react';
 import { HelmetProvider } from 'react-helmet-async';
 import { BrowserRouter, Routes, Route, useLocation, Outlet } from 'react-router-dom';
+import { Analytics } from '@vercel/analytics/react';
 import { Nav } from './components/Nav';
 import { Footer } from './components/Footer';
 import { AuthProvider, ProtectedRoute } from './lib/auth';
@@ -92,6 +93,7 @@ export function App() {
           </Suspense>
         </AuthProvider>
       </BrowserRouter>
+      <Analytics />
     </HelmetProvider>
   );
 }
