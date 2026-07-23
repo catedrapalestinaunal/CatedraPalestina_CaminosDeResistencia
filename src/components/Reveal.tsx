@@ -29,6 +29,9 @@ export function Reveal({
 }: RevealProps) {
   const [near, setNear] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
+  const prefersReduced = typeof window !== 'undefined'
+    ? window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    : false;
 
   useEffect(() => {
     const el = ref.current;
@@ -46,10 +49,10 @@ export function Reveal({
     return () => observer.disconnect();
   }, []);
 
-  if (!near) {
+  if (!near || prefersReduced) {
     const Tag = TAG_MAP[as] as 'div';
     return (
-      <Tag ref={ref} className={className} style={{ opacity: 0, willChange: 'transform, opacity' }}>
+      <Tag ref={ref} className={className} style={{ opacity: 0 }}>
         {children}
       </Tag>
     );
@@ -63,7 +66,6 @@ export function Reveal({
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: '-10% 0px' }}
       transition={{ duration, ease: 'easeOut', delay }}
-      style={{ willChange: 'transform, opacity' }}
       {...rest}
     >
       {children}

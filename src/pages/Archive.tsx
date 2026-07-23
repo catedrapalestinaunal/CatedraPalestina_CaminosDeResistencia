@@ -397,7 +397,7 @@ export function Archive() {
               transition={{ duration: 0.3, ease: 'easeOut' }}
             >
               <button className="close" onClick={() => setOpenProj(null)}><Icon.Close /></button>
-              <div className={'proj-thumb' + (openProj.thumbnail && !modalImgError ? '' : ' kind-' + openProj.kind)} style={{ height: 220, marginBottom: 28, backgroundImage: openProj.thumbnail && !modalImgError ? 'url(' + openProj.thumbnail + ')' : undefined, backgroundSize: 'cover', backgroundPosition: 'center' }}>
+              <div className={'proj-thumb h-[220px] md:h-[280px] mb-6 md:mb-7 ' + (openProj.thumbnail && !modalImgError ? '' : ' kind-' + openProj.kind)} style={{ backgroundImage: openProj.thumbnail && !modalImgError ? 'url(' + openProj.thumbnail + ')' : undefined, backgroundSize: 'cover', backgroundPosition: 'center' }}>
                 <div className="kind-num">N° {openProj.n}</div>
                 {(!openProj.thumbnail || modalImgError) && <div className="kind-glyph">{KIND_GLYPH[openProj.kind] || openProj.kind.toUpperCase()}</div>}
                 {openProj.aiThumbnail && <div className="absolute top-2 left-2 z-10 font-mono text-[9px] tracking-[0.12em] uppercase bg-black/50 backdrop-blur-sm text-white/80 px-1.5 py-0.5 rounded-sm">AI · ref.</div>}

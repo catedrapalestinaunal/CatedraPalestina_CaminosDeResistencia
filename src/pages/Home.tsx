@@ -59,10 +59,15 @@ interface YTPlayer {
 }
 
 export function Home() {
-  const { projects } = useProjects({ defer: true });
+  const { projects, loading, error, refetch } = useProjects({ defer: true });
   const [openProj, setOpenProj] = useState<Project | null>(null);
   useLockBodyScroll(!!openProj);
   const modalRef = useFocusTrap(!!openProj, () => setOpenProj(null));
+  const prefersReduced = typeof window !== 'undefined'
+    ? window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    : false;
+  const featuredIds = [3, 14, 25, 17, 23, 12];
+  const featuredProjects = projects.filter(p => featuredIds.includes(p.id));
 
   return (
     <>
@@ -88,7 +93,7 @@ export function Home() {
       <section className="hero">
         <div className="hero-bg" aria-hidden="true" />
 
-        <div className="olive-decor text-primary" style={{ top: 110, right: -40 }} aria-hidden="true">
+        <div className="olive-decor text-primary" aria-hidden="true">
           <svg width="320" height="320" viewBox="0 0 320 320" fill="none" stroke="currentColor" opacity="0.25">
             <path d="M40 280 Q 180 80, 290 30" strokeWidth="1.2" />
             <ellipse cx="80" cy="240" rx="14" ry="5" transform="rotate(-30 80 240)" fill="currentColor" stroke="none" />
@@ -99,18 +104,18 @@ export function Home() {
           </svg>
         </div>
 
-        <div className="wrap w-full grid grid-cols-1 gap-x-8 items-end md:grid-cols-[1fr_320px]">
+        <div className="wrap w-full grid grid-cols-1 gap-x-8 gap-y-5 items-end md:grid-cols-[1fr_320px]">
           <div className="order-1 md:col-start-1 md:row-start-1">
             <div className="eyebrow"><span className="dot" /><span>Plataforma de Memoria y Solidaridad Académica · UNAL</span></div>
           </div>
 
-          <div className="text-left md:text-right order-2 md:col-start-2 md:row-start-1 md:max-w-[320px]">
+          <div className="text-left md:text-right order-3 md:col-start-2 md:row-start-1 md:max-w-[320px] hidden sm:block">
             <div className="font-mono text-xs md:text-[11px] text-fg-mute tracking-[0.18em] uppercase mb-2.5">
               001 / Inicio
             </div>
           </div>
 
-          <h1 className="hero-title order-3 md:col-span-2 md:mt-10">
+          <h1 className="hero-title order-2 md:order-3 md:col-span-2 md:mt-10 mt-1.5">
             <span className="neutral">Caminos</span><br />
             <em>de</em> Resistencia
           </h1>
@@ -129,8 +134,8 @@ export function Home() {
 
           <div className="hero-foot order-6 md:col-span-2">
             <div className="stat">
-              <span className="num">{projects.length}</span>
-              <span className="lbl">Proyectos · realizados</span>
+              <span className="num">{loading && projects.length === 0 ? <span className="skeleton-num" aria-hidden="true">···</span> : projects.length}</span>
+              <span className="lbl">{loading && projects.length === 0 ? 'Cargando...' : 'Proyectos · realizados'}</span>
             </div>
             <div className="stat">
               <span className="num text-accent">+{CONFIG.DESPOJO_ANOS}</span>
@@ -363,28 +368,60 @@ export function Home() {
               <span>Cosecha {CONFIG.SEMESTRE} · proyectos destacados</span>
             </h2>
           </Reveal>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[3, 14, 25, 17, 23, 12].map((id, i) => {
-              const p = projects.find(pr => pr.id === id);
-              if (!p) return null;
-              return (
+
+          {loading && projects.length === 0 && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" aria-label="Cargando proyectos">
+              {[1, 2, 3, 4, 5, 6].map(i => (
+                <div key={i} className="card min-h-[180px]" aria-hidden="true">
+                  <div className="h-4 bg-current/10 rounded w-2/3 mb-4" />
+                  <div className="h-3 bg-current/10 rounded w-1/3 mb-6" />
+                  <div className="h-5 bg-current/10 rounded w-full mb-2" />
+                  <div className="h-5 bg-current/10 rounded w-4/5 mb-4" />
+                  <div className="h-8 bg-current/10 rounded-full w-32" />
+                </div>
+              ))}
+            </div>
+          )}
+
+          {error && !loading && (
+            <div className="text-center py-16" role="alert">
+              <p className="text-fg-mute mb-4">No pudimos cargar los proyectos destacados.</p>
+              {typeof refetch === 'function' && (
+                <button type="button" className="btn" onClick={refetch}>
+                  Intentar de nuevo
+                </button>
+              )}
+            </div>
+          )}
+
+          {!loading && !error && projects.length > 0 && featuredProjects.length === 0 && (
+            <div className="text-center py-16">
+              <p className="text-fg-mute">Los proyectos destacados no están disponibles actualmente.</p>
+            </div>
+          )}
+
+          {featuredProjects.length > 0 && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {featuredProjects.map((p, i) => (
                 <Reveal key={p.id} as="article" delay={i * 0.06}>
-                  <div className="card cursor-pointer" onClick={() => setOpenProj(p)} role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setOpenProj(p); } }}>
-                    <div className="kicker">{p.group || p.author}</div>
-                    <div className="mt-1 font-mono text-[10px] tracking-[0.1em] text-fg-mute">{KIND_GLYPH_LOCAL[p.kind] || p.kind}</div>
-                    <h3 className="mt-2 text-[clamp(16px,1.6vw,20px)] font-serif leading-tight">
-                      {p.title}
-                    </h3>
+                  <div className="card">
+                    <div role="button" tabIndex={0} onClick={() => setOpenProj(p)} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setOpenProj(p); } }}>
+                      <div className="kicker">{p.group || p.author}</div>
+                      <div className="mt-1 font-mono text-[10px] tracking-[0.1em] text-fg-mute">{KIND_GLYPH_LOCAL[p.kind] || p.kind}</div>
+                      <h3 className="mt-2 text-[clamp(16px,1.6vw,20px)] font-serif leading-tight">
+                        {p.title}
+                      </h3>
+                    </div>
                     <div className="mt-4">
-                      <Link to="/archivo" className="btn terra" onClick={(e) => e.stopPropagation()}>
+                      <Link to="/archivo" className="btn terra">
                         Ver en Archivo <Icon.Arrow />
                       </Link>
                     </div>
                   </div>
                 </Reveal>
-              );
-            })}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
@@ -421,25 +458,28 @@ export function Home() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
+            transition={{ duration: prefersReduced ? 0 : 0.2 }}
           >
             <motion.div
               className="modal"
               ref={modalRef}
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="modal-title"
               onClick={(e) => e.stopPropagation()}
               initial={{ opacity: 0, y: 30, scale: 0.96 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 30, scale: 0.96 }}
-              transition={{ duration: 0.3, ease: 'easeOut' }}
+              transition={{ duration: prefersReduced ? 0 : 0.3, ease: 'easeOut' }}
             >
-              <button className="close" onClick={() => setOpenProj(null)}><Icon.Close /></button>
-              <div className={'proj-thumb' + (openProj.thumbnail ? '' : ' kind-' + openProj.kind)} style={{ height: 220, marginBottom: 28, backgroundImage: openProj.thumbnail ? 'url(' + openProj.thumbnail + ')' : undefined, backgroundSize: 'cover', backgroundPosition: 'center' }}>
+              <button className="close" onClick={() => setOpenProj(null)} aria-label="Cerrar"><Icon.Close /></button>
+              <div className={'proj-thumb h-[220px] md:h-[280px] mb-6 md:mb-7 ' + (openProj.thumbnail ? '' : ' kind-' + openProj.kind)} style={{ backgroundImage: openProj.thumbnail ? 'url(' + openProj.thumbnail + ')' : undefined, backgroundSize: 'cover', backgroundPosition: 'center' }} role="img" aria-label={openProj.title ? `Miniatura de ${openProj.title}` : 'Proyecto sin miniatura'}>
                 <div className="kind-num">N° {openProj.n}</div>
                 {!openProj.thumbnail && <div className="kind-glyph">{KIND_GLYPH_LOCAL[openProj.kind] || openProj.kind.toUpperCase()}</div>}
                 {openProj.aiThumbnail && <div className="absolute top-2 left-2 z-10 font-mono text-[9px] tracking-[0.12em] uppercase bg-black/50 backdrop-blur-sm text-white/80 px-1.5 py-0.5 rounded-sm">AI · ref.</div>}
               </div>
               <div className="kicker">{openProj.kind} · {openProj.year}</div>
-              <h2 className="mt-3 text-[clamp(26px,7vw,44px)] leading-tight">{openProj.title}</h2>
+              <h2 id="modal-title" className="mt-3 text-[clamp(26px,7vw,44px)] leading-tight">{openProj.title}</h2>
               <div className="text-fg-mute mt-2.5 text-base md:text-sm">{openProj.author}</div>
 
               {openProj.group && (
@@ -588,6 +628,7 @@ function AudioPlayer() {
   const containerRef = useRef<HTMLDivElement>(null);
   const [apiReady, setApiReady] = useState(false);
   const [playerReady, setPlayerReady] = useState(false);
+  const [ytError, setYtError] = useState(false);
 
   const activeTrack = POETRY_PLAYLIST.find((t) => t.id === activeTrackId) ?? POETRY_PLAYLIST[0];
   const isYouTube = activeTrack.source === 'youtube';
@@ -599,15 +640,28 @@ function AudioPlayer() {
     if (loadYouTubeAPIRef.current) return loadYouTubeAPIRef.current;
     if (window.YT?.Player) { setApiReady(true); return Promise.resolve(); }
 
-    loadYouTubeAPIRef.current = new Promise<void>((resolve) => {
+    loadYouTubeAPIRef.current = new Promise<void>((resolve, reject) => {
+      const timeout = setTimeout(() => {
+        setYtError(true);
+        reject(new Error('YouTube API load timeout'));
+      }, 10000);
+
+      const prev = (window as any).onYouTubeIframeAPIReady;
       (window as any).onYouTubeIframeAPIReady = () => {
+        clearTimeout(timeout);
+        if (typeof prev === 'function') prev();
         setApiReady(true);
         resolve();
       };
       const tag = document.createElement('script');
       tag.src = 'https://www.youtube.com/iframe_api';
+      tag.onerror = () => {
+        clearTimeout(timeout);
+        setYtError(true);
+        reject(new Error('Failed to load YouTube API'));
+      };
       document.head.appendChild(tag);
-    });
+    }).catch(() => {});
 
     return loadYouTubeAPIRef.current;
   }
@@ -617,27 +671,31 @@ function AudioPlayer() {
     const firstYT = POETRY_PLAYLIST.find(t => t.source === 'youtube');
     if (!firstYT) return;
     const vid = firstYT.embedUrl.split('/').pop()!;
-    playerRef.current = new window.YT!.Player(containerRef.current, {
-      videoId: vid,
-      playerVars: {
-        autoplay: 1,
-        mute: 1,
-        enablejsapi: 1,
-        controls: 1,
-        modestbranding: 1,
-        rel: 0,
-      },
-      events: {
-        onReady: () => setPlayerReady(true),
-        onStateChange: (e) => {
-          if (e.data === window.YT!.PlayerState.PLAYING) setIsPlaying(true);
-          else if (
-            e.data === window.YT!.PlayerState.PAUSED ||
-            e.data === window.YT!.PlayerState.ENDED
-          ) setIsPlaying(false);
+    try {
+      playerRef.current = new window.YT!.Player(containerRef.current, {
+        videoId: vid,
+        playerVars: {
+          autoplay: 0,
+          mute: 1,
+          enablejsapi: 1,
+          controls: 1,
+          modestbranding: 1,
+          rel: 0,
         },
-      },
-    });
+        events: {
+          onReady: () => setPlayerReady(true),
+          onStateChange: (e) => {
+            if (e.data === window.YT!.PlayerState.PLAYING) setIsPlaying(true);
+            else if (
+              e.data === window.YT!.PlayerState.PAUSED ||
+              e.data === window.YT!.PlayerState.ENDED
+            ) setIsPlaying(false);
+          },
+        },
+      });
+    } catch {
+      setYtError(true);
+    }
     return () => {
       playerRef.current?.destroy();
       playerRef.current = null;
@@ -675,21 +733,20 @@ function AudioPlayer() {
   const barsActive = isPlaying && isInView && isYouTube;
 
   return (
-    <div className="audio-player" ref={sectionRef}>
+    <div className="media-stub" ref={sectionRef}>
       {/* ======== HEAD ======== */}
-      <div className="audio-player-head">
+      <div className="media-stub-head">
         <div className="md-dot" style={isYouTube && barsActive ? undefined : { animationPlayState: 'paused' }} />
-        <div className="title-block">
-          <div className="now-label">
+        <div className="flex-1">
+          <div className="md-now" role="status" aria-live="polite">
             {isYouTube
               ? (barsActive ? (isMuted ? 'Reproduciendo · silenciado' : 'Reproduciendo') : isPlaying ? 'Cargando' : 'Pausado')
               : 'Listo para reproducir'}
           </div>
-          <div className="track-title">{activeTrack.title}</div>
-          <div className="track-author">{activeTrack.author}</div>
+          <div className="md-title" title={activeTrack.title}>{activeTrack.title}</div>
         </div>
         {isYouTube && (
-          <div className="audio-controls">
+          <div className="audio-controls flex items-center gap-1.5 flex-shrink-0 ml-auto">
             <button
               type="button"
               className={`audio-ctrl-btn ${isMuted ? 'is-muted' : ''}`}
@@ -735,9 +792,10 @@ function AudioPlayer() {
           setShowVideo((v) => !v);
         }}
         aria-expanded={showVideo}
+        aria-controls="audio-video-panel"
       >
         <span className="left-side">
-          <div className="w-4 h-4 shrink-0 flex items-center">
+          <div className="w-4 h-4 shrink-0 flex items-center" aria-hidden="true">
             <Icon.Music />
           </div>
           {isYouTube ? 'Ver interpretación visual' : activeTrack.source === 'spotify' ? 'Escuchar en Spotify' : 'Abrir reproductor'}
@@ -749,7 +807,7 @@ function AudioPlayer() {
         </span>
       </button>
 
-      <div className={`audio-video-wrapper ${showVideo ? 'is-open' : ''}`}>
+      <div id="audio-video-panel" role="region" aria-label="Reproductor multimedia" className={`audio-video-wrapper ${showVideo ? 'is-open' : ''}`}>
         {isYouTube ? (
           <div className="aspect-video rounded-xl overflow-hidden">
             <div ref={containerRef} className="w-full h-full" />
@@ -794,31 +852,47 @@ function AudioPlayer() {
         )}
       </div>
 
+      {/* ======== YOUTUBE ERROR FALLBACK ======== */}
+      {ytError && isYouTube && (
+        <div className="mt-4 text-center py-4 px-4 border border-white/10 rounded-xl">
+          <p className="text-sm opacity-80 mb-2">
+            No se pudo cargar el reproductor de video.
+          </p>
+          {activeTrack.externalUrl && (
+            <a
+              href={activeTrack.externalUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn-ghost-light"
+            >
+              Ver en YouTube <Icon.External />
+            </a>
+          )}
+        </div>
+      )}
+
       {/* ======== PLAYLIST ======== */}
-      <ul className="audio-playlist">
+      <ul className="md-list">
         {POETRY_PLAYLIST.map((track) => {
           const isActive = track.id === activeTrackId;
           return (
-            <li key={track.id}>
-              <button
-                type="button"
-                className={`audio-playlist-item ${isActive ? 'is-active' : ''}`}
-                onClick={() => {
-                  setActiveTrackId(track.id);
-                  setShowVideo(false);
-                  if (track.source === 'youtube') setIsPlaying(true);
-                }}
-              >
-                <span className="pl-index">
-                  {isActive ? (
-                    track.source === 'youtube' ? <Icon.Play /> : <Icon.External />
-                  ) : String(track.id).padStart(2, '0')}
-                </span>
-                <div>
-                  <span className="pl-name">{track.title}</span>
-                  <span className="pl-author">{track.author}</span>
-                </div>
-              </button>
+            <li
+              key={track.id}
+              className={isActive ? 'is-active' : ''}
+              onClick={() => {
+                setActiveTrackId(track.id);
+                setShowVideo(false);
+                if (track.source === 'youtube') setIsPlaying(true);
+              }}
+              aria-label={`${track.title} — ${track.author}${isActive ? ', reproduciendo' : ''}`}
+            >
+              <span className="md-kind">
+                {isActive ? (
+                  track.source === 'youtube' ? <Icon.Play /> : <Icon.External />
+                ) : String(track.id).padStart(2, '0')}
+              </span>
+              <span className="md-name"><i>{track.title}</i></span>
+              <span className="md-len">{track.author}</span>
             </li>
           );
         })}

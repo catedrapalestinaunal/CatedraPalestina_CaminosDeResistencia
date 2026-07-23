@@ -44,9 +44,8 @@ function AppLayout({ theme, toggleTheme }: AppLayoutProps) {
 
 export function App() {
   const [theme, setTheme] = useState<Theme>(() => {
-    const saved = localStorage.getItem('cdr-theme') as Theme | null;
-    if (saved === 'dark' || saved === 'light') return saved;
-    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    const a = document.documentElement.getAttribute('data-theme');
+    return a === 'dark' || a === 'light' ? a : 'light';
   });
 
   useEffect(() => {
@@ -75,6 +74,8 @@ export function App() {
       <BrowserRouter>
         <AuthProvider>
           <ScrollToTop />
+          <SpeedInsights />
+          <Analytics />
           <Suspense fallback={<div style={{ height: '100vh' }} />}>
             <Routes>
               <Route path="/admin/login" element={<AdminLogin />} />
@@ -94,8 +95,6 @@ export function App() {
           </Suspense>
         </AuthProvider>
       </BrowserRouter>
-      <Analytics />
-      <SpeedInsights />
     </HelmetProvider>
   );
 }

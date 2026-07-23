@@ -35,14 +35,13 @@ export function Nav({ theme, toggleTheme }: NavProps) {
             </span>
           </Link>
 
-          <div className="nav-links" role="tablist">
+          <div className="nav-links">
             {PAGES.map(p => (
               <Link
                 key={p.id}
-                role="tab"
                 to={p.path}
                 className={'nav-link ' + (activePage === p.id ? 'is-active' : '')}
-                aria-selected={activePage === p.id}
+                aria-current={activePage === p.id ? 'page' : undefined}
               >
                 {p.label}
               </Link>
@@ -50,7 +49,7 @@ export function Nav({ theme, toggleTheme }: NavProps) {
           </div>
 
           <div className="nav-meta">
-            <button className="icon-btn" onClick={toggleTheme} aria-label="Alternar tema">
+            <button className="icon-btn" onClick={toggleTheme} aria-label="Alternar tema" aria-pressed={theme === 'dark'}>
               {theme === 'dark' ? <Icon.Sun /> : <Icon.Moon />}
             </button>
             <Link to="/archivo" className="nav-cta" aria-label="Explorar el Archivo">

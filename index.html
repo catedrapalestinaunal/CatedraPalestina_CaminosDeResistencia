@@ -1,8 +1,18 @@
 <!doctype html>
 <html lang="es-CO">
   <head>
+    <script>
+      (function() {
+        var t = localStorage.getItem('cdr-theme');
+        if (t !== 'dark' && t !== 'light') {
+          t = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        }
+        document.documentElement.setAttribute('data-theme', t);
+        document.documentElement.classList.toggle('dark', t === 'dark');
+      })();
+    </script>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <title>Cátedra Caminos de Resistencia · UNAL</title>
     <meta name="description" content="Plataforma de Memoria y Solidaridad Académica. Cátedra Caminos de Resistencia · UNAL + Embajada del Estado de Palestina." />
     <meta name="author" content="Cátedra Caminos de Resistencia · Colectividad Estudiantil Autónoma" />
