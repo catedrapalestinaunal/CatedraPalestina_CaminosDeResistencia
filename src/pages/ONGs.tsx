@@ -1,8 +1,6 @@
 import { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
-import { Link } from 'react-router-dom';
 import { Reveal } from '../components/Reveal';
-import { Icon } from '../lib/icons';
 import { ImageSlot } from '../components/ImageSlot';
 import { ImageGallery } from '../components/ImageGallery';
 import { ONG_CARDS, ONG_PARTNERS } from '../data/ongs';
@@ -182,7 +180,7 @@ export function ONGs() {
                 <span>Proyectos estudiantiles · salud y derechos humanos</span>
               </div>
             </Reveal>
-            <div className="grid md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {[4, 8, 20, 25].map((id, i) => {
                 const p = projects.find(pr => pr.id === id);
                 if (!p) return null;
@@ -203,9 +201,9 @@ export function ONGs() {
                           href={p.url}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="btn terra"
+                          className="btn terra w-full justify-center"
                         >
-                          {({ ensayo: 'Leer ensayo', cartografia: 'Explorar mapa', video: 'Ver video', podcast: 'Escuchar podcast', fanzine: 'Ver fanzine', mural: 'Ver mural', collage: 'Ver collage', grabado: 'Ver grabado' } as Record<string, string>)[p.kind] || 'Abrir'} <Icon.External />
+                          {({ ensayo: 'Leer ensayo', cartografia: 'Explorar mapa', video: 'Ver video', podcast: 'Escuchar podcast', fanzine: 'Ver fanzine', mural: 'Ver mural', collage: 'Ver collage', grabado: 'Ver grabado' } as Record<string, string>)[p.kind] || 'Abrir'}
                         </a>
                       </div>
                     </div>
@@ -214,13 +212,6 @@ export function ONGs() {
               })}
             </div>
 
-            <Reveal>
-              <div className="mt-10 text-center">
-                <Link to="/archivo" className="btn terra">
-                  Proyectos estudiantiles sobre el terreno <Icon.Arrow />
-                </Link>
-              </div>
-            </Reveal>
           </div>
         </section>
       )}
@@ -246,23 +237,15 @@ export function ONGs() {
                     <div>
                       <div className="font-serif text-[20px] md:text-[26px] tracking-[-0.015em] leading-tight">{p.name}</div>
                     </div>
-                    <div className="partner-city font-mono text-[11px] tracking-[0.14em] uppercase text-fg-mute">{p.city}</div>
+                    <div className="partner-city font-mono text-[12px] tracking-[0.14em] uppercase text-fg-mute">{p.city}</div>
                     <div className="partner-focus text-sm text-fg-mute">{p.focus}</div>
-                    <div className="partner-since font-mono text-[11px] text-fg-mute tracking-[0.15em] text-right">est. {p.since}</div>
+                    <div className="partner-since font-mono text-[12px] text-fg-mute tracking-[0.15em] text-right">est. {p.since}</div>
                   </a>
                 </Reveal>
               ))}
             </div>
 
             <ExternalOrgs />
-
-            <Reveal>
-              <div className="mt-12 text-center">
-                <Link to="/genero" className="btn">
-                  Género y derechos humanos <Icon.Arrow />
-                </Link>
-              </div>
-            </Reveal>
           </div>
         </section>
       )}

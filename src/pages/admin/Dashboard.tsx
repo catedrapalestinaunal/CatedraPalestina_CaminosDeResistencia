@@ -128,7 +128,7 @@ export function AdminDashboard() {
               </p>
             </div>
           ) : (
-            <div className="overflow-x-auto">
+            <div className="touch-scroll">
               <table className="w-full text-sm">
                 <thead>
                   <tr className="font-mono text-[11px] tracking-[0.14em] uppercase text-fg-mute border-b border-[var(--line)]">

@@ -89,7 +89,7 @@ function ProjectCard({ p, onOpen, variant }: ProjectCardProps) {
         <div className={'proj-thumb' + (hasThumb ? '' : ' kind-' + p.kind)} style={thumbBg}>
           <div className="kind-num">N° {p.n}</div>
           {!hasThumb && <div className="kind-glyph">{KIND_GLYPH[p.kind]}</div>}
-          {p.aiThumbnail && <div className="absolute top-1.5 left-1.5 z-10 font-mono text-[8px] md:text-[9px] tracking-[0.12em] uppercase bg-black/50 backdrop-blur-sm text-white/80 px-1.5 py-0.5 rounded-sm">AI · ref.</div>}
+          {p.aiThumbnail && <div className="absolute top-1.5 left-1.5 z-10 font-mono text-[11px] md:text-[9px] tracking-[0.12em] uppercase bg-black/50 backdrop-blur-sm text-white/80 px-1.5 py-0.5 rounded-sm">AI · ref.</div>}
         </div>
         <div className="proj-body">
           <h3>{p.title}</h3>
@@ -105,7 +105,7 @@ function ProjectCard({ p, onOpen, variant }: ProjectCardProps) {
       <div className={'proj-thumb' + (hasThumb ? '' : ' kind-' + p.kind)} style={thumbBg}>
         <div className="kind-num">N° {p.n}</div>
         {!hasThumb && <div className="kind-glyph">{KIND_GLYPH[p.kind]}</div>}
-        {p.aiThumbnail && <div className="absolute top-1.5 left-1.5 z-10 font-mono text-[8px] md:text-[9px] tracking-[0.12em] uppercase bg-black/50 backdrop-blur-sm text-white/80 px-1.5 py-0.5 rounded-sm">AI · ref.</div>}
+        {p.aiThumbnail && <div className="absolute top-1.5 left-1.5 z-10 font-mono text-[11px] md:text-[9px] tracking-[0.12em] uppercase bg-black/50 backdrop-blur-sm text-white/80 px-1.5 py-0.5 rounded-sm">AI · ref.</div>}
       </div>
       <div className="meta">
         <span className="text-accent">{p.kind.toUpperCase()}</span>
@@ -214,7 +214,7 @@ export function Archive() {
           <Reveal delay={0.25}>
             <div className="mt-6 flex items-start gap-2.5">
               <span className="shrink-0 mt-0.5 w-1.5 h-1.5 rounded-full bg-[var(--terracotta)]" />
-              <p className="font-mono text-[10px] md:text-[10.5px] tracking-[0.06em] text-fg-mute leading-relaxed">
+              <p className="font-mono text-[12px] md:text-[10.5px] tracking-[0.06em] text-fg-mute leading-relaxed">
                 Algunas miniaturas fueron generadas con inteligencia artificial como recurso pedagógico y pueden contener imprecisiones históricas o geográficas. Esta página es producto de una actividad académica.
               </p>
             </div>
@@ -266,7 +266,7 @@ export function Archive() {
                       onChange={(e) => setQuery(e.target.value)}
                     />
                     {query && (
-                      <button className="icon-btn w-8 h-8" onClick={() => setQuery('')}>
+                      <button className="icon-btn w-8 h-8 md:w-11 md:h-11" onClick={() => setQuery('')} aria-label="Limpiar búsqueda">
                         <Icon.Close />
                       </button>
                     )}
@@ -396,11 +396,11 @@ export function Archive() {
               exit={{ opacity: 0, y: 30, scale: 0.96 }}
               transition={{ duration: 0.3, ease: 'easeOut' }}
             >
-              <button className="close" onClick={() => setOpenProj(null)}><Icon.Close /></button>
+              <button className="close" onClick={() => setOpenProj(null)} aria-label="Cerrar"><Icon.Close /></button>
               <div className={'proj-thumb h-[220px] md:h-[280px] mb-6 md:mb-7 ' + (openProj.thumbnail && !modalImgError ? '' : ' kind-' + openProj.kind)} style={{ backgroundImage: openProj.thumbnail && !modalImgError ? 'url(' + openProj.thumbnail + ')' : undefined, backgroundSize: 'cover', backgroundPosition: 'center' }}>
                 <div className="kind-num">N° {openProj.n}</div>
                 {(!openProj.thumbnail || modalImgError) && <div className="kind-glyph">{KIND_GLYPH[openProj.kind] || openProj.kind.toUpperCase()}</div>}
-                {openProj.aiThumbnail && <div className="absolute top-2 left-2 z-10 font-mono text-[9px] tracking-[0.12em] uppercase bg-black/50 backdrop-blur-sm text-white/80 px-1.5 py-0.5 rounded-sm">AI · ref.</div>}
+                {openProj.aiThumbnail && <div className="absolute top-2 left-2 z-10 font-mono text-[11px] md:text-[9px] tracking-[0.12em] uppercase bg-black/50 backdrop-blur-sm text-white/80 px-1.5 py-0.5 rounded-sm">AI · ref.</div>}
               </div>
               <div className="kicker">{openProj.kind} · {openProj.year}</div>
               <h2 className="mt-3 text-[clamp(26px,7vw,44px)] leading-tight">{openProj.title}</h2>
@@ -418,7 +418,7 @@ export function Archive() {
 
               {openProj.members && openProj.members.length > 0 && (
                 <div className="mt-5">
-                  <div className="font-mono text-[11px] tracking-[0.14em] uppercase text-fg-mute mb-2">Integrantes</div>
+                  <div className="font-mono text-[12px] tracking-[0.14em] uppercase text-fg-mute mb-2">Integrantes</div>
                   <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-fg-mute">
                     {openProj.members.map((m, i) => (
                       <span key={i}>{m}{i < openProj.members!.length - 1 ? '·' : ''}</span>

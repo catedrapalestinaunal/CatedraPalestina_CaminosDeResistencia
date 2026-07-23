@@ -68,9 +68,9 @@ function EstudianteCard({ p, delay }: { p: Project; delay: number }) {
             href={p.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="btn terra"
+            className="btn terra w-full justify-center"
           >
-            Abrir documento <Icon.External />
+            Abrir documento
           </a>
         </div>
       </div>
@@ -346,7 +346,7 @@ export function Genero() {
               <span>Voces desde el aula · proyectos {CONFIG.SEMESTRE}</span>
             </h2>
           </Reveal>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {projects.filter(p => [10, 5, 12].includes(p.id)).map((p, i) => (
               <EstudianteCard key={p.id} p={p} delay={i * 0.08} />
             ))}
@@ -376,7 +376,7 @@ export function Genero() {
                   El análisis de género no es auxiliar al conflicto —<em>es constitutivo de él.</em>
                 </p>
               </div>
-              <button className="btn terra whitespace-nowrap" disabled>
+              <button className="btn terra" disabled>
                 Descargar ficha · PDF
               </button>
             </div>

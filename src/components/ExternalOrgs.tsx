@@ -29,7 +29,7 @@ export function ExternalOrgs() {
               <h3 className="font-serif text-xl md:text-2xl tracking-tight leading-tight">
                 {org.name}
               </h3>
-              <span className="shrink-0 font-mono text-[10px] md:text-[10px] tracking-[0.15em] uppercase text-fg-mute whitespace-nowrap px-2.5 py-1 border border-[var(--line)] rounded-full">
+              <span className="shrink-0 font-mono text-[11px] md:text-[10px] tracking-[0.15em] uppercase text-fg-mute whitespace-nowrap px-2.5 py-1 border border-[var(--line)] rounded-full">
                 {org.category}
               </span>
             </div>
@@ -40,7 +40,7 @@ export function ExternalOrgs() {
               href={org.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 self-start font-mono text-[11px] tracking-[0.15em] uppercase text-accent hover:text-[var(--carbon)] transition-colors duration-200"
+              className="inline-flex items-center gap-1.5 self-start font-mono text-[12px] tracking-[0.15em] uppercase text-accent hover:text-[var(--carbon)] transition-colors duration-200"
             >
               Sitio oficial
               <span className="inline-block transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5">↗</span>

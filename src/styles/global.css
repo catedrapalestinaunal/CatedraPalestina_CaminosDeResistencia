@@ -1785,6 +1785,8 @@
 @layer utilities {
   .hide-scrollbar { scrollbar-width: none; -ms-overflow-style: none; }
   .hide-scrollbar::-webkit-scrollbar { display: none; }
+  .touch-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+  .touch-scroll::-webkit-scrollbar { display: none; }
 }
 
 /* ── Focus visible ring for all interactive elements ── */
@@ -1877,6 +1879,8 @@
   .hero-foot { grid-template-columns: 1fr; gap: 14px; }
   .tl-year { font-size: 40px; }
   .gloss-item .term { font-size: 22px; }
+  .btn { white-space: normal; }
+  .btn-ghost-light { white-space: normal; }
 }
 @media (max-width: 490px) {
   .audio-player-head { gap: 6px; }
@@ -1911,7 +1915,7 @@
   /* Nav shell — wider on mobile, less internal padding */
   .nav-shell { top: 12px; width: calc(100% - 16px); }
   .nav { padding: 8px 8px 8px 14px; gap: 8px; overflow-x: hidden; }
-  .brand { font-size: 14px; overflow: hidden; }
+  .brand { font-size: 14px; overflow: hidden; text-overflow: ellipsis; }
   .brand small { display: none; }
   .icon-btn { width: 44px; height: 44px; }
   .nav-meta { flex-shrink: 0; margin-left: auto; gap: 6px; position: relative; z-index: 5; }
@@ -1949,7 +1953,7 @@
   /* SUBTABS — full-width scrollable row on mobile to avoid overflow */
   .subtabs { width: 100%; flex-wrap: nowrap; overflow-x: auto; -webkit-overflow-scrolling: touch; }
   .subtabs::-webkit-scrollbar { display: none; }
-  .subtab { white-space: nowrap; font-size: 13px; padding: 8px 14px; }
+  .subtab { white-space: nowrap; font-size: 13px; padding: 8px 14px; min-height: 44px; display: inline-flex; align-items: center; }
 
   /* CARDS grid — single column, compact */
   .cards { grid-template-columns: 1fr; gap: 18px; }
@@ -2006,7 +2010,7 @@
   .proj .author { font-size: 13.5px; }
   .proj .meta { font-size: 12px; }
   .proj-foot { font-size: 12px; }
-  .chip { font-size: 12px; padding: 6px 10px; }
+  .chip { font-size: 12px; padding: 10px 14px; min-height: 44px; display: inline-flex; align-items: center; }
 
   .proj-row { grid-template-columns: 56px 1fr; gap: 14px; padding: 14px 16px; }
   .proj-row .proj-thumb { height: 48px; }
@@ -2084,9 +2088,14 @@
   .modal { padding: clamp(16px, 3vw, 24px) clamp(14px, 2.5vw, 18px); max-height: 92vh; }
   .modal .close { top: 12px; right: 12px; width: 44px; height: 44px; }
 
+  /* IMAGE BOOK MODAL — touch targets */
+  .image-book-modal-close { width: 44px; height: 44px; }
+  .image-book-modal-zoom button { width: 44px; height: 44px; }
+
   /* BUTTONS readable */
   .btn { font-size: 13.5px; padding: 11px 16px; }
   .nav-cta { font-size: 13px; }
+  .viewtoggle button { min-width: 44px; min-height: 44px; }
 
   .voces-darwish-bio { max-width: 100%; }
   .reading-note-body { max-width: 100%; }
@@ -2119,7 +2128,30 @@
   .poetica-attrib,
   .simbo-card-meaning,
   .simbo-card-n,
-  .mission li .n {
+  .mission li .n,
+  .audio-player-head .now-label,
+  .audio-player-head .track-author,
+  .audio-playlist-item .pl-index,
+  .biblio-item .idx,
+  .biblio-item .meta-r,
+  .card .stat-strip.is-blockade .label-row,
+  .image-book-modal-zoom-pct,
+  .md-list .md-len,
+  .pdt-pill,
+  .pl-author,
+  .qm-author,
+  .qm-sep,
+  .reading-note-eyebrow,
+  .voces-cij-mono,
+  .voces-darwish-works,
+  .voces-dark-stat-label,
+  .voces-unesco-badge,
+  .myth-reality-tag,
+  .voces-dark-footer-label,
+  .voces-stat-label,
+  .voces-bq-attr,
+  .voces-tutu-attr,
+  .voces-float-attr {
     font-size: 12px !important;
   }
 }

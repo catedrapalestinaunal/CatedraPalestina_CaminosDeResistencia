@@ -407,7 +407,7 @@ export function Home() {
                   <div className="card">
                     <div role="button" tabIndex={0} onClick={() => setOpenProj(p)} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setOpenProj(p); } }}>
                       <div className="kicker">{p.group || p.author}</div>
-                      <div className="mt-1 font-mono text-[10px] tracking-[0.1em] text-fg-mute">{KIND_GLYPH_LOCAL[p.kind] || p.kind}</div>
+                      <div className="mt-1 font-mono text-[12px] sm:text-[10px] tracking-[0.1em] text-fg-mute">{KIND_GLYPH_LOCAL[p.kind] || p.kind}</div>
                       <h3 className="mt-2 text-[clamp(16px,1.6vw,20px)] font-serif leading-tight">
                         {p.title}
                       </h3>
@@ -476,7 +476,7 @@ export function Home() {
               <div className={'proj-thumb h-[220px] md:h-[280px] mb-6 md:mb-7 ' + (openProj.thumbnail ? '' : ' kind-' + openProj.kind)} style={{ backgroundImage: openProj.thumbnail ? 'url(' + openProj.thumbnail + ')' : undefined, backgroundSize: 'cover', backgroundPosition: 'center' }} role="img" aria-label={openProj.title ? `Miniatura de ${openProj.title}` : 'Proyecto sin miniatura'}>
                 <div className="kind-num">N° {openProj.n}</div>
                 {!openProj.thumbnail && <div className="kind-glyph">{KIND_GLYPH_LOCAL[openProj.kind] || openProj.kind.toUpperCase()}</div>}
-                {openProj.aiThumbnail && <div className="absolute top-2 left-2 z-10 font-mono text-[9px] tracking-[0.12em] uppercase bg-black/50 backdrop-blur-sm text-white/80 px-1.5 py-0.5 rounded-sm">AI · ref.</div>}
+                {openProj.aiThumbnail && <div className="absolute top-2 left-2 z-10 font-mono text-[11px] md:text-[9px] tracking-[0.12em] uppercase bg-black/50 backdrop-blur-sm text-white/80 px-1.5 py-0.5 rounded-sm">AI · ref.</div>}
               </div>
               <div className="kicker">{openProj.kind} · {openProj.year}</div>
               <h2 id="modal-title" className="mt-3 text-[clamp(26px,7vw,44px)] leading-tight">{openProj.title}</h2>
@@ -494,7 +494,7 @@ export function Home() {
 
               {openProj.members && openProj.members.length > 0 && (
                 <div className="mt-5">
-                  <div className="font-mono text-[11px] tracking-[0.14em] uppercase text-fg-mute mb-2">Integrantes</div>
+                  <div className="font-mono text-[12px] tracking-[0.14em] uppercase text-fg-mute mb-2">Integrantes</div>
                   <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-fg-mute">
                     {openProj.members.map((m, i) => (
                       <span key={i}>{m}{i < openProj.members!.length - 1 ? ' · ' : ''}</span>
@@ -900,16 +900,16 @@ function AudioPlayer() {
 
       {/* ======== FOOTER ======== */}
       <div className="audio-player-footer">
-        <p className="text-[10px] opacity-50 tracking-normal text-justify leading-normal block px-4 py-2">
+        <p className="text-[12px] opacity-50 tracking-normal text-justify leading-normal block px-4 py-2">
           Aviso académico: Los recursos multimedia aquí enlazados provienen de plataformas públicas y se presentan con fines exclusivamente pedagógicos y de preservación de memoria. Las opiniones de las obras pertenecen a sus creadores y no representan a las instancias educativas o culturales que apoyan el desarrollo de este espacio.
         </p>
-        <p className="text-[10px] md:text-[9.5px] leading-relaxed text-center w-full mb-3" style={{ color: 'var(--on-dark-legal)' }}>
+        <p className="text-[12px] md:text-[9.5px] leading-relaxed text-center w-full mb-3" style={{ color: 'var(--on-dark-legal)' }}>
           Las obras poéticas, sonoras y audiovisuales aquí incrustadas son propiedad intelectual de sus respectivos autores, intérpretes y productoras. Su exposición en esta plataforma se realiza bajo el amparo del derecho de cita y uso justo (fair use) con fines estrictamente educativos, de memoria e investigación académica, sin ánimo de lucro.
         </p>
-        <span className="font-mono text-[11px] md:text-[10.5px] tracking-[0.15em]" style={{ color: 'var(--on-dark-legal)' }}>
+        <span className="font-mono text-[12px] md:text-[10.5px] tracking-[0.15em]" style={{ color: 'var(--on-dark-legal)' }}>
           Curaduría · Cátedra Caminos de Resistencia
         </span>
-        <button className="btn-ghost-light">
+        <button className="btn-ghost-light" onClick={() => {}}>
           Abrir antología completa
           <span className="w-3.5 h-3.5 shrink-0 flex items-center">
             <Icon.External />

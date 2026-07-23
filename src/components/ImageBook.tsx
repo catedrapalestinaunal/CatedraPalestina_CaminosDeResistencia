@@ -164,7 +164,7 @@ export function ImageBook({ src, alt, pages, label, credit, naturalWidth, natura
                 {isMulti && pages.length > 1 && (
                   <div className="flex items-center gap-1.5 flex-shrink-0">
                     <button
-                      className="icon-btn !w-[30px] !h-[30px]"
+                      className="icon-btn !w-[30px] !h-[30px] md:!w-[44px] md:!h-[44px]"
                       onClick={() => setImgIndex(i => Math.max(i - 1, 0))}
                       disabled={imgIndex === 0}
                       aria-label="Página anterior"
@@ -175,7 +175,7 @@ export function ImageBook({ src, alt, pages, label, credit, naturalWidth, natura
                       {imgIndex + 1}/{pages.length}
                     </span>
                     <button
-                      className="icon-btn !w-[30px] !h-[30px]"
+                      className="icon-btn !w-[30px] !h-[30px] md:!w-[44px] md:!h-[44px]"
                       onClick={() => setImgIndex(i => Math.min(i + 1, pages.length - 1))}
                       disabled={imgIndex === pages.length - 1}
                       aria-label="Página siguiente"

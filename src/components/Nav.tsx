@@ -18,6 +18,11 @@ export function Nav({ theme, toggleTheme }: NavProps) {
 
   useEffect(() => { setMenuOpen(false); }, [pathname]);
 
+  useEffect(() => {
+    document.body.style.overflow = menuOpen ? 'hidden' : '';
+    return () => { document.body.style.overflow = ''; };
+  }, [menuOpen]);
+
   return (
     <>
       <div className={'nav-shell ' + (scrolled ? 'is-scrolled' : '')}>
@@ -68,20 +73,20 @@ export function Nav({ theme, toggleTheme }: NavProps) {
       </div>
 
       <div className={'mobile-sheet ' + (menuOpen ? 'is-open' : '')}>
+        <button
+          className="absolute top-4 right-4 z-10 w-11 h-11 flex items-center justify-center rounded-full bg-[var(--bg-warm)] border border-[var(--line)] text-[var(--fg)]"
+          onClick={toggleTheme}
+          aria-label="Alternar tema"
+          aria-pressed={theme === 'dark'}
+        >
+          {theme === 'dark' ? <Icon.Sun /> : <Icon.Moon />}
+        </button>
         {PAGES.map((p, i) => (
-          <Link key={p.id} to={p.path}>
-            <span>{p.label}</span>
+          <Link key={p.id} to={p.path} className={activePage === p.id ? 'is-active' : ''}>
+            <span className={p.id === 'archive' ? 'text-accent' : ''}>{p.label}</span>
             <small>0{i + 1}</small>
           </Link>
         ))}
-        <div className="mt-6 flex gap-3">
-          <Link to="/archivo" className="btn terra">
-            Explorar el Archivo <Icon.Arrow />
-          </Link>
-          <button className="icon-btn" onClick={toggleTheme} aria-label="Alternar tema">
-            {theme === 'dark' ? <Icon.Sun /> : <Icon.Moon />}
-          </button>
-        </div>
       </div>
     </>
   );

@@ -75,7 +75,7 @@ function DarwishCard() {
 
       <ul className="md-list mt-[18px]">
         {poems.map((q, i) => (
-          <li key={i} className={i === active ? 'is-active' : ''} onClick={() => setActive(i)}>
+          <li key={i} className={i === active ? 'is-active' : ''} onClick={() => setActive(i)} role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setActive(i); } }}>
             <span className="md-kind">{i === active ? <Icon.Play /> : 'Verso'}</span>
             <span className="md-name"><i>{q.title}</i></span>
             <span className="md-len">{q.year}</span>
@@ -265,7 +265,7 @@ function ArteTab() {
             <span>Proyectos estudiantiles · arte y cultura</span>
           </div>
         </Reveal>
-        <div className="grid md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {[1, 4, 5, 19, 20, 24, 15, 22, 23, 17].map((id, i) => {
             const p = projects.find(pr => pr.id === id);
             if (!p) return null;
@@ -286,9 +286,9 @@ function ArteTab() {
                       href={p.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="btn terra"
+                      className="btn terra w-full justify-center"
                     >
-                      {({ ensayo: 'Leer ensayo', cartografia: 'Explorar mapa', video: 'Ver video', podcast: 'Escuchar', fanzine: 'Ver fanzine', mural: 'Ver mural', collage: 'Ver collage', grabado: 'Ver grabado' } as Record<string, string>)[p.kind] || 'Abrir'} <Icon.External />
+                      {({ ensayo: 'Leer ensayo', cartografia: 'Explorar mapa', video: 'Ver video', podcast: 'Escuchar', fanzine: 'Ver fanzine', mural: 'Ver mural', collage: 'Ver collage', grabado: 'Ver grabado' } as Record<string, string>)[p.kind] || 'Abrir'}
                     </a>
                   </div>
                 </div>
@@ -433,7 +433,7 @@ function PeriodismoTab() {
             <span>Proyectos estudiantiles · periodismo y narrativas</span>
           </div>
         </Reveal>
-        <div className="grid md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {[16].map((id, i) => {
             const p = projects.find(pr => pr.id === id);
             if (!p) return null;
@@ -454,9 +454,9 @@ function PeriodismoTab() {
                       href={p.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="btn terra"
+                      className="btn terra w-full justify-center"
                     >
-                      {({ ensayo: 'Leer ensayo', cartografia: 'Explorar mapa', video: 'Ver video', podcast: 'Escuchar', fanzine: 'Ver fanzine', mural: 'Ver mural', collage: 'Ver collage', grabado: 'Ver grabado' } as Record<string, string>)[p.kind] || 'Abrir'} <Icon.External />
+                      {({ ensayo: 'Leer ensayo', cartografia: 'Explorar mapa', video: 'Ver video', podcast: 'Escuchar', fanzine: 'Ver fanzine', mural: 'Ver mural', collage: 'Ver collage', grabado: 'Ver grabado' } as Record<string, string>)[p.kind] || 'Abrir'}
                     </a>
                   </div>
                 </div>
@@ -865,7 +865,7 @@ function PodcastTab() {
           <div className="hr-rule mb-8">
             <span>{podcasts.length} podcasts · Producción estudiantil</span>
           </div>
-          <div className="grid md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {podcasts.map((p, i) => (
               <Reveal key={p.id} delay={i * 0.08} as="article">
                 <div className="card">
@@ -906,7 +906,7 @@ function PodcastTab() {
                             rel="noopener noreferrer"
                             className="flex items-center gap-2 text-sm text-fg-mute hover:text-fg transition-colors no-underline"
                           >
-                            <span className="font-mono text-[10px] text-accent shrink-0">EP.{e.n}</span>
+                            <span className="font-mono text-[12px] text-accent shrink-0">EP.{e.n}</span>
                             <span className="flex-1">{e.title}</span>
                             <span className="w-3.5 h-3.5 shrink-0 flex items-center"><Icon.External /></span>
                           </a>
@@ -943,11 +943,11 @@ function PodcastTab() {
                         href={p.url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="btn terra"
-                      >
-                        Escuchar <Icon.External />
-                      </a>
-                    ) : p.links && p.links.length > 0 ? null : (
+                      className="btn terra w-full justify-center"
+                    >
+                      Escuchar
+                    </a>
+                  ) : p.links && p.links.length > 0 ? null : (
                       <button className="btn" disabled>Próximamente</button>
                     )}
                   </div>

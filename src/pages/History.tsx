@@ -229,6 +229,9 @@ export function History() {
                   key={i}
                   className={'gloss-item ' + (open === i ? 'is-open' : '')}
                   onClick={() => setOpen(open === i ? -1 : i)}
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setOpen(open === i ? -1 : i); } }}
                 >
                   <div className="term">
                     <span>{g.term}</span>
@@ -259,7 +262,7 @@ export function History() {
               <span>Recursos elaborados por estudiantes {CONFIG.SEMESTRE}</span>
             </h2>
           </Reveal>
-          <div className="grid md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {[
               {
                 id: 3,
@@ -291,17 +294,17 @@ export function History() {
                     <p className="mt-2 text-fg-mute text-sm leading-relaxed">{body}</p>
                     <div className="mt-4">
                       {id === 3 ? (
-                        <a href="#timeline-g3" className="btn terra">
-                          Ver recurso <Icon.Arrow />
+                        <a href="#timeline-g3" className="btn terra w-full justify-center">
+                          Ver recurso
                         </a>
                       ) : (
                         <a
                           href={proj?.url}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="btn terra"
+                          className="btn terra w-full justify-center"
                         >
-                          Ver recurso <Icon.External />
+                          Ver recurso
                         </a>
                       )}
                     </div>
@@ -326,7 +329,7 @@ export function History() {
                 una continuidad de una novedad — y abre la pregunta verdadera: <em>¿quién?</em>
               </p>
             </div>
-            <button className="btn terra whitespace-nowrap" disabled>
+            <button className="btn terra" disabled>
               Descargar PDF · 24 pp
             </button>
           </Reveal>
