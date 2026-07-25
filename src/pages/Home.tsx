@@ -1,14 +1,14 @@
 import type { ReactNode } from 'react';
-import { useState, useRef, useEffect } from 'react';
+import { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
-import { motion, AnimatePresence, useInView } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Reveal } from '../components/Reveal';
 import { ImageSlot } from '../components/ImageSlot';
 import { Icon } from '../lib/icons';
 import { useLockBodyScroll } from '../lib/hooks';
 import type { Project } from '../lib/types';
-import { POETRY_PLAYLIST } from '../data/playlist';
+
 import { useProjects } from '../lib/useProjects';
 import { OG_IMAGE, SITE_URL, SITE_NAME, SITE_LOCALE } from '../lib/seo';
 import { orgSchema, websiteSchema, courseSchema } from '../lib/seo-schema';
@@ -293,7 +293,7 @@ export function Home() {
               </Reveal>
 
               <Reveal delay={0.2}>
-                <p className="mt-9 max-w-[46ch] text-base md:text-[15px] leading-[1.7] md:leading-[1.65]" style={{ color: 'var(--on-dark-fg)' }}>
+                <p className="mt-9 max-w-prose text-base md:text-[15px] leading-[1.7] md:leading-[1.65]" style={{ color: 'var(--on-dark-fg)' }}>
                   Si el ocupante toma la tierra, el poeta nombra la tierra. Si el archivo
                   quema, el cantor recuerda. Esta cátedra recoge un cuerpo poético, musical
                   y cinematográfico que ha sostenido la palabra <i>Palestina</i> durante
@@ -302,8 +302,26 @@ export function Home() {
               </Reveal>
             </div>
 
-            <Reveal delay={0.3}>
-              <AudioPlayer />
+            <Reveal delay={0.3} className="self-center">
+              <div className="text-center space-y-2">
+                <div className="font-mono text-[11px] tracking-[0.15em] uppercase" style={{ color: 'var(--gold-accent)' }}>
+                  Interpretación musical · Marcel Khalifé
+                </div>
+                <div className="aspect-video rounded-xl overflow-hidden border border-white/10 shadow-2xl">
+                  <iframe
+                    src="https://www.youtube.com/embed/UEeU-tx0SBU"
+                    width="100%"
+                    height="100%"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    className="border-0 w-full h-full"
+                    title="Rita (Rita y el fusil) — Mahmoud Darwish / Marcel Khalifé"
+                    loading="lazy"
+                  />
+                </div>
+                <div className="font-mono text-[11px] tracking-[0.04em] opacity-60 text-balance">
+                  Rita (Rita y el fusil) · poema de Mahmoud Darwish musicado por Marcel Khalifé
+                </div>
+              </div>
             </Reveal>
           </div>
         </div>
@@ -413,8 +431,8 @@ export function Home() {
                       </h3>
                     </div>
                     <div className="mt-4">
-                      <Link to="/archivo" className="btn terra">
-                        Ver en Archivo <Icon.Arrow />
+                      <Link to="/archivo" className="btn terra w-full justify-center">
+                        Ver en Archivo
                       </Link>
                     </div>
                   </div>
@@ -473,12 +491,29 @@ export function Home() {
               transition={{ duration: prefersReduced ? 0 : 0.3, ease: 'easeOut' }}
             >
               <button className="close" onClick={() => setOpenProj(null)} aria-label="Cerrar"><Icon.Close /></button>
-              <div className={'proj-thumb h-[220px] md:h-[280px] mb-6 md:mb-7 ' + (openProj.thumbnail ? '' : ' kind-' + openProj.kind)} style={{ backgroundImage: openProj.thumbnail ? 'url(' + openProj.thumbnail + ')' : undefined, backgroundSize: 'cover', backgroundPosition: 'center' }} role="img" aria-label={openProj.title ? `Miniatura de ${openProj.title}` : 'Proyecto sin miniatura'}>
-                <div className="kind-num">N° {openProj.n}</div>
-                {!openProj.thumbnail && <div className="kind-glyph">{KIND_GLYPH_LOCAL[openProj.kind] || openProj.kind.toUpperCase()}</div>}
-                {openProj.aiThumbnail && <div className="absolute top-2 left-2 z-10 font-mono text-[11px] md:text-[9px] tracking-[0.12em] uppercase bg-black/50 backdrop-blur-sm text-white/80 px-1.5 py-0.5 rounded-sm">AI · ref.</div>}
+              <div className="relative mb-6 md:mb-7 rounded-xl overflow-hidden h-[220px] md:h-[280px] bg-[var(--olive)]">
+                {openProj.thumbnail ? (
+                  <img src={openProj.thumbnail} alt={openProj.title ? `Miniatura de ${openProj.title}` : 'Proyecto sin miniatura'} className="w-full h-full object-cover" />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center">
+                    <span className="font-serif text-[clamp(70px,12vw,120px)] opacity-15 select-none text-white">
+                      {KIND_GLYPH_LOCAL[openProj.kind] || openProj.kind.toUpperCase()}
+                    </span>
+                  </div>
+                )}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+                <div className="absolute bottom-3 left-4 font-mono text-[12px] tracking-[0.15em] uppercase text-white/90">
+                  {openProj.kind} · {openProj.year}
+                </div>
+                <div className="absolute top-3 right-4 font-mono text-[11px] tracking-[0.12em] uppercase text-white/80 bg-black/30 backdrop-blur-sm px-2.5 py-1 rounded-full">
+                  N° {openProj.n}
+                </div>
+                {openProj.aiThumbnail && (
+                  <div className="absolute top-3 left-4 z-10 font-mono text-[11px] md:text-[10px] tracking-[0.12em] uppercase text-white/70 bg-black/30 backdrop-blur-sm px-2 py-0.5 rounded-full">
+                    AI · ref.
+                  </div>
+                )}
               </div>
-              <div className="kicker">{openProj.kind} · {openProj.year}</div>
               <h2 id="modal-title" className="mt-3 text-[clamp(26px,7vw,44px)] leading-tight">{openProj.title}</h2>
               <div className="text-fg-mute mt-2.5 text-base md:text-sm">{openProj.author}</div>
 
@@ -613,309 +648,4 @@ function SimboCard({ n, term, meaning, body, glyph, accent }: SimboCardProps) {
   );
 }
 
-const BAR_COUNT = 24;
-const WIGGLE_PATTERNS = ['w1', 'w2', 'w3', 'w4'];
 
-function AudioPlayer() {
-  const sectionRef = useRef<HTMLDivElement>(null);
-  const isInView = useInView(sectionRef, { amount: 0.3, once: true });
-  const [activeTrackId, setActiveTrackId] = useState(1);
-  const [showVideo, setShowVideo] = useState(false);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [isMuted, setIsMuted] = useState(true);
-
-  const playerRef = useRef<YTPlayer | null>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
-  const [apiReady, setApiReady] = useState(false);
-  const [playerReady, setPlayerReady] = useState(false);
-  const [ytError, setYtError] = useState(false);
-
-  const activeTrack = POETRY_PLAYLIST.find((t) => t.id === activeTrackId) ?? POETRY_PLAYLIST[0];
-  const isYouTube = activeTrack.source === 'youtube';
-
-  /* ============ YOUTUBE API (lazy) ============ */
-  const loadYouTubeAPIRef = useRef<Promise<void> | null>(null);
-
-  function loadYouTubeAPI(): Promise<void> {
-    if (loadYouTubeAPIRef.current) return loadYouTubeAPIRef.current;
-    if (window.YT?.Player) { setApiReady(true); return Promise.resolve(); }
-
-    loadYouTubeAPIRef.current = new Promise<void>((resolve, reject) => {
-      const timeout = setTimeout(() => {
-        setYtError(true);
-        reject(new Error('YouTube API load timeout'));
-      }, 10000);
-
-      const prev = (window as any).onYouTubeIframeAPIReady;
-      (window as any).onYouTubeIframeAPIReady = () => {
-        clearTimeout(timeout);
-        if (typeof prev === 'function') prev();
-        setApiReady(true);
-        resolve();
-      };
-      const tag = document.createElement('script');
-      tag.src = 'https://www.youtube.com/iframe_api';
-      tag.onerror = () => {
-        clearTimeout(timeout);
-        setYtError(true);
-        reject(new Error('Failed to load YouTube API'));
-      };
-      document.head.appendChild(tag);
-    }).catch(() => {});
-
-    return loadYouTubeAPIRef.current;
-  }
-
-  useEffect(() => {
-    if (!apiReady || !containerRef.current || playerRef.current) return;
-    const firstYT = POETRY_PLAYLIST.find(t => t.source === 'youtube');
-    if (!firstYT) return;
-    const vid = firstYT.embedUrl.split('/').pop()!;
-    try {
-      playerRef.current = new window.YT!.Player(containerRef.current, {
-        videoId: vid,
-        playerVars: {
-          autoplay: 0,
-          mute: 1,
-          enablejsapi: 1,
-          controls: 1,
-          modestbranding: 1,
-          rel: 0,
-        },
-        events: {
-          onReady: () => setPlayerReady(true),
-          onStateChange: (e) => {
-            if (e.data === window.YT!.PlayerState.PLAYING) setIsPlaying(true);
-            else if (
-              e.data === window.YT!.PlayerState.PAUSED ||
-              e.data === window.YT!.PlayerState.ENDED
-            ) setIsPlaying(false);
-          },
-        },
-      });
-    } catch {
-      setYtError(true);
-    }
-    return () => {
-      playerRef.current?.destroy();
-      playerRef.current = null;
-    };
-  }, [apiReady]);
-
-  useEffect(() => {
-    if (!playerRef.current || !playerReady || !isYouTube) return;
-    try { (isPlaying ? playerRef.current.playVideo : playerRef.current.pauseVideo)(); } catch {}
-  }, [isPlaying, playerReady, isYouTube]);
-
-  useEffect(() => {
-    if (!playerRef.current || !playerReady || !isYouTube) return;
-    try { (isMuted ? playerRef.current.mute : playerRef.current.unMute)(); } catch {}
-  }, [isMuted, playerReady, isYouTube]);
-
-  useEffect(() => {
-    if (!playerRef.current || !playerReady || !isYouTube) return;
-    const id = activeTrack.embedUrl.split('/').pop()!;
-    (isPlaying ? playerRef.current.loadVideoById(id) : playerRef.current.cueVideoById(id));
-  }, [activeTrackId, playerReady, isYouTube]);
-
-  useEffect(() => {
-    if (!playerRef.current || !playerReady) return;
-    if (!isYouTube) {
-      try { playerRef.current.pauseVideo(); } catch {}
-      setIsPlaying(false);
-    }
-  }, [activeTrackId, playerReady, isYouTube]);
-
-  const barPatterns = useRef(
-    Array.from({ length: BAR_COUNT }, (_, i) => WIGGLE_PATTERNS[i % WIGGLE_PATTERNS.length])
-  );
-
-  const barsActive = isPlaying && isInView && isYouTube;
-
-  return (
-    <div className="media-stub" ref={sectionRef}>
-      {/* ======== HEAD ======== */}
-      <div className="media-stub-head">
-        <div className="md-dot" style={isYouTube && barsActive ? undefined : { animationPlayState: 'paused' }} />
-        <div className="flex-1">
-          <div className="md-now" role="status" aria-live="polite">
-            {isYouTube
-              ? (barsActive ? (isMuted ? 'Reproduciendo · silenciado' : 'Reproduciendo') : isPlaying ? 'Cargando' : 'Pausado')
-              : 'Listo para reproducir'}
-          </div>
-          <div className="md-title" title={activeTrack.title}>{activeTrack.title}</div>
-        </div>
-        {isYouTube && (
-          <div className="audio-controls flex items-center gap-1.5 flex-shrink-0 ml-auto">
-            <button
-              type="button"
-              className={`audio-ctrl-btn ${isMuted ? 'is-muted' : ''}`}
-              onClick={() => setIsMuted((m) => !m)}
-              aria-label={isMuted ? 'Activar sonido' : 'Silenciar'}
-            >
-              {isMuted ? <Icon.VolumeX /> : <Icon.Volume />}
-            </button>
-            <button
-              type="button"
-              className="audio-ctrl-btn"
-              onClick={() => {
-                if (isYouTube && !apiReady) { loadYouTubeAPI(); }
-                setIsPlaying((p) => !p);
-              }}
-              aria-label={isPlaying ? 'Pausar' : 'Reproducir'}
-            >
-              {isPlaying ? <Icon.Pause /> : <Icon.Play />}
-            </button>
-          </div>
-        )}
-      </div>
-
-      {/* ======== FREQ BARS ======== */}
-      {barsActive && (
-        <div className="freq-bars" aria-hidden="true">
-          {Array.from({ length: BAR_COUNT }, (_, i) => (
-            <div
-              key={i}
-              className={`freq-bar ${barPatterns.current[i]} is-active`}
-              style={{ animationDelay: `${(i * 0.06).toFixed(2)}s` }}
-            />
-          ))}
-        </div>
-      )}
-
-      {/* ======== ACCORDION ======== */}
-      <button
-        type="button"
-        className="audio-accordion-btn"
-        onClick={() => {
-          if (isYouTube && !showVideo && !apiReady) { loadYouTubeAPI(); }
-          setShowVideo((v) => !v);
-        }}
-        aria-expanded={showVideo}
-        aria-controls="audio-video-panel"
-      >
-        <span className="left-side">
-          <div className="w-4 h-4 shrink-0 flex items-center" aria-hidden="true">
-            <Icon.Music />
-          </div>
-          {isYouTube ? 'Ver interpretación visual' : activeTrack.source === 'spotify' ? 'Escuchar en Spotify' : 'Abrir reproductor'}
-        </span>
-        <span className={`chevron ${showVideo ? 'is-up' : ''}`}>
-          <div className="w-4 h-4 shrink-0 flex items-center">
-            <Icon.ChevronDown />
-          </div>
-        </span>
-      </button>
-
-      <div id="audio-video-panel" role="region" aria-label="Reproductor multimedia" className={`audio-video-wrapper ${showVideo ? 'is-open' : ''}`}>
-        {isYouTube ? (
-          <div className="aspect-video rounded-xl overflow-hidden">
-            <div ref={containerRef} className="w-full h-full" />
-          </div>
-        ) : activeTrack.source === 'spotify' ? (
-          <div className="rounded-xl overflow-hidden" style={{ height: 352 }}>
-            <iframe
-              src={activeTrack.embedUrl}
-              width="100%"
-              height="100%"
-              allow="encrypted-media; clipboard-write"
-              className="border-0"
-              title={activeTrack.title}
-            />
-          </div>
-        ) : (
-          <div className="rounded-xl overflow-hidden" style={{ height: 480 }}>
-            <iframe
-              src={activeTrack.embedUrl}
-              width="100%"
-              height="100%"
-              allow="autoplay"
-              className="border-0"
-              title={activeTrack.title}
-            />
-          </div>
-        )}
-        {activeTrack.source !== 'youtube' && activeTrack.externalUrl && (
-          <div className="mt-3 flex justify-center">
-            <a
-              href={activeTrack.externalUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="btn-ghost-light"
-            >
-              Abrir en {activeTrack.source === 'spotify' ? 'Spotify' : 'Google Drive'}
-              <span className="w-3.5 h-3.5 shrink-0 flex items-center">
-                <Icon.External />
-              </span>
-            </a>
-          </div>
-        )}
-      </div>
-
-      {/* ======== YOUTUBE ERROR FALLBACK ======== */}
-      {ytError && isYouTube && (
-        <div className="mt-4 text-center py-4 px-4 border border-white/10 rounded-xl">
-          <p className="text-sm opacity-80 mb-2">
-            No se pudo cargar el reproductor de video.
-          </p>
-          {activeTrack.externalUrl && (
-            <a
-              href={activeTrack.externalUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="btn-ghost-light"
-            >
-              Ver en YouTube <Icon.External />
-            </a>
-          )}
-        </div>
-      )}
-
-      {/* ======== PLAYLIST ======== */}
-      <ul className="md-list">
-        {POETRY_PLAYLIST.map((track) => {
-          const isActive = track.id === activeTrackId;
-          return (
-            <li
-              key={track.id}
-              className={isActive ? 'is-active' : ''}
-              onClick={() => {
-                setActiveTrackId(track.id);
-                setShowVideo(false);
-                if (track.source === 'youtube') setIsPlaying(true);
-              }}
-              aria-label={`${track.title} — ${track.author}${isActive ? ', reproduciendo' : ''}`}
-            >
-              <span className="md-kind">
-                {isActive ? (
-                  track.source === 'youtube' ? <Icon.Play /> : <Icon.External />
-                ) : String(track.id).padStart(2, '0')}
-              </span>
-              <span className="md-name"><i>{track.title}</i></span>
-              <span className="md-len">{track.author}</span>
-            </li>
-          );
-        })}
-      </ul>
-
-      {/* ======== FOOTER ======== */}
-      <div className="audio-player-footer">
-        <p className="text-[12px] opacity-50 tracking-normal text-justify leading-normal block px-4 py-2">
-          Aviso académico: Los recursos multimedia aquí enlazados provienen de plataformas públicas y se presentan con fines exclusivamente pedagógicos y de preservación de memoria. Las opiniones de las obras pertenecen a sus creadores y no representan a las instancias educativas o culturales que apoyan el desarrollo de este espacio.
-        </p>
-        <p className="text-[12px] md:text-[9.5px] leading-relaxed text-center w-full mb-3" style={{ color: 'var(--on-dark-legal)' }}>
-          Las obras poéticas, sonoras y audiovisuales aquí incrustadas son propiedad intelectual de sus respectivos autores, intérpretes y productoras. Su exposición en esta plataforma se realiza bajo el amparo del derecho de cita y uso justo (fair use) con fines estrictamente educativos, de memoria e investigación académica, sin ánimo de lucro.
-        </p>
-        <span className="font-mono text-[12px] md:text-[10.5px] tracking-[0.15em]" style={{ color: 'var(--on-dark-legal)' }}>
-          Curaduría · Cátedra Caminos de Resistencia
-        </span>
-        <button className="btn-ghost-light" onClick={() => {}}>
-          Abrir antología completa
-          <span className="w-3.5 h-3.5 shrink-0 flex items-center">
-            <Icon.External />
-          </span>
-        </button>
-      </div>
-    </div>
-  );
-}

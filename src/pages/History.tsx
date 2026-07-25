@@ -3,6 +3,7 @@ import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
 import { Reveal } from '../components/Reveal';
 import { MythCards } from '../components/MythCards';
+import { ProjectModal } from '../components/ProjectModal';
 import { Icon } from '../lib/icons';
 import { ImageBook } from '../components/ImageBook';
 import { TIMELINE, GLOSSARY } from '../data/history';
@@ -12,12 +13,14 @@ import { OG_IMAGE, SITE_URL, SITE_NAME, SITE_LOCALE } from '../lib/seo';
 import { useProjects } from '../lib/useProjects';
 import { articleSchema, eventSchema, breadcrumbSchema, faqSchema } from '../lib/seo-schema';
 import { CONFIG } from '../lib/config';
+import type { Project } from '../lib/types';
 
 export function History() {
   const { projects } = useProjects();
   const railRef = useRef<HTMLDivElement>(null);
   const [progress, setProgress] = useState(0);
   const [open, setOpen] = useState(-1);
+  const [openProj, setOpenProj] = useState<Project | null>(null);
   const [isWide, setIsWide] = useState(window.innerWidth >= 768);
 
   useEffect(() => {
@@ -282,30 +285,25 @@ export function History() {
                 body: 'Ep. 1: Introducción histórica y Ep. 2: Vida cotidiana bajo ocupación. Serie completa de 4 episodios del Grupo 13.',
                 group: 'Grupo 13',
               },
-            ].map(({ id, title, body, group }, i) => {
+            ].map(({ id, title, group }, i) => {
               const proj = projects.find(p => p.id === id);
               return (
                 <Reveal key={id} as="article" delay={i * 0.08}>
-                  <div className="card">
+                  <div className="card" role="button" tabIndex={0} onClick={() => { if (proj) setOpenProj(proj); }} onKeyDown={(e) => { if ((e.key === 'Enter' || e.key === ' ') && proj) { e.preventDefault(); setOpenProj(proj); } }}>
                     <div className="kicker">{group}</div>
-                    <h3 className="mt-2 text-[clamp(18px,1.8vw,22px)] font-serif leading-tight">
+                    <div className="mt-1 font-mono text-[12px] sm:text-[10px] tracking-[0.1em] text-fg-mute">{proj ? ({ ensayo: 'Ensayo', cartografia: 'Cartografía', video: 'Video', podcast: 'Podcast', fanzine: 'Fanzine', mural: 'Mural', collage: 'Collage', grabado: 'Grabado' } as Record<string, string>)[proj.kind] || proj.kind : ''}</div>
+                    <h3 className="mt-2 text-[clamp(16px,1.6vw,20px)] font-serif leading-tight">
                       {title}
                     </h3>
-                    <p className="mt-2 text-fg-mute text-sm leading-relaxed">{body}</p>
-                    <div className="mt-4">
+                    <div className="mt-4" onClick={(e) => e.stopPropagation()}>
                       {id === 3 ? (
                         <a href="#timeline-g3" className="btn terra w-full justify-center">
                           Ver recurso
                         </a>
                       ) : (
-                        <a
-                          href={proj?.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="btn terra w-full justify-center"
-                        >
-                          Ver recurso
-                        </a>
+                        <Link to="/archivo" className="btn terra w-full justify-center">
+                          Ver en Archivo
+                        </Link>
                       )}
                     </div>
                   </div>
@@ -329,12 +327,11 @@ export function History() {
                 una continuidad de una novedad — y abre la pregunta verdadera: <em>¿quién?</em>
               </p>
             </div>
-            <button className="btn terra" disabled>
-              Descargar PDF · 24 pp
-            </button>
           </Reveal>
         </div>
       </section>
+
+      <ProjectModal project={openProj} onClose={() => setOpenProj(null)} />
     </>
   );
 }

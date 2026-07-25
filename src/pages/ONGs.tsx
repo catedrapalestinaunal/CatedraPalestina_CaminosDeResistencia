@@ -1,12 +1,14 @@
 import { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
+import { Link } from 'react-router-dom';
 import { Reveal } from '../components/Reveal';
 import { ImageSlot } from '../components/ImageSlot';
 import { ImageGallery } from '../components/ImageGallery';
+import { ProjectModal } from '../components/ProjectModal';
 import { ONG_CARDS, ONG_PARTNERS } from '../data/ongs';
 import { useProjects } from '../lib/useProjects';
 import { ExternalOrgs } from '../components/ExternalOrgs';
-import type { ImageVariant } from '../lib/types';
+import type { ImageVariant, Project } from '../lib/types';
 import { OG_IMAGE, SITE_URL, SITE_NAME, SITE_LOCALE } from '../lib/seo';
 import { websiteSchema, breadcrumbSchema } from '../lib/seo-schema';
 
@@ -21,6 +23,7 @@ const TABS: { id: Tab; label: string }[] = [
 export function ONGs() {
   const [tab, setTab] = useState<Tab>('vida');
   const { projects } = useProjects();
+  const [openProj, setOpenProj] = useState<Project | null>(null);
 
   const brigadaImages = [
     {
@@ -186,25 +189,16 @@ export function ONGs() {
                 if (!p) return null;
                 return (
                   <Reveal key={p.id} as="article" delay={i * 0.08}>
-                    <div className="card">
+                    <div className="card" role="button" tabIndex={0} onClick={() => setOpenProj(p)} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setOpenProj(p); } }}>
                       <div className="kicker">{p.group || p.author}</div>
-                      <h3 className="mt-2 text-[clamp(18px,1.8vw,22px)] font-serif leading-tight">
+                      <div className="mt-1 font-mono text-[12px] sm:text-[10px] tracking-[0.1em] text-fg-mute">{({ ensayo: 'Ensayo', cartografia: 'Cartografía', video: 'Video', podcast: 'Podcast', fanzine: 'Fanzine', mural: 'Mural', collage: 'Collage', grabado: 'Grabado' } as Record<string, string>)[p.kind] || p.kind}</div>
+                      <h3 className="mt-2 text-[clamp(16px,1.6vw,20px)] font-serif leading-tight">
                         {p.title}
                       </h3>
-                      {p.description && (
-                        <p className="mt-2 text-fg-mute text-sm leading-relaxed line-clamp-3">
-                          {p.description}
-                        </p>
-                      )}
-                      <div className="mt-4">
-                        <a
-                          href={p.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="btn terra w-full justify-center"
-                        >
-                          {({ ensayo: 'Leer ensayo', cartografia: 'Explorar mapa', video: 'Ver video', podcast: 'Escuchar podcast', fanzine: 'Ver fanzine', mural: 'Ver mural', collage: 'Ver collage', grabado: 'Ver grabado' } as Record<string, string>)[p.kind] || 'Abrir'}
-                        </a>
+                      <div className="mt-4" onClick={(e) => e.stopPropagation()}>
+                        <Link to="/archivo" className="btn terra w-full justify-center">
+                          Ver en Archivo
+                        </Link>
                       </div>
                     </div>
                   </Reveal>
@@ -315,6 +309,8 @@ export function ONGs() {
           </div>
         </section>
       )}
+
+      <ProjectModal project={openProj} onClose={() => setOpenProj(null)} />
     </>
   );
 }

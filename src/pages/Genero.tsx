@@ -1,8 +1,10 @@
+import { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
 import { Reveal } from '../components/Reveal';
 import { ImageSlot } from '../components/ImageSlot';
 import { ImageBook } from '../components/ImageBook';
+import { ProjectModal } from '../components/ProjectModal';
 import { FANZINE_G12 } from '../data/fanzine-g12';
 import { useProjects } from '../lib/useProjects';
 import { Icon } from '../lib/icons';
@@ -50,28 +52,19 @@ function QuotesMarquee({
 /* ============================================================
    EstudianteCard — used in producción estudiantil section
    ============================================================ */
-function EstudianteCard({ p, delay }: { p: Project; delay: number }) {
+function EstudianteCard({ p, delay, onOpenProj }: { p: Project; delay: number; onOpenProj: (p: Project) => void }) {
   return (
     <Reveal as="article" delay={delay}>
-      <div className="pdt-card-modern flex flex-col h-full">
+      <div className="pdt-card-modern flex flex-col h-full" role="button" tabIndex={0} onClick={() => onOpenProj(p)} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onOpenProj(p); } }}>
         <div className="kicker mb-3">{p.group || p.author}</div>
-        <h3 className="font-serif text-[clamp(18px,2vw,24px)] leading-tight">
+        <div className="font-mono text-[12px] sm:text-[10px] tracking-[0.1em] text-fg-mute mb-2">{({ ensayo: 'Ensayo', cartografia: 'Cartografía', video: 'Video', podcast: 'Podcast', fanzine: 'Fanzine', mural: 'Mural', collage: 'Collage', grabado: 'Grabado' } as Record<string, string>)[p.kind] || p.kind}</div>
+        <h3 className="font-serif text-[clamp(16px,1.6vw,20px)] leading-tight">
           {p.title}
         </h3>
-        {p.description && (
-          <p className="mt-2 text-fg-mute text-sm leading-relaxed line-clamp-3">
-            {p.description}
-          </p>
-        )}
-        <div className="mt-auto pt-4">
-          <a
-            href={p.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="btn terra w-full justify-center"
-          >
-            Abrir documento
-          </a>
+        <div className="mt-auto pt-4" onClick={(e) => e.stopPropagation()}>
+          <Link to="/archivo" className="btn terra w-full justify-center">
+            Ver en Archivo
+          </Link>
         </div>
       </div>
     </Reveal>
@@ -266,6 +259,7 @@ function PalestinaDeTodas() {
    ============================================================ */
 export function Genero() {
   const { projects } = useProjects();
+  const [openProj, setOpenProj] = useState<Project | null>(null);
   return (
     <>
       <Helmet>
@@ -348,7 +342,7 @@ export function Genero() {
           </Reveal>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {projects.filter(p => [10, 5, 12].includes(p.id)).map((p, i) => (
-              <EstudianteCard key={p.id} p={p} delay={i * 0.08} />
+              <EstudianteCard key={p.id} p={p} delay={i * 0.08} onOpenProj={setOpenProj} />
             ))}
           </div>
         </div>
@@ -383,6 +377,8 @@ export function Genero() {
           </Reveal>
         </div>
       </section>
+
+      <ProjectModal project={openProj} onClose={() => setOpenProj(null)} />
     </>
   );
 }

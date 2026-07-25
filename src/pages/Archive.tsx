@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Reveal } from '../components/Reveal';
 import { Icon } from '../lib/icons';
-import { useLockBodyScroll } from '../lib/hooks';
+import { useLockBodyScroll, useMediaQuery } from '../lib/hooks';
 import { BIBLIOGRAPHY, KIND_GLYPH, buildKindFilters } from '../data/archive';
 import { useProjects } from '../lib/useProjects';
 import { useFocusTrap } from '../lib/useFocusTrap';
@@ -126,6 +126,8 @@ export function Archive() {
   const [kind, setKind] = useState<string>('all');
   const [semester, setSemester] = useState<string>('all');
   const [view, setView] = useState<'grid' | 'list'>('grid');
+  const isMobile = useMediaQuery('(max-width: 768px)');
+  useEffect(() => { if (isMobile) setView('grid'); }, [isMobile]);
   const [query, setQuery] = useState('');
   const [openProj, setOpenProj] = useState<Project | null>(null);
   useLockBodyScroll(!!openProj);

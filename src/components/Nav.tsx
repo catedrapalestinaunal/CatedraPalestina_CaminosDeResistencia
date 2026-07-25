@@ -29,10 +29,7 @@ export function Nav({ theme, toggleTheme }: NavProps) {
         <nav className="nav" aria-label="Principal">
           <Link className="brand" to="/">
             <span className="brand-mark">
-              <picture>
-                <source srcSet="/navbar-icon.webp" type="image/webp" />
-                <img src="/navbar-icon.png" alt="Caminos de Resistencia" width={28} height={28} />
-              </picture>
+              <Icon.Brand />
             </span>
             <span>
               Caminos de Resistencia

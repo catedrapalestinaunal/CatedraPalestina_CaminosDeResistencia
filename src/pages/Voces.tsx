@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import { Reveal } from '../components/Reveal';
 import { ImageSlot } from '../components/ImageSlot';
 import { ImageGallery } from '../components/ImageGallery';
+import { ProjectModal } from '../components/ProjectModal';
 import { Icon } from '../lib/icons';
 import { PODCAST_SERIES } from '../data/podcast-series';
 import { useProjects } from '../lib/useProjects';
@@ -12,6 +13,7 @@ import { OG_IMAGE, SITE_URL, SITE_NAME, SITE_LOCALE } from '../lib/seo';
 import { articleSchema, breadcrumbSchema, videoObjectSchema, podcastEpisodeSchema } from '../lib/seo-schema';
 import { LazyYouTube } from '../components/LazyYouTube';
 import { CONFIG } from '../lib/config';
+import type { Project } from '../lib/types';
 
 /* ============================================================
    Darwish interactive poem card
@@ -89,7 +91,7 @@ function DarwishCard() {
 /* ============================================================
    TAB 1 — Arte y Cultura
    ============================================================ */
-function ArteTab() {
+function ArteTab({ onOpenProj }: { onOpenProj: (p: Project) => void }) {
   const { projects } = useProjects();
   const muralImages = [
     {
@@ -271,25 +273,16 @@ function ArteTab() {
             if (!p) return null;
             return (
               <Reveal key={p.id} as="article" delay={i * 0.08}>
-                <div className="card">
+                <div className="card" role="button" tabIndex={0} onClick={() => onOpenProj(p)} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onOpenProj(p); } }}>
                   <div className="kicker">{p.group || p.author}</div>
-                  <h3 className="mt-2 text-[clamp(18px,1.8vw,22px)] font-serif leading-tight">
+                  <div className="mt-1 font-mono text-[12px] sm:text-[10px] tracking-[0.1em] text-fg-mute">{({ ensayo: 'Ensayo', cartografia: 'Cartografía', video: 'Video', podcast: 'Podcast', fanzine: 'Fanzine', mural: 'Mural', collage: 'Collage', grabado: 'Grabado' } as Record<string, string>)[p.kind] || p.kind}</div>
+                  <h3 className="mt-2 text-[clamp(16px,1.6vw,20px)] font-serif leading-tight">
                     {p.title}
                   </h3>
-                  {p.description && (
-                    <p className="mt-2 text-fg-mute text-sm leading-relaxed line-clamp-3">
-                      {p.description}
-                    </p>
-                  )}
-                  <div className="mt-4">
-                    <a
-                      href={p.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="btn terra w-full justify-center"
-                    >
-                      {({ ensayo: 'Leer ensayo', cartografia: 'Explorar mapa', video: 'Ver video', podcast: 'Escuchar', fanzine: 'Ver fanzine', mural: 'Ver mural', collage: 'Ver collage', grabado: 'Ver grabado' } as Record<string, string>)[p.kind] || 'Abrir'}
-                    </a>
+                  <div className="mt-4" onClick={(e) => e.stopPropagation()}>
+                    <Link to="/archivo" className="btn terra w-full justify-center">
+                      Ver en Archivo
+                    </Link>
                   </div>
                 </div>
               </Reveal>
@@ -303,9 +296,9 @@ function ArteTab() {
 }
 
 /* ============================================================
-   TAB 2 — Periodismo y Narrativas
+   PeriodismoTab
    ============================================================ */
-function PeriodismoTab() {
+function PeriodismoTab({ onOpenProj }: { onOpenProj: (p: Project) => void }) {
   const { projects } = useProjects();
   return (
     <>
@@ -439,25 +432,16 @@ function PeriodismoTab() {
             if (!p) return null;
             return (
               <Reveal key={p.id} as="article" delay={i * 0.08}>
-                <div className="card">
+                <div className="card" role="button" tabIndex={0} onClick={() => onOpenProj(p)} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onOpenProj(p); } }}>
                   <div className="kicker">{p.group || p.author}</div>
-                  <h3 className="mt-2 text-[clamp(18px,1.8vw,22px)] font-serif leading-tight">
+                  <div className="mt-1 font-mono text-[12px] sm:text-[10px] tracking-[0.1em] text-fg-mute">{({ ensayo: 'Ensayo', cartografia: 'Cartografía', video: 'Video', podcast: 'Podcast', fanzine: 'Fanzine', mural: 'Mural', collage: 'Collage', grabado: 'Grabado' } as Record<string, string>)[p.kind] || p.kind}</div>
+                  <h3 className="mt-2 text-[clamp(16px,1.6vw,20px)] font-serif leading-tight">
                     {p.title}
                   </h3>
-                  {p.description && (
-                    <p className="mt-2 text-fg-mute text-sm leading-relaxed line-clamp-3">
-                      {p.description}
-                    </p>
-                  )}
-                  <div className="mt-4">
-                    <a
-                      href={p.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="btn terra w-full justify-center"
-                    >
-                      {({ ensayo: 'Leer ensayo', cartografia: 'Explorar mapa', video: 'Ver video', podcast: 'Escuchar', fanzine: 'Ver fanzine', mural: 'Ver mural', collage: 'Ver collage', grabado: 'Ver grabado' } as Record<string, string>)[p.kind] || 'Abrir'}
-                    </a>
+                  <div className="mt-4" onClick={(e) => e.stopPropagation()}>
+                    <Link to="/archivo" className="btn terra w-full justify-center">
+                      Ver en Archivo
+                    </Link>
                   </div>
                 </div>
               </Reveal>
@@ -471,7 +455,7 @@ function PeriodismoTab() {
 }
 
 /* ============================================================
-   TAB 3 — Solidaridad y Sur Global
+   SolidaridadTab
    ============================================================ */
 function SolidaridadTab() {
   return (
@@ -633,6 +617,7 @@ function SolidaridadTab() {
 export function Voces() {
   const [tab, setTab] = useState<'arte' | 'periodismo' | 'solidaridad' | 'podcast' | 'videos'>('arte');
   const { projects } = useProjects();
+  const [openProj, setOpenProj] = useState<Project | null>(null);
 
   const videos = projects.filter(p => p.kind === 'video');
   const podcasts = projects.filter(p => p.kind === 'podcast');
@@ -731,11 +716,13 @@ export function Voces() {
         </div>
       </header>
 
-      {tab === 'arte'        && <ArteTab />}
-      {tab === 'periodismo'  && <PeriodismoTab />}
+      {tab === 'arte'        && <ArteTab onOpenProj={setOpenProj} />}
+      {tab === 'periodismo'  && <PeriodismoTab onOpenProj={setOpenProj} />}
       {tab === 'solidaridad' && <SolidaridadTab />}
-      {tab === 'podcast'     && <PodcastTab />}
+      {tab === 'podcast'     && <PodcastTab onOpenProj={setOpenProj} />}
       {tab === 'videos'      && <VideoTab />}
+
+      <ProjectModal project={openProj} onClose={() => setOpenProj(null)} />
     </>
   );
 }
@@ -842,7 +829,7 @@ function VideoTab() {
 /* ============================================================
    TAB 4 — Podcast · Producción estudiantil
    ============================================================ */
-function PodcastTab() {
+function PodcastTab({ onOpenProj }: { onOpenProj: (p: Project) => void }) {
   const { projects } = useProjects();
   const podcasts = projects.filter(p => p.kind === 'podcast');
 
@@ -868,19 +855,15 @@ function PodcastTab() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {podcasts.map((p, i) => (
               <Reveal key={p.id} delay={i * 0.08} as="article">
-                <div className="card">
+                <div className="card" role="button" tabIndex={0} onClick={() => onOpenProj(p)} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onOpenProj(p); } }}>
                   <div className="kicker">{p.group || p.author}</div>
-                  <h3 className="mt-2 text-[clamp(18px,1.8vw,22px)] font-serif leading-tight">
+                  <div className="mt-1 font-mono text-[12px] sm:text-[10px] tracking-[0.1em] text-fg-mute">Podcast</div>
+                  <h3 className="mt-2 text-[clamp(16px,1.6vw,20px)] font-serif leading-tight">
                     {p.title}
                   </h3>
-                  {p.description && (
-                    <p className="mt-2 text-fg-mute text-sm leading-relaxed line-clamp-3">
-                      {p.description}
-                    </p>
-                  )}
 
                   {p.url && getSpotifyEmbedUrl(p.url) && (
-                    <div className="mt-4 h-[152px]">
+                    <div className="mt-4 h-[152px]" onClick={(e) => e.stopPropagation()}>
                       <iframe
                         src={getSpotifyEmbedUrl(p.url)!}
                         width="100%"
@@ -893,7 +876,7 @@ function PodcastTab() {
                   )}
 
                   {p.id === 13 && PODCAST_SERIES.episodes.length > 0 && (
-                    <details className="mt-4 pt-3 border-t border-[var(--line)]">
+                    <details className="mt-4 pt-3 border-t border-[var(--line)]" onClick={(e) => e.stopPropagation()}>
                       <summary className="font-mono text-[11px] tracking-[0.14em] uppercase text-fg-mute cursor-pointer">
                         {PODCAST_SERIES.episodes.length} episodios
                       </summary>
@@ -916,7 +899,7 @@ function PodcastTab() {
                   )}
 
                   {p.id === 26 && p.links && p.links.length > 0 && (
-                    <details className="mt-4 pt-3 border-t border-[var(--line)]">
+                    <details className="mt-4 pt-3 border-t border-[var(--line)]" onClick={(e) => e.stopPropagation()}>
                       <summary className="font-mono text-[11px] tracking-[0.14em] uppercase text-fg-mute cursor-pointer">
                         {p.links.length} episodios
                       </summary>
@@ -937,19 +920,10 @@ function PodcastTab() {
                     </details>
                   )}
 
-                  <div className="mt-4">
-                    {p.url ? (
-                      <a
-                        href={p.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      className="btn terra w-full justify-center"
-                    >
-                      Escuchar
-                    </a>
-                  ) : p.links && p.links.length > 0 ? null : (
-                      <button className="btn" disabled>Próximamente</button>
-                    )}
+                  <div className="mt-4" onClick={(e) => e.stopPropagation()}>
+                    <Link to="/archivo" className="btn terra w-full justify-center">
+                      Ver en Archivo
+                    </Link>
                   </div>
                 </div>
               </Reveal>

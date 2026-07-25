@@ -7,64 +7,25 @@ import { fileURLToPath } from 'url';
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const PUBLIC = resolve(__dirname, '..', 'public');
 
-const MASTER = 512;
-const CIRCLE_BG = '#F5F5F5';
+const SVG_PATH = resolve(PUBLIC, 'favicon.svg');
+const SVG_CONTENT = readFileSync(SVG_PATH, 'utf8')
+  /* Render SVG at high resolution so downscales stay crisp */
+  .replace('width="325"', 'width="1024"')
+  .replace('height="325"', 'height="1024"');
 
-/* ============ 1. Read source PNG & make black bg transparent ============ */
-const source = readFileSync(resolve(PUBLIC, 'tree-icon.png'));
-
-const raw = await sharp(source)
-  .ensureAlpha()
-  .raw()
-  .toBuffer({ resolveWithObject: true });
-
-const { data } = raw;
-for (let i = 0; i < data.length; i += 4) {
-  const max = Math.max(data[i], data[i + 1], data[i + 2]);
-  if (max < 20) {
-    data[i + 3] = 0;
-  } else if (max < 50) {
-    data[i + 3] = Math.round(((max - 20) / 30) * 255);
-  }
-}
-
-const transparent = await sharp(data, {
-  raw: { width: raw.info.width, height: raw.info.height, channels: 4 },
-})
+/* ============ 1. Render master PNG from SVG ============ */
+const MASTER_SZ = 512;
+const master = await sharp(Buffer.from(SVG_CONTENT))
+  .resize(MASTER_SZ, MASTER_SZ)
   .png()
   .toBuffer();
 
-/* ============ 2. Trim empty space & scale to fill circle diameter ============ */
-const circleDiam = Math.round(MASTER * 0.92);
-const iconFilled = await sharp(transparent)
-  .trim()
-  .resize(circleDiam, circleDiam, { fit: 'cover', position: 'centre' })
-  .png()
-  .toBuffer();
-
-/* ============ 3. White smoke circle ============ */
-const circleSvg = `<svg width="${MASTER}" height="${MASTER}" viewBox="0 0 ${MASTER} ${MASTER}" xmlns="http://www.w3.org/2000/svg">
-  <circle cx="${MASTER / 2}" cy="${MASTER / 2}" r="${MASTER * 0.46}" fill="${CIRCLE_BG}"/>
-</svg>`;
-
-const circle = await sharp(Buffer.from(circleSvg)).png().toBuffer();
-
-/* ============ 4. Composite: circle bg + transparent icon ============ */
-const master = await sharp({
-  create: { width: MASTER, height: MASTER, channels: 4, background: { r: 0, g: 0, b: 0, alpha: 0 } },
-})
-  .composite([
-    { input: circle, gravity: 'centre' },
-    { input: iconFilled, gravity: 'centre' },
-  ])
-  .png()
-  .toBuffer();
-
-/* ============ 5. Generate all sizes ============ */
+/* ============ 2. Generate all raster sizes ============ */
 const SIZES = [
   { size: 16,  name: 'favicon-16x16.png',        ico: true },
   { size: 32,  name: 'favicon-32x32.png',        ico: true },
   { size: 48,  name: 'favicon-48x48.png',        ico: true },
+  { size: 96,  name: 'favicon-96x96.png',        ico: false },
   { size: 180, name: 'apple-touch-icon.png',     ico: false },
   { size: 192, name: 'icon-192.png',             ico: false },
   { size: 512, name: 'icon-512.png',             ico: false },
@@ -79,33 +40,36 @@ for (const { size, name, ico } of SIZES) {
   if (ico) icoInputs.push(buf);
 }
 
-/* ============ 6. .ico ============ */
+/* ============ 3. .ico ============ */
 const icoBuf = await toIco(icoInputs);
 writeFileSync(resolve(PUBLIC, 'favicon.ico'), icoBuf);
 console.log('  OK  favicon.ico (16+32+48)');
 
-/* ============ 7. favicon.svg ============ */
-const b64 = master.toString('base64');
-const svg = `<?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 ${MASTER} ${MASTER}" width="${MASTER}" height="${MASTER}">
-  <image width="${MASTER}" height="${MASTER}" xlink:href="data:image/png;base64,${b64}"/>
+/* ============ 4. OG image (1200×630 from SVG) ============ */
+const OG_W = 1200, OG_H = 630;
+
+const ogSvg = `<svg width="${OG_W}" height="${OG_H}" viewBox="0 0 ${OG_W} ${OG_H}" xmlns="http://www.w3.org/2000/svg">
+  <rect width="${OG_W}" height="${OG_H}" fill="#F3372F"/>
+  <g transform="translate(${OG_W/2}, ${OG_H/2}) scale(${OG_H/2596 * 0.6}) translate(-1298, -1298)">
+    <use href="/favicon.svg#icon"/>
+  </g>
 </svg>`;
-writeFileSync(resolve(PUBLIC, 'favicon.svg'), svg);
-console.log('  OK  favicon.svg');
 
-/* ============ 8. OG image (white bg + tree) ============ */
-const OG_W = 1200, OG_H = 630, ICON_SZ = 420;
-
-const ogIcon = await sharp(master).resize(ICON_SZ, ICON_SZ).png().toBuffer();
-
-const ogImage = await sharp({
-  create: { width: OG_W, height: OG_H, channels: 3, background: { r: 245, g: 245, b: 245 } },
-})
-  .composite([{ input: ogIcon, gravity: 'centre' }])
+const ogImage = await sharp(Buffer.from(ogSvg))
+  .resize(OG_W, OG_H)
   .png()
   .toBuffer();
 
 writeFileSync(resolve(PUBLIC, 'og-image.png'), ogImage);
 console.log('  OK  og-image.png');
 
-console.log('\nAll favicons regenerated with white-circle background.');
+/* ============ 5. Navbar icon (28×28 PNG from SVG) ============ */
+const navPng = await sharp(master).resize(28, 28).png().toBuffer();
+writeFileSync(resolve(PUBLIC, 'navbar-icon.png'), navPng);
+console.log('  OK  navbar-icon.png');
+
+const navWebp = await sharp(master).resize(28, 28).webp().toBuffer();
+writeFileSync(resolve(PUBLIC, 'navbar-icon.webp'), navWebp);
+console.log('  OK  navbar-icon.webp');
+
+console.log('\nAll favicons regenerated from SVG.');
