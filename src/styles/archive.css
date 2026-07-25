@@ -1,0 +1,19 @@
+/* ============================================================
+   Enhanced archive search & bibliography
+   ============================================================ */
+
+.archive-search.is-prominent {
+  flex-basis: 100%;
+  padding: 16px 22px;
+  border-width: 1.5px;
+  border-color: var(--olive);
+  background: var(--bg);
+  border-radius: 14px;
+}
+.archive-search.is-prominent input { font-size: 18px; font-family: var(--serif); letter-spacing: -0.01em; }
+.archive-search.is-prominent svg { width: 18px; height: 18px; color: var(--terracotta); }
+
+.biblio-item h5 { transition: color .25s ease, transform .25s ease; }
+.biblio-item:hover h5 { color: var(--terracotta); transform: translateX(4px); }
+.biblio-item .work { transition: color .25s ease; }
+.biblio-item:hover .work { color: var(--fg); }

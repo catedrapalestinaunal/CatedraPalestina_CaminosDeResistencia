@@ -4,9 +4,10 @@ import { BrowserRouter, Routes, Route, useLocation, Outlet } from 'react-router-
 import { Nav } from './components/Nav';
 import { Footer } from './components/Footer';
 import { AuthProvider, ProtectedRoute } from './lib/auth';
-import { SpeedInsights } from "@vercel/speed-insights/react";
-import { Analytics } from "@vercel/analytics/react";
 import type { Theme } from './lib/types';
+
+const SpeedInsights = lazy(() => import("@vercel/speed-insights/react").then(m => ({ default: m.SpeedInsights })));
+const Analytics = lazy(() => import("@vercel/analytics/react").then(m => ({ default: m.Analytics })));
 
 const Home = lazy(() => import('./pages/Home').then(m => ({ default: m.Home })));
 const ONGs = lazy(() => import('./pages/ONGs').then(m => ({ default: m.ONGs })));
@@ -22,7 +23,9 @@ const AdminProjectForm = lazy(() => import('./pages/admin/ProjectForm').then(m =
 function ScrollToTop() {
   const { pathname } = useLocation();
   useEffect(() => {
-    window.scrollTo(0, 0);
+    requestAnimationFrame(() => {
+      window.scrollTo({ top: 0, behavior: 'instant' as ScrollBehavior });
+    });
   }, [pathname]);
   return null;
 }
@@ -49,17 +52,10 @@ export function App() {
   });
 
   useEffect(() => {
-    document.documentElement.setAttribute('data-theme', theme);
-    document.documentElement.classList.toggle('dark', theme === 'dark');
-    localStorage.setItem('cdr-theme', theme);
-  }, [theme]);
-
-  useEffect(() => {
-    document.body.classList.add('grain');
-  }, []);
-
-  useEffect(() => {
-    document.documentElement.dataset.mounted = 'true';
+    queueMicrotask(() => {
+      document.body.classList.add('grain');
+      document.documentElement.dataset.mounted = 'true';
+    });
     const tid = setTimeout(() => {
       const sh = document.getElementById('static-hero');
       if (sh) sh.remove();
@@ -67,15 +63,23 @@ export function App() {
     return () => clearTimeout(tid);
   }, []);
 
-  const toggleTheme = () => setTheme(t => t === 'dark' ? 'light' : 'dark');
+  const toggleTheme = () => {
+    setTheme(prev => {
+      const next = prev === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', next);
+      document.documentElement.classList.toggle('dark', next === 'dark');
+      localStorage.setItem('cdr-theme', next);
+      return next;
+    });
+  };
 
   return (
     <HelmetProvider>
       <BrowserRouter>
         <AuthProvider>
           <ScrollToTop />
-          <SpeedInsights />
-          <Analytics />
+          <Suspense fallback={null}><SpeedInsights /></Suspense>
+          <Suspense fallback={null}><Analytics /></Suspense>
           <Suspense fallback={<div style={{ height: '100vh' }} />}>
             <Routes>
               <Route path="/admin/login" element={<AdminLogin />} />

@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
+import '../styles/history.css';
 import { Reveal } from '../components/Reveal';
 import { MythCards } from '../components/MythCards';
 import { ProjectModal } from '../components/ProjectModal';

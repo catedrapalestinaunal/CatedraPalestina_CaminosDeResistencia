@@ -1,0 +1,251 @@
+/* ============================================================
+   PalestinaDeTodas — Bento editorial · Perspectiva de Género
+   ============================================================ */
+
+.pdt-pill {
+  display: inline-block;
+  padding: 5px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  font-family: var(--mono);
+  font-size: 10.5px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--fg-mute);
+}
+
+.pdt-intro {
+  margin-bottom: 48px;
+}
+
+.pdt-intro-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.25fr;
+  gap: 64px;
+  align-items: start;
+  margin-top: 0;
+}
+@media (max-width: 820px) {
+  .pdt-intro-grid { grid-template-columns: 1fr; gap: 28px; }
+}
+
+.pdt-intro-title {
+  font-size: clamp(36px, 5vw, 62px);
+  line-height: 1;
+  letter-spacing: -0.03em;
+}
+
+.pdt-intro-body {
+  font-size: 16px;
+  line-height: 1.68;
+  color: var(--fg-mute);
+  padding-top: 6px;
+}
+.pdt-intro-body strong { color: var(--fg); font-weight: 500; }
+
+.pdt-alert-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 12px;
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--terracotta) 7%, transparent);
+  border: 1px solid color-mix(in srgb, var(--terracotta) 18%, transparent);
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--terracotta);
+  line-height: 1.4;
+}
+
+.pdt-alert-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--terracotta);
+  flex-shrink: 0;
+  animation: pulse 2.4s ease-in-out infinite;
+}
+
+.pdt-list {
+  list-style: none;
+  padding: 0; margin: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.pdt-list-item {
+  display: grid;
+  grid-template-columns: 26px 1fr;
+  gap: 12px;
+  align-items: baseline;
+  padding: 11px 0;
+  border-bottom: 1px solid var(--line-soft);
+  font-size: 14px;
+  color: var(--fg-mute);
+  line-height: 1.58;
+}
+.pdt-list-item:last-child { border-bottom: none; }
+
+.pdt-list-n {
+  font-family: var(--mono);
+  font-size: 9.5px;
+  letter-spacing: .14em;
+  color: var(--olive);
+  padding-top: 2px;
+}
+.pdt-list-n--alert { color: var(--terracotta); }
+
+.pdt-card-modern {
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  padding: 1.5rem;
+  background: var(--bg-warm);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+@media (hover: hover) {
+  .pdt-card-modern:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+  }
+}
+@media (hover: none) {
+  .pdt-card-modern:hover { transform: none; box-shadow: none; }
+}
+.pdt-warning-card {
+  background: color-mix(in srgb, var(--terracotta) 5%, var(--bg-warm));
+  border-left: 3px solid var(--terracotta);
+}
+.pdt-stat-card {
+  background: var(--bg-warm);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  padding: 1.5rem;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+@media (hover: hover) {
+  .pdt-stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+  }
+}
+@media (hover: none) {
+  .pdt-stat-card:hover { transform: none; box-shadow: none; }
+}
+.pdt-stat-number {
+  font-family: var(--serif);
+  font-size: clamp(2.5rem, 6vw, 3.5rem);
+  font-weight: 700;
+  color: var(--terracotta);
+  line-height: 1;
+}
+.pdt-stat-label {
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--fg-mute);
+  margin-top: 0.5rem;
+}
+
+
+/* ============================================================
+   QuotesMarquee — Cita de impacto visual
+   ============================================================ */
+
+.qm-section {
+  position: relative;
+  overflow: hidden;
+}
+.qm-section.section + .section { border-top: none; }
+
+.qm-dark {
+  background: var(--carbon);
+  color: #f1ede0;
+}
+
+.qm-light {
+  background: var(--bg-warm);
+  color: var(--fg);
+}
+
+.qm-bg-deco {
+  position: absolute; inset: 0;
+  pointer-events: none;
+}
+.qm-dark .qm-bg-deco {
+  background:
+    radial-gradient(55% 70% at 15% 20%, color-mix(in srgb, var(--olive) 28%, transparent), transparent 55%),
+    radial-gradient(45% 55% at 88% 85%, color-mix(in srgb, var(--terracotta) 20%, transparent), transparent 55%);
+}
+.qm-light .qm-bg-deco {
+  background:
+    radial-gradient(55% 60% at 90% 10%, color-mix(in srgb, var(--olive) 10%, transparent), transparent 60%);
+}
+
+.qm-inner {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 0 clamp(16px, 4vw, 48px);
+}
+
+.qm-openmark {
+  font-family: var(--serif);
+  font-size: 120px;
+  line-height: 0.55;
+  color: var(--olive);
+  opacity: 0.35;
+  display: block;
+  margin-bottom: 4px;
+  user-select: none;
+}
+.qm-dark .qm-openmark { color: var(--olive); opacity: 0.45; }
+.qm-light .qm-openmark { color: var(--olive); opacity: 0.25; }
+
+.qm-quote {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: clamp(22px, 3.2vw, 46px);
+  line-height: 1.22;
+  letter-spacing: -0.02em;
+  margin: 0;
+  text-wrap: balance;
+  color: inherit;
+}
+
+.qm-attrib {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 32px;
+  flex-wrap: wrap;
+}
+
+.qm-author {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  font-style: normal;
+}
+.qm-dark  .qm-author { color: rgba(241,237,224,.9); }
+.qm-light .qm-author { color: var(--fg); }
+
+.qm-sep {
+  font-family: var(--mono);
+  font-size: 11px;
+  opacity: .4;
+}
+
+.qm-source {
+  font-family: var(--serif);
+  font-size: 14px;
+  font-style: italic;
+  letter-spacing: 0;
+}
+.qm-dark  .qm-source { color: var(--on-dark-mute); }
+.qm-light .qm-source { color: var(--fg-mute); }

@@ -20,7 +20,6 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks(id: string) {
-          if (id.includes('framer-motion')) return 'framer';
           if (id.includes('node_modules/react')) return 'vendor';
         },
       },

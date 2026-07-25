@@ -21,6 +21,18 @@
     <meta http-equiv="content-language" content="es-CO" />
     <link rel="canonical" href="https://catedrapalestinacaminosderesistencia.com" />
     <style>
+      @font-face{font-family:'Inter';font-style:normal;font-weight:300;font-display:optional;src:url('/fonts/inter-300.woff2')format('woff2')}
+@font-face{font-family:'Inter';font-style:normal;font-weight:400;font-display:optional;src:url('/fonts/inter-400.woff2')format('woff2')}
+@font-face{font-family:'Inter';font-style:normal;font-weight:500;font-display:optional;src:url('/fonts/inter-500.woff2')format('woff2')}
+@font-face{font-family:'Inter';font-style:normal;font-weight:600;font-display:optional;src:url('/fonts/inter-600.woff2')format('woff2')}
+@font-face{font-family:'Inter';font-style:normal;font-weight:700;font-display:optional;src:url('/fonts/inter-700.woff2')format('woff2')}
+@font-face{font-family:'JetBrains Mono';font-style:normal;font-weight:400;font-display:optional;src:url('/fonts/jetbrains-mono-400.woff2')format('woff2')}
+@font-face{font-family:'JetBrains Mono';font-style:normal;font-weight:500;font-display:optional;src:url('/fonts/jetbrains-mono-500.woff2')format('woff2')}
+@font-face{font-family:'Playfair Display';font-style:italic;font-weight:400;font-display:optional;src:url('/fonts/playfair-display-400-italic.woff2')format('woff2')}
+@font-face{font-family:'Playfair Display';font-style:normal;font-weight:400;font-display:optional;src:url('/fonts/playfair-display-400.woff2')format('woff2')}
+@font-face{font-family:'Playfair Display';font-style:normal;font-weight:600;font-display:optional;src:url('/fonts/playfair-display-600.woff2')format('woff2')}
+@font-face{font-family:'Playfair Display';font-style:normal;font-weight:700;font-display:optional;src:url('/fonts/playfair-display-700.woff2')format('woff2')}
+@font-face{font-family:'Playfair Display';font-style:normal;font-weight:800;font-display:optional;src:url('/fonts/playfair-display-800.woff2')format('woff2')}
       :root {
         --olive: #2E4731; --olive-deep: #1d2f1f; --olive-soft: rgba(46,71,49,0.08);
         --terracotta: #8B1D22; --terracotta-soft: rgba(139,29,34,0.08);
@@ -130,10 +142,8 @@
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="Cátedra Caminos de Resistencia · UNAL" />
     <meta name="twitter:description" content="Plataforma de Memoria y Solidaridad Académica · UNAL + Embajada del Estado de Palestina." />
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=optional" onload="this.onload=null;this.rel='stylesheet'">
-    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=optional"></noscript>
+    <link rel="preload" as="font" href="/fonts/playfair-display-600.woff2" crossorigin type="font/woff2" fetchpriority="high">
+    <link rel="preload" as="font" href="/fonts/inter-400.woff2" crossorigin type="font/woff2">
     <link rel="preload" as="image" href="/images/home/ancient-olive-al-badawi-1200.avif" imagesrcset="/images/home/ancient-olive-al-badawi-480.avif 480w, /images/home/ancient-olive-al-badawi-768.avif 768w, /images/home/ancient-olive-al-badawi-1200.avif 1200w" imagesizes="(max-width: 480px) 480px, (max-width: 768px) 768px, 1200px" fetchpriority="high">
   </head>
   <body>
@@ -153,7 +163,7 @@
       <div class="wrap" style="display:grid;grid-template-columns:1fr;gap:32px;align-items:end">
         <div class="eyebrow"><span class="dot"></span><span>Plataforma de Memoria y Solidaridad Académica · UNAL</span></div>
         <div style="font-family:var(--mono);font-size:12px;letter-spacing:0.18em;text-transform:uppercase;color:var(--fg-mute);margin-bottom:10px">001 / Inicio</div>
-        <h1 class="hero-title hero-fade" style="margin:0;font-family:var(--serif);font-weight:600;letter-spacing:-.035em;font-size:clamp(48px,8vw,132px);line-height:.95"><span>Caminos</span><br><em style="font-style:italic;color:var(--terracotta)">de</em> Resistencia</h1>
+        <h1 class="hero-title" style="margin:0;font-family:var(--serif);font-weight:600;letter-spacing:-.035em;font-size:clamp(48px,8vw,132px);line-height:.95"><span>Caminos</span><br><em style="font-style:italic;color:var(--terracotta)">de</em> Resistencia</h1>
         <div style="font-family:var(--mono);font-size:13px;color:var(--fg-mute);letter-spacing:0.1em;line-height:1.625">Repositorio permanente · Facultad de Derecho y Ciencias Políticas</div>
         <div style="font-size:16px;color:var(--fg-mute);line-height:1.625">Un espacio sentipensante de educaci&oacute;n p&uacute;blica desde Colombia, en solidaridad con Palestina.</div>
         <div class="hero-foot">
