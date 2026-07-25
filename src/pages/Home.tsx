@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { lazy, Suspense } from 'react';
+import { lazy, Suspense, useEffect, useRef, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
 import { Reveal } from '../components/Reveal';
@@ -14,6 +14,24 @@ import { CONFIG } from '../lib/config';
 const FeaturedProjects = lazy(() => import('../components/FeaturedProjects').then(m => ({ default: m.FeaturedProjects })));
 
 export function Home() {
+  const projectsRef = useRef<HTMLDivElement>(null);
+  const [showProjects, setShowProjects] = useState(false);
+
+  useEffect(() => {
+    const el = projectsRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setShowProjects(true);
+          observer.disconnect();
+        }
+      },
+      { rootMargin: '400px 0px' },
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
 
   return (
     <>
@@ -319,7 +337,7 @@ export function Home() {
       </section>
 
       {/* ============ COSECHA 2025-I ============ */}
-      <section className="section pt-0 pb-20">
+      <section className="section pt-0 pb-20" ref={projectsRef}>
         <div className="wrap">
           <Reveal>
             <h2 className="hr-rule mb-10">
@@ -327,21 +345,23 @@ export function Home() {
             </h2>
           </Reveal>
 
-          <Suspense fallback={
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" aria-label="Cargando proyectos">
-              {[1, 2, 3, 4, 5, 6].map(i => (
-                <div key={i} className="card min-h-[180px]" aria-hidden="true">
-                  <div className="h-4 bg-current/10 rounded w-2/3 mb-4" />
-                  <div className="h-3 bg-current/10 rounded w-1/3 mb-6" />
-                  <div className="h-5 bg-current/10 rounded w-full mb-2" />
-                  <div className="h-5 bg-current/10 rounded w-4/5 mb-4" />
-                  <div className="h-8 bg-current/10 rounded-full w-32" />
-                </div>
-              ))}
-            </div>
-          }>
-            <FeaturedProjects />
-          </Suspense>
+          {showProjects && (
+            <Suspense fallback={
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" aria-label="Cargando proyectos">
+                {[1, 2, 3, 4, 5, 6].map(i => (
+                  <div key={i} className="card min-h-[180px]" aria-hidden="true">
+                    <div className="h-4 bg-current/10 rounded w-2/3 mb-4" />
+                    <div className="h-3 bg-current/10 rounded w-1/3 mb-6" />
+                    <div className="h-5 bg-current/10 rounded w-full mb-2" />
+                    <div className="h-5 bg-current/10 rounded w-4/5 mb-4" />
+                    <div className="h-8 bg-current/10 rounded-full w-32" />
+                  </div>
+                ))}
+              </div>
+            }>
+              <FeaturedProjects />
+            </Suspense>
+          )}
         </div>
       </section>
 
