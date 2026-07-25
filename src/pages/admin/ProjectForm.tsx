@@ -1,5 +1,6 @@
 import { useEffect, useState, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import '../../styles/admin.css';
 import { X, ImageIcon } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { Reveal } from '../../components/Reveal';

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import '../../styles/admin.css';
 import { Reveal } from '../../components/Reveal';
 import { useAuth } from '../../lib/auth';
 

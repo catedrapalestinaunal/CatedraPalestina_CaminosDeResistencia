@@ -1,5 +1,6 @@
 import { useEffect, useState, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
+import '../../styles/admin.css';
 import { supabase } from '../../lib/supabase';
 import { Reveal } from '../../components/Reveal';
 import { AdminBar } from './AdminBar';

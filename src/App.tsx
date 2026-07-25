@@ -54,13 +54,16 @@ export function App() {
   useEffect(() => {
     queueMicrotask(() => {
       document.body.classList.add('grain');
-      document.documentElement.dataset.mounted = 'true';
     });
-    const tid = setTimeout(() => {
-      const sh = document.getElementById('static-hero');
-      if (sh) sh.remove();
-    }, 400);
-    return () => clearTimeout(tid);
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        document.documentElement.dataset.mounted = 'true';
+        setTimeout(() => {
+          const sh = document.getElementById('static-hero');
+          if (sh) sh.remove();
+        }, 350);
+      });
+    });
   }, []);
 
   const toggleTheme = () => {
