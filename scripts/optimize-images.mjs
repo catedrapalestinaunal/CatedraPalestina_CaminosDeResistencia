@@ -25,7 +25,7 @@ async function optimize() {
 
     await sharp(buffer)
       .resize(s.width, s.height, { fit: 'cover', position: 'centre' })
-      .avif({ quality: 35, effort: 6 })
+      .avif({ quality: 25, effort: 6 })
       .toFile(join(HOME, `${s.name}.avif`));
     console.log(`  ✓ ${s.name}.avif generated`);
   }
