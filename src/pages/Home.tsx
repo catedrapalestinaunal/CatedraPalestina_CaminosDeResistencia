@@ -1,73 +1,19 @@
 import type { ReactNode } from 'react';
-import { useState } from 'react';
+import { lazy, Suspense } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
 import { Reveal } from '../components/Reveal';
 import { ImageSlot } from '../components/ImageSlot';
 import { Icon } from '../lib/icons';
-import { useLockBodyScroll } from '../lib/hooks';
-import type { Project } from '../lib/types';
+import { LazyYouTube } from '../components/LazyYouTube';
 
-import { useProjects } from '../lib/useProjects';
 import { OG_IMAGE, SITE_URL, SITE_NAME, SITE_LOCALE } from '../lib/seo';
 import { orgSchema, websiteSchema, courseSchema } from '../lib/seo-schema';
 import { CONFIG } from '../lib/config';
-import { useFocusTrap } from '../lib/useFocusTrap';
 
-/* ============ YOUTUBE IFrame API TYPES ============ */
-declare global {
-  interface Window {
-    YT?: {
-      Player: new (
-        element: HTMLElement | string,
-        config: YTPlayerConfig,
-      ) => YTPlayer;
-      PlayerState: {
-        PLAYING: number;
-        PAUSED: number;
-        ENDED: number;
-      };
-    };
-  }
-}
-
-interface YTPlayerConfig {
-  videoId?: string;
-  playerVars?: {
-    autoplay?: number;
-    mute?: number;
-    enablejsapi?: number;
-    controls?: number;
-    modestbranding?: number;
-    rel?: number;
-  };
-  events?: {
-    onReady?: () => void;
-    onStateChange?: (event: { data: number }) => void;
-  };
-}
-
-interface YTPlayer {
-  playVideo(): void;
-  pauseVideo(): void;
-  mute(): void;
-  unMute(): void;
-  loadVideoById(videoId: string): void;
-  cueVideoById(videoId: string): void;
-  destroy(): void;
-}
+const FeaturedProjects = lazy(() => import('../components/FeaturedProjects').then(m => ({ default: m.FeaturedProjects })));
 
 export function Home() {
-  const { projects, loading, error, refetch } = useProjects({ defer: true });
-  const [openProj, setOpenProj] = useState<Project | null>(null);
-  useLockBodyScroll(!!openProj);
-  const modalRef = useFocusTrap(!!openProj, () => setOpenProj(null));
-  const prefersReduced = typeof window !== 'undefined'
-    ? window.matchMedia('(prefers-reduced-motion: reduce)').matches
-    : false;
-  const featuredIds = [3, 14, 25, 17, 23, 12];
-  const featuredProjects = projects.filter(p => featuredIds.includes(p.id));
 
   return (
     <>
@@ -134,8 +80,8 @@ export function Home() {
 
           <div className="hero-foot order-6 md:col-span-2">
             <div className="stat">
-              <span className="num">{loading && projects.length === 0 ? <span className="skeleton-num" aria-hidden="true">···</span> : projects.length}</span>
-              <span className="lbl">{loading && projects.length === 0 ? 'Cargando...' : 'Proyectos · realizados'}</span>
+              <span className="num">26</span>
+              <span className="lbl">Proyectos · realizados</span>
             </div>
             <div className="stat">
               <span className="num text-accent">+{CONFIG.DESPOJO_ANOS}</span>
@@ -237,8 +183,9 @@ export function Home() {
             <Reveal className="stick">
               <div className="story-slot !p-0 !h-auto">
                 <ImageSlot
-                  src="/images/home/ancient-olive-al-badawi.webp"
+                  src="/images/home/ancient-olive-al-badawi-1200.webp"
                   srcSet="/images/home/ancient-olive-al-badawi-480.webp 480w, /images/home/ancient-olive-al-badawi-768.webp 768w, /images/home/ancient-olive-al-badawi-1200.webp 1200w"
+                  avifSrcSet="/images/home/ancient-olive-al-badawi-480.avif 480w, /images/home/ancient-olive-al-badawi-768.avif 768w, /images/home/ancient-olive-al-badawi-1200.avif 1200w"
                   sizes="(max-width: 480px) 480px, (max-width: 768px) 768px, 1200px"
                   alt="Salah Ali junto al colosal tronco del olivo al-Badawi en al-Walaja, uno de los árboles más antiguos del mundo."
                   credit="Fotografía documental por Jason Ruffin para Atlas Obscura. Exhibición con fines estrictamente pedagógicos, de memoria y de investigación académica en el entorno universitario (Uso Justo)."
@@ -307,17 +254,10 @@ export function Home() {
                 <div className="font-mono text-[11px] tracking-[0.15em] uppercase" style={{ color: 'var(--gold-accent)' }}>
                   Interpretación musical · Marcel Khalifé
                 </div>
-                <div className="aspect-video rounded-xl overflow-hidden border border-white/10 shadow-2xl">
-                  <iframe
-                    src="https://www.youtube.com/embed/UEeU-tx0SBU"
-                    width="100%"
-                    height="100%"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    className="border-0 w-full h-full"
-                    title="Rita (Rita y el fusil) — Mahmoud Darwish / Marcel Khalifé"
-                    loading="lazy"
-                  />
-                </div>
+                <LazyYouTube
+                  embedId="UEeU-tx0SBU"
+                  title="Rita (Rita y el fusil) — Mahmoud Darwish / Marcel Khalifé"
+                />
                 <div className="font-mono text-[11px] tracking-[0.04em] opacity-60 text-balance">
                   Rita (Rita y el fusil) · poema de Mahmoud Darwish musicado por Marcel Khalifé
                 </div>
@@ -387,7 +327,7 @@ export function Home() {
             </h2>
           </Reveal>
 
-          {loading && projects.length === 0 && (
+          <Suspense fallback={
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" aria-label="Cargando proyectos">
               {[1, 2, 3, 4, 5, 6].map(i => (
                 <div key={i} className="card min-h-[180px]" aria-hidden="true">
@@ -399,47 +339,9 @@ export function Home() {
                 </div>
               ))}
             </div>
-          )}
-
-          {error && !loading && (
-            <div className="text-center py-16" role="alert">
-              <p className="text-fg-mute mb-4">No pudimos cargar los proyectos destacados.</p>
-              {typeof refetch === 'function' && (
-                <button type="button" className="btn" onClick={refetch}>
-                  Intentar de nuevo
-                </button>
-              )}
-            </div>
-          )}
-
-          {!loading && !error && projects.length > 0 && featuredProjects.length === 0 && (
-            <div className="text-center py-16">
-              <p className="text-fg-mute">Los proyectos destacados no están disponibles actualmente.</p>
-            </div>
-          )}
-
-          {featuredProjects.length > 0 && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {featuredProjects.map((p, i) => (
-                <Reveal key={p.id} as="article" delay={i * 0.06}>
-                  <div className="card">
-                    <div role="button" tabIndex={0} onClick={() => setOpenProj(p)} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setOpenProj(p); } }}>
-                      <div className="kicker">{p.group || p.author}</div>
-                      <div className="mt-1 font-mono text-[12px] sm:text-[10px] tracking-[0.1em] text-fg-mute">{KIND_GLYPH_LOCAL[p.kind] || p.kind}</div>
-                      <h3 className="mt-2 text-[clamp(16px,1.6vw,20px)] font-serif leading-tight">
-                        {p.title}
-                      </h3>
-                    </div>
-                    <div className="mt-4">
-                      <Link to="/archivo" className="btn terra w-full justify-center">
-                        Ver en Archivo
-                      </Link>
-                    </div>
-                  </div>
-                </Reveal>
-              ))}
-            </div>
-          )}
+          }>
+            <FeaturedProjects />
+          </Suspense>
         </div>
       </section>
 
@@ -468,106 +370,9 @@ export function Home() {
         </div>
       </section>
 
-      <AnimatePresence>
-        {openProj && (
-          <motion.div
-            className="modal-veil"
-            onClick={() => setOpenProj(null)}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: prefersReduced ? 0 : 0.2 }}
-          >
-            <motion.div
-              className="modal"
-              ref={modalRef}
-              role="dialog"
-              aria-modal="true"
-              aria-labelledby="modal-title"
-              onClick={(e) => e.stopPropagation()}
-              initial={{ opacity: 0, y: 30, scale: 0.96 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: 30, scale: 0.96 }}
-              transition={{ duration: prefersReduced ? 0 : 0.3, ease: 'easeOut' }}
-            >
-              <button className="close" onClick={() => setOpenProj(null)} aria-label="Cerrar"><Icon.Close /></button>
-              <div className="relative mb-6 md:mb-7 rounded-xl overflow-hidden h-[220px] md:h-[280px] bg-[var(--olive)]">
-                {openProj.thumbnail ? (
-                  <img src={openProj.thumbnail} alt={openProj.title ? `Miniatura de ${openProj.title}` : 'Proyecto sin miniatura'} className="w-full h-full object-cover" />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center">
-                    <span className="font-serif text-[clamp(70px,12vw,120px)] opacity-15 select-none text-white">
-                      {KIND_GLYPH_LOCAL[openProj.kind] || openProj.kind.toUpperCase()}
-                    </span>
-                  </div>
-                )}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
-                <div className="absolute bottom-3 left-4 font-mono text-[12px] tracking-[0.15em] uppercase text-white/90">
-                  {openProj.kind} · {openProj.year}
-                </div>
-                <div className="absolute top-3 right-4 font-mono text-[11px] tracking-[0.12em] uppercase text-white/80 bg-black/30 backdrop-blur-sm px-2.5 py-1 rounded-full">
-                  N° {openProj.n}
-                </div>
-                {openProj.aiThumbnail && (
-                  <div className="absolute top-3 left-4 z-10 font-mono text-[11px] md:text-[10px] tracking-[0.12em] uppercase text-white/70 bg-black/30 backdrop-blur-sm px-2 py-0.5 rounded-full">
-                    AI · ref.
-                  </div>
-                )}
-              </div>
-              <h2 id="modal-title" className="mt-3 text-[clamp(26px,7vw,44px)] leading-tight">{openProj.title}</h2>
-              <div className="text-fg-mute mt-2.5 text-base md:text-sm">{openProj.author}</div>
-
-              {openProj.group && (
-                <div className="mt-3 font-mono text-xs tracking-[0.12em] uppercase text-accent">{openProj.group}</div>
-              )}
-
-              <p className="mt-5 md:mt-6 text-fg-mute text-base leading-relaxed">
-                {openProj.description
-                  ? openProj.description
-                  : 'Proyecto desarrollado en el marco del módulo final de la cátedra. La versión completa puede consultarse en los archivos de la Cátedra Caminos de Resistencia.'}
-              </p>
-
-              {openProj.members && openProj.members.length > 0 && (
-                <div className="mt-5">
-                  <div className="font-mono text-[12px] tracking-[0.14em] uppercase text-fg-mute mb-2">Integrantes</div>
-                  <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-fg-mute">
-                    {openProj.members.map((m, i) => (
-                      <span key={i}>{m}{i < openProj.members!.length - 1 ? ' · ' : ''}</span>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              <div className="flex gap-2.5 mt-7 flex-wrap">
-                {openProj.url ? (
-                  <a href={openProj.url} target="_blank" rel="noopener noreferrer" className="btn terra">
-                    {({ ensayo: 'Leer ensayo', cartografia: 'Explorar mapa', video: 'Ver video', podcast: 'Escuchar podcast', fanzine: 'Ver fanzine', mural: 'Ver mural', collage: 'Ver collage', grabado: 'Ver grabado' } as Record<string, string>)[openProj.kind] || 'Abrir documento'} <Icon.External />
-                  </a>
-                ) : (
-                  <button className="btn" disabled>Próximamente</button>
-                )}
-                <Link to="/archivo" className="btn" onClick={() => setOpenProj(null)}>
-                  Ver en Archivo <Icon.Arrow />
-                </Link>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </>
   );
 }
-
-const KIND_GLYPH_LOCAL: Record<string, string> = {
-  ensayo: 'Ensayo',
-  cartografia: 'Cartografía',
-  video: 'Video',
-  podcast: 'Podcast',
-  fanzine: 'Fanzine',
-  mural: 'Mural',
-  collage: 'Collage',
-  grabado: 'Grabado',
-};
 
 const MISSION_POINTS = [
   { n: '01', title: 'Investigar', body: 'con rigor histórico el caso palestino desde las orillas del sur global, sin neutralidades cómplices ni eufemismos académicos.' },

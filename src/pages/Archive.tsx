@@ -1,13 +1,12 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
-import { AnimatePresence, motion } from 'framer-motion';
+import { ProjectModal } from '../components/ProjectModal';
 import { Reveal } from '../components/Reveal';
 import { Icon } from '../lib/icons';
-import { useLockBodyScroll, useMediaQuery } from '../lib/hooks';
+import { useMediaQuery } from '../lib/hooks';
 import { BIBLIOGRAPHY, KIND_GLYPH, buildKindFilters } from '../data/archive';
 import { useProjects } from '../lib/useProjects';
-import { useFocusTrap } from '../lib/useFocusTrap';
 import type { Project } from '../lib/types';
 import { OG_IMAGE, SITE_URL, SITE_NAME, SITE_LOCALE } from '../lib/seo';
 import { collectionPageSchema, bookSchema, breadcrumbSchema } from '../lib/seo-schema';
@@ -25,46 +24,6 @@ const KIND_CHIP_CLASS: Record<string, string> = {
   collage: 'kind-collage',
   grabado: 'kind-grabado',
 };
-
-/* ============================================================
-   APA 7 citation helpers
-   ============================================================ */
-function formatAuthorName(fullName: string): string {
-  const parts = fullName.trim().split(/\s+/);
-  if (parts.length <= 1) return fullName;
-  /* TODO: handle compound surnames (e.g. "García Márquez") */
-  const surname = parts[parts.length - 1];
-  const initials = parts.slice(0, -1).map(p => p.charAt(0).toUpperCase() + '.').join(' ');
-  return `${surname}, ${initials}`;
-}
-
-function generateAPA(p: Project): string {
-  const kindLabels: Record<string, string> = {
-    ensayo: 'Ensayo académico',
-    cartografia: 'Cartografía',
-    video: 'Video',
-    podcast: 'Podcast',
-    fanzine: 'Fanzine',
-    mural: 'Mural',
-    collage: 'Collage',
-    grabado: 'Grabado',
-  };
-
-  const kindLabel = kindLabels[p.kind] || p.kind;
-
-  const authors = (() => {
-    if (p.members && p.members.length > 0) {
-      const formatted = p.members.map(formatAuthorName);
-      if (formatted.length <= 5) return formatted.join(', ');
-      return formatted.slice(0, 5).join(', ') + ', et al.';
-    }
-    return p.author;
-  })();
-
-  const url = p.url ? ` ${p.url}` : '';
-
-  return `${authors} (${p.year}). ${p.title} [${kindLabel}]. Cátedra Caminos de Resistencia, Universidad Nacional de Colombia.${url}`;
-}
 
 interface ProjectCardProps {
   p: Project;
@@ -130,24 +89,8 @@ export function Archive() {
   useEffect(() => { if (isMobile) setView('grid'); }, [isMobile]);
   const [query, setQuery] = useState('');
   const [openProj, setOpenProj] = useState<Project | null>(null);
-  useLockBodyScroll(!!openProj);
-  const [copied, setCopied] = useState(false);
-  const [expandedLinks, setExpandedLinks] = useState(false);
-  const [modalImgError, setModalImgError] = useState(false);
-  const modalRef = useFocusTrap(!!openProj, () => setOpenProj(null));
 
   const { projects, loading, error, refetch } = useProjects();
-
-  useEffect(() => {
-    setExpandedLinks(false);
-    setModalImgError(false);
-    if (openProj?.thumbnail) {
-      const img = new Image();
-      img.onload = () => setModalImgError(false);
-      img.onerror = () => setModalImgError(true);
-      img.src = openProj.thumbnail;
-    }
-  }, [openProj]);
 
   const kindFilters = useMemo(() => buildKindFilters(projects), [projects]);
 
@@ -379,156 +322,7 @@ export function Archive() {
         </section>
       )}
 
-      <AnimatePresence>
-        {openProj && (
-          <motion.div
-            className="modal-veil"
-            onClick={() => setOpenProj(null)}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
-          >
-            <motion.div
-              className="modal"
-              ref={modalRef}
-              onClick={(e) => e.stopPropagation()}
-              initial={{ opacity: 0, y: 30, scale: 0.96 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: 30, scale: 0.96 }}
-              transition={{ duration: 0.3, ease: 'easeOut' }}
-            >
-              <button className="close" onClick={() => setOpenProj(null)} aria-label="Cerrar"><Icon.Close /></button>
-              <div className={'proj-thumb h-[220px] md:h-[280px] mb-6 md:mb-7 ' + (openProj.thumbnail && !modalImgError ? '' : ' kind-' + openProj.kind)} style={{ backgroundImage: openProj.thumbnail && !modalImgError ? 'url(' + openProj.thumbnail + ')' : undefined, backgroundSize: 'cover', backgroundPosition: 'center' }}>
-                <div className="kind-num">N° {openProj.n}</div>
-                {(!openProj.thumbnail || modalImgError) && <div className="kind-glyph">{KIND_GLYPH[openProj.kind] || openProj.kind.toUpperCase()}</div>}
-                {openProj.aiThumbnail && <div className="absolute top-2 left-2 z-10 font-mono text-[11px] md:text-[9px] tracking-[0.12em] uppercase bg-black/50 backdrop-blur-sm text-white/80 px-1.5 py-0.5 rounded-sm">AI · ref.</div>}
-              </div>
-              <div className="kicker">{openProj.kind} · {openProj.year}</div>
-              <h2 className="mt-3 text-[clamp(26px,7vw,44px)] leading-tight">{openProj.title}</h2>
-              <div className="text-fg-mute mt-2.5 text-base md:text-sm">{openProj.author}</div>
-
-              {openProj.group && (
-                <div className="mt-3 font-mono text-xs tracking-[0.12em] uppercase text-accent">{openProj.group}</div>
-              )}
-
-              <p className="mt-5 md:mt-6 text-fg-mute text-base leading-relaxed">
-                {openProj.description
-                  ? openProj.description
-                  : 'Proyecto desarrollado en el marco del módulo final de la cátedra. La versión completa puede consultarse en los archivos de la Cátedra Caminos de Resistencia.'}
-              </p>
-
-              {openProj.members && openProj.members.length > 0 && (
-                <div className="mt-5">
-                  <div className="font-mono text-[12px] tracking-[0.14em] uppercase text-fg-mute mb-2">Integrantes</div>
-                  <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-fg-mute">
-                    {openProj.members.map((m, i) => (
-                      <span key={i}>{m}{i < openProj.members!.length - 1 ? '·' : ''}</span>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              <div className="flex gap-2.5 mt-7 flex-wrap">
-                {openProj.links && openProj.links.length > 0 && openProj.linkLabel ? (
-                  <div className="w-full flex flex-col gap-3">
-                    <div className="flex flex-wrap items-center gap-3">
-                      <button className="btn terra" onClick={() => setExpandedLinks(!expandedLinks)}>
-                        {openProj.linkLabel}
-                        <span className={'inline-block transition-transform duration-200 ' + (expandedLinks ? 'rotate-180' : '')}>▾</span>
-                      </button>
-                      <button
-                        className="btn"
-                        onClick={() => {
-                          navigator.clipboard.writeText(generateAPA(openProj));
-                          setCopied(true);
-                          setTimeout(() => setCopied(false), 2200);
-                        }}
-                      >
-                        {copied ? 'Copiado ✓' : 'Copiar cita APA'}
-                      </button>
-                    </div>
-                    <AnimatePresence initial={false}>
-                      {expandedLinks && (
-                        <motion.div
-                          className="flex flex-col overflow-hidden"
-                          initial={{ height: 0, opacity: 0 }}
-                          animate={{ height: 'auto', opacity: 1 }}
-                          exit={{ height: 0, opacity: 0 }}
-                          transition={{ duration: 0.25, ease: 'easeInOut' }}
-                        >
-                          <div className="border border-[var(--line)] rounded-xl divide-y divide-[var(--line)] overflow-hidden">
-                            {openProj.links.map((l, i) => (
-                              <a key={i} href={l.url} target="_blank" rel="noopener noreferrer"
-                                 className="flex items-center gap-2 justify-between w-full text-left p-3 md:px-4 text-sm text-fg-mute hover:text-fg hover:bg-[var(--olive-soft)] transition-colors">
-                                {l.label}
-                                <span className="shrink-0 text-fg-mute"><Icon.External /></span>
-                              </a>
-                            ))}
-                          </div>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                  </div>
-                ) : openProj.links && openProj.links.length > 0 ? (
-                  <>
-                    {openProj.links.map((l, i) => (
-                      <a key={i} href={l.url} target="_blank" rel="noopener noreferrer" className={'btn' + (i === 0 ? ' terra' : '')}>
-                        {l.label} <Icon.External />
-                      </a>
-                    ))}
-                    <button
-                      className="btn"
-                      onClick={() => {
-                        navigator.clipboard.writeText(generateAPA(openProj));
-                        setCopied(true);
-                        setTimeout(() => setCopied(false), 2200);
-                      }}
-                    >
-                      {copied ? 'Copiado ✓' : 'Copiar cita APA'}
-                    </button>
-                  </>
-                ) : openProj.url ? (
-                  <>
-                    <a href={openProj.url} target="_blank" rel="noopener noreferrer" className="btn terra">
-                      {({ ensayo: 'Leer ensayo', cartografia: 'Explorar mapa', video: 'Ver video', podcast: 'Escuchar podcast', fanzine: 'Ver fanzine', mural: 'Ver mural', collage: 'Ver collage', grabado: 'Ver grabado' } as Record<string, string>)[openProj.kind] || 'Abrir documento'} <Icon.External />
-                    </a>
-                    {openProj.urlAlt && (
-                      <a href={openProj.urlAlt} target="_blank" rel="noopener noreferrer" className="btn">
-                        Ver transcripción <Icon.External />
-                      </a>
-                    )}
-                    <button
-                      className="btn"
-                      onClick={() => {
-                        navigator.clipboard.writeText(generateAPA(openProj));
-                        setCopied(true);
-                        setTimeout(() => setCopied(false), 2200);
-                      }}
-                    >
-                      {copied ? 'Copiado ✓' : 'Copiar cita APA'}
-                    </button>
-                  </>
-                ) : (
-                  <>
-                    <button className="btn" disabled>Próximamente</button>
-                    <button
-                      className="btn"
-                      onClick={() => {
-                        navigator.clipboard.writeText(generateAPA(openProj));
-                        setCopied(true);
-                        setTimeout(() => setCopied(false), 2200);
-                      }}
-                    >
-                      {copied ? 'Copiado ✓' : 'Copiar cita APA'}
-                    </button>
-                  </>
-                )}
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <ProjectModal project={openProj} onClose={() => setOpenProj(null)} hideArchiveLink />
     </>
   );
 }

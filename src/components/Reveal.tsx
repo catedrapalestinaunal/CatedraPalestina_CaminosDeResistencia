@@ -1,8 +1,7 @@
-import { motion, type HTMLMotionProps } from 'framer-motion';
-import type { ReactNode } from 'react';
+import type { ReactNode, HTMLAttributes } from 'react';
 import { useEffect, useRef, useState } from 'react';
 
-interface RevealProps extends Omit<HTMLMotionProps<'div'>, 'children'> {
+interface RevealProps extends HTMLAttributes<HTMLElement> {
   children: ReactNode;
   delay?: number;
   y?: number;
@@ -27,19 +26,21 @@ export function Reveal({
   className,
   ...rest
 }: RevealProps) {
-  const [near, setNear] = useState(false);
+  const [visible, setVisible] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
-  const prefersReduced = typeof window !== 'undefined'
-    ? window.matchMedia('(prefers-reduced-motion: reduce)').matches
-    : false;
 
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
+    const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (prefersReduced) {
+      setVisible(true);
+      return;
+    }
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
-          setNear(true);
+          setVisible(true);
           observer.disconnect();
         }
       },
@@ -49,26 +50,20 @@ export function Reveal({
     return () => observer.disconnect();
   }, []);
 
-  if (!near || prefersReduced) {
-    const Tag = TAG_MAP[as] as 'div';
-    return (
-      <Tag ref={ref} className={className} style={{ opacity: 0 }}>
-        {children}
-      </Tag>
-    );
-  }
+  const Tag = TAG_MAP[as] as 'div';
 
-  const MotionTag = motion[as] as typeof motion.div;
   return (
-    <MotionTag
+    <Tag
+      ref={ref}
       className={className}
-      initial={{ opacity: 0, y }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: '-10% 0px' }}
-      transition={{ duration, ease: 'easeOut', delay }}
+      style={{
+        opacity: visible ? 1 : 0,
+        transform: visible ? 'translateY(0)' : `translateY(${y}px)`,
+        transition: `opacity ${duration}s ease-out ${delay}s, transform ${duration}s ease-out ${delay}s`,
+      }}
       {...rest}
     >
       {children}
-    </MotionTag>
+    </Tag>
   );
 }

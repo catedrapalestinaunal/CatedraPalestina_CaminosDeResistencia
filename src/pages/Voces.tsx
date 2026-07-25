@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
 import { Reveal } from '../components/Reveal';
 import { ImageSlot } from '../components/ImageSlot';
 import { ImageGallery } from '../components/ImageGallery';
@@ -782,11 +781,9 @@ function VideoTab() {
           </div>
         </Reveal>
 
-        <motion.div
+        <div
           key={active}
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.35, ease: 'easeOut' }}
+          style={{ animation: 'fadeSlideIn 0.35s ease-out' }}
         >
           <Reveal>
             <div className="card">
@@ -820,7 +817,7 @@ function VideoTab() {
               )}
             </div>
           </Reveal>
-        </motion.div>
+        </div>
       </div>
     </section>
   );

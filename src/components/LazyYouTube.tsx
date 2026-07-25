@@ -35,7 +35,7 @@ export function LazyYouTube({ embedId, title }: LazyYouTubeProps) {
   return (
     <div className="aspect-video rounded-xl overflow-hidden bg-black">
       <iframe
-        src={`https://www.youtube.com/embed/${embedId}?autoplay=1`}
+        src={`https://www.youtube-nocookie.com/embed/${embedId}?autoplay=1`}
         width="100%"
         height="100%"
         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"

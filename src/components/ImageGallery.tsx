@@ -1,5 +1,4 @@
 import { useRef, useState, useEffect, useCallback } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { Icon } from '../lib/icons';
 
 interface ImageGalleryProps {
@@ -49,7 +48,7 @@ export function ImageGallery({ children, className = '', hint }: ImageGalleryPro
     });
   };
 
-  const showButtons = (isTouch || hovering);
+  const showButtons = isTouch || hovering;
 
   return (
     <div
@@ -58,22 +57,16 @@ export function ImageGallery({ children, className = '', hint }: ImageGalleryPro
       onMouseLeave={() => setHovering(false)}
     >
       <div className="relative">
-        <AnimatePresence>
-          {showButtons && canScrollLeft && (
-            <motion.button
-              key="prev"
-              initial={{ opacity: 0, x: -8 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -8 }}
-              transition={{ duration: 0.2 }}
-              className="absolute left-2 top-1/2 -translate-y-1/2 z-10 w-9 h-9 md:w-11 md:h-11 flex items-center justify-center rounded-full bg-black/30 hover:bg-black/50 backdrop-blur-sm text-white transition-colors cursor-pointer"
-              onClick={() => scroll('left')}
-              aria-label="Imagen anterior"
-            >
-              <Icon.ArrowLeft />
-            </motion.button>
-          )}
-        </AnimatePresence>
+        {showButtons && canScrollLeft && (
+          <button
+            className="absolute left-2 top-1/2 -translate-y-1/2 z-10 w-9 h-9 md:w-11 md:h-11 flex items-center justify-center rounded-full bg-black/30 hover:bg-black/50 backdrop-blur-sm text-white transition-all duration-200 cursor-pointer"
+            onClick={() => scroll('left')}
+            aria-label="Imagen anterior"
+            style={{ animation: 'fadeIn 0.2s ease-out' }}
+          >
+            <Icon.ArrowLeft />
+          </button>
+        )}
 
         <div
           ref={scrollRef}
@@ -82,22 +75,16 @@ export function ImageGallery({ children, className = '', hint }: ImageGalleryPro
           {children}
         </div>
 
-        <AnimatePresence>
-          {showButtons && canScrollRight && (
-            <motion.button
-              key="next"
-              initial={{ opacity: 0, x: 8 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: 8 }}
-              transition={{ duration: 0.2 }}
-              className="absolute right-2 top-1/2 -translate-y-1/2 z-10 w-9 h-9 md:w-11 md:h-11 flex items-center justify-center rounded-full bg-black/30 hover:bg-black/50 backdrop-blur-sm text-white transition-colors cursor-pointer"
-              onClick={() => scroll('right')}
-              aria-label="Imagen siguiente"
-            >
-              <Icon.Arrow />
-            </motion.button>
-          )}
-        </AnimatePresence>
+        {showButtons && canScrollRight && (
+          <button
+            className="absolute right-2 top-1/2 -translate-y-1/2 z-10 w-9 h-9 md:w-11 md:h-11 flex items-center justify-center rounded-full bg-black/30 hover:bg-black/50 backdrop-blur-sm text-white transition-all duration-200 cursor-pointer"
+            onClick={() => scroll('right')}
+            aria-label="Imagen siguiente"
+            style={{ animation: 'fadeIn 0.2s ease-out' }}
+          >
+            <Icon.Arrow />
+          </button>
+        )}
       </div>
 
       {hint && (

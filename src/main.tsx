@@ -1,9 +1,5 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
-import '@fontsource/playfair-display/latin.css';
-import '@fontsource/playfair-display/latin-italic.css';
-import '@fontsource/inter/latin.css';
-import '@fontsource/jetbrains-mono/latin.css';
 import './styles/global.css';
 import { App } from './App';
 

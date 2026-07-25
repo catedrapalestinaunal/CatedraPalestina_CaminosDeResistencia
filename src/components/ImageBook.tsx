@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { ZoomIn, ZoomOut, RotateCcw, RotateCw } from 'lucide-react';
 import { Icon } from '../lib/icons';
 import { useLockBodyScroll } from '../lib/hooks';
@@ -25,9 +24,12 @@ export function ImageBook({ src, alt, pages, label, credit, naturalWidth, natura
   const [scale, setScale] = useState(1);
   const [rotate, setRotate] = useState(0);
   const [imgIndex, setImgIndex] = useState(0);
+  const [visible, setVisible] = useState(false);
   const stageRef = useRef<HTMLDivElement>(null);
   const [stage, setStage] = useState({ w: 800, h: 500 });
   const [loadedN, setLoadedN] = useState({ w: 0, h: 0 });
+  const dragRef = useRef({ x: 0, y: 0, startX: 0, startY: 0, isDragging: false });
+  const [dragPos, setDragPos] = useState({ x: 0, y: 0 });
 
   const isMulti = !!pages;
   const currentSrc = isMulti ? pages[imgIndex].src : src!;
@@ -44,10 +46,14 @@ export function ImageBook({ src, alt, pages, label, credit, naturalWidth, natura
   }, []);
 
   useEffect(() => {
-    if (!open) {
+    if (open) {
+      requestAnimationFrame(() => setVisible(true));
+    } else {
+      setVisible(false);
       setScale(1);
       setRotate(0);
       setImgIndex(0);
+      setDragPos({ x: 0, y: 0 });
     }
   }, [open]);
 
@@ -57,6 +63,7 @@ export function ImageBook({ src, alt, pages, label, credit, naturalWidth, natura
     if (!open) return;
     setScale(1);
     setRotate(0);
+    setDragPos({ x: 0, y: 0 });
   }, [open, imgIndex]);
 
   useEffect(() => {
@@ -81,7 +88,7 @@ export function ImageBook({ src, alt, pages, label, credit, naturalWidth, natura
 
   const zoomIn = () => setScale(s => Math.min(s * 1.4, 20));
   const zoomOut = () => setScale(s => Math.max(s / 1.4, 0.10));
-  const zoomReset = () => setScale(1);
+  const zoomReset = () => { setScale(1); setDragPos({ x: 0, y: 0 }); };
 
   const handleWheel = useCallback((e: React.WheelEvent) => {
     if (e.ctrlKey || e.metaKey) {
@@ -102,11 +109,33 @@ export function ImageBook({ src, alt, pages, label, credit, naturalWidth, natura
     }
   };
 
+  const handlePointerDown = (e: React.PointerEvent) => {
+    if (scale <= 1) return;
+    dragRef.current = {
+      x: dragPos.x,
+      y: dragPos.y,
+      startX: e.clientX,
+      startY: e.clientY,
+      isDragging: true,
+    };
+    (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+  };
+
+  const handlePointerMove = (e: React.PointerEvent) => {
+    if (!dragRef.current.isDragging) return;
+    const dx = e.clientX - dragRef.current.startX;
+    const dy = e.clientY - dragRef.current.startY;
+    setDragPos({ x: dragRef.current.x + dx, y: dragRef.current.y + dy });
+  };
+
+  const handlePointerUp = () => {
+    dragRef.current.isDragging = false;
+  };
+
   const triggerSrc = isMulti ? pages[0].src : src!;
 
   return (
     <div className={'image-book ' + className}>
-      {/* ============ TRIGGER ============ */}
       <div
         className="image-book-trigger group"
         onClick={() => setOpen(true)}
@@ -138,97 +167,98 @@ export function ImageBook({ src, alt, pages, label, credit, naturalWidth, natura
         )}
       </div>
 
-      {/* ============ MODAL ============ */}
-      <AnimatePresence>
-        {open && (
-          <motion.div
-            className="image-book-modal-veil"
-            onClick={() => setOpen(false)}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
+      {open && (
+        <div
+          className="image-book-modal-veil"
+          onClick={() => setOpen(false)}
+          style={{
+            opacity: visible ? 1 : 0,
+            transition: 'opacity 0.2s ease',
+          }}
+        >
+          <div
+            className="image-book-modal"
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              opacity: visible ? 1 : 0,
+              transform: visible ? 'scale(1) translateY(0)' : 'scale(0.95) translateY(20px)',
+              transition: 'opacity 0.3s ease-out, transform 0.3s ease-out',
+            }}
           >
-            <motion.div
-              className="image-book-modal"
-              onClick={(e) => e.stopPropagation()}
-              initial={{ opacity: 0, scale: 0.95, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              transition={{ duration: 0.3, ease: 'easeOut' }}
-            >
-              {/* Header */}
-              <div className="image-book-modal-header">
-                <div className="kicker truncate">{label}</div>
+            <div className="image-book-modal-header">
+              <div className="kicker truncate">{label}</div>
 
-                {isMulti && pages.length > 1 && (
-                  <div className="flex items-center gap-1.5 flex-shrink-0">
-                    <button
-                      className="icon-btn !w-[30px] !h-[30px] md:!w-[44px] md:!h-[44px]"
-                      onClick={() => setImgIndex(i => Math.max(i - 1, 0))}
-                      disabled={imgIndex === 0}
-                      aria-label="Página anterior"
-                    >
-                      <Icon.ArrowLeft />
-                    </button>
-                    <span className="font-mono text-[11px] tracking-[0.1em] text-fg-mute min-w-[44px] text-center">
-                      {imgIndex + 1}/{pages.length}
-                    </span>
-                    <button
-                      className="icon-btn !w-[30px] !h-[30px] md:!w-[44px] md:!h-[44px]"
-                      onClick={() => setImgIndex(i => Math.min(i + 1, pages.length - 1))}
-                      disabled={imgIndex === pages.length - 1}
-                      aria-label="Página siguiente"
-                    >
-                      <Icon.Arrow />
-                    </button>
-                  </div>
-                )}
-
-                <div className="image-book-modal-zoom">
-                  <button onClick={zoomOut} aria-label="Alejar"><ZoomOut size={14} /></button>
-                  <span className="image-book-modal-zoom-pct">{Math.round(scale * 100)}%</span>
-                  <button onClick={zoomIn} aria-label="Acercar"><ZoomIn size={14} /></button>
-                  <button onClick={() => setRotate(r => r === 0 ? 180 : 0)} aria-label="Rotar 180°"><RotateCw size={14} /></button>
-                  <button onClick={zoomReset} aria-label="Restablecer"><RotateCcw size={14} /></button>
+              {isMulti && pages.length > 1 && (
+                <div className="flex items-center gap-1.5 flex-shrink-0">
+                  <button
+                    className="icon-btn !w-[30px] !h-[30px] md:!w-[44px] md:!h-[44px]"
+                    onClick={() => setImgIndex(i => Math.max(i - 1, 0))}
+                    disabled={imgIndex === 0}
+                    aria-label="Página anterior"
+                  >
+                    <Icon.ArrowLeft />
+                  </button>
+                  <span className="font-mono text-[11px] tracking-[0.1em] text-fg-mute min-w-[44px] text-center">
+                    {imgIndex + 1}/{pages.length}
+                  </span>
+                  <button
+                    className="icon-btn !w-[30px] !h-[30px] md:!w-[44px] md:!h-[44px]"
+                    onClick={() => setImgIndex(i => Math.min(i + 1, pages.length - 1))}
+                    disabled={imgIndex === pages.length - 1}
+                    aria-label="Página siguiente"
+                  >
+                    <Icon.Arrow />
+                  </button>
                 </div>
-                <button className="image-book-modal-close" onClick={() => setOpen(false)} aria-label="Cerrar">
-                  <Icon.Close />
-                </button>
-              </div>
+              )}
 
-              {/* Stage */}
-              <div
-                ref={stageRef}
-                className="image-book-modal-stage"
-                onWheel={handleWheel}
-                onDoubleClick={handleDoubleClick}
-              >
-                <motion.div
-                  className="image-book-modal-pan"
-                  drag={scale > 1}
-                  dragConstraints={stageRef}
-                  dragElastic={0}
-                >
-                  <img
-                    key={currentSrc}
-                    src={currentSrc}
-                    alt={currentAlt ?? ''}
-                    draggable={false}
-                    className="image-book-modal-img"
-                    onLoad={handleImgLoad}
-                    style={{
-                      width: baseW * scale,
-                      height: baseH * scale,
-                      transform: `rotate(${rotate}deg)`,
-                    }}
-                  />
-                </motion.div>
+              <div className="image-book-modal-zoom">
+                <button onClick={zoomOut} aria-label="Alejar"><ZoomOut size={14} /></button>
+                <span className="image-book-modal-zoom-pct">{Math.round(scale * 100)}%</span>
+                <button onClick={zoomIn} aria-label="Acercar"><ZoomIn size={14} /></button>
+                <button onClick={() => setRotate(r => r === 0 ? 180 : 0)} aria-label="Rotar 180°"><RotateCw size={14} /></button>
+                <button onClick={zoomReset} aria-label="Restablecer"><RotateCcw size={14} /></button>
               </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+              <button className="image-book-modal-close" onClick={() => setOpen(false)} aria-label="Cerrar">
+                <Icon.Close />
+              </button>
+            </div>
+
+            <div
+              ref={stageRef}
+              className="image-book-modal-stage"
+              onWheel={handleWheel}
+              onDoubleClick={handleDoubleClick}
+            >
+              <div
+                className="image-book-modal-pan"
+                onPointerDown={handlePointerDown}
+                onPointerMove={handlePointerMove}
+                onPointerUp={handlePointerUp}
+                style={{
+                  cursor: scale > 1 ? 'grab' : 'default',
+                  transform: scale > 1 ? `translate(${dragPos.x}px, ${dragPos.y}px)` : undefined,
+                  transition: dragRef.current.isDragging ? 'none' : 'transform 0.15s ease',
+                }}
+              >
+                <img
+                  key={currentSrc}
+                  src={currentSrc}
+                  alt={currentAlt ?? ''}
+                  draggable={false}
+                  className="image-book-modal-img"
+                  onLoad={handleImgLoad}
+                  style={{
+                    width: baseW * scale,
+                    height: baseH * scale,
+                    transform: `rotate(${rotate}deg)`,
+                  }}
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

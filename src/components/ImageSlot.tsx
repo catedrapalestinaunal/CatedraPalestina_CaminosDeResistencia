@@ -12,6 +12,7 @@ interface ImageSlotProps {
   alt?: string;
   credit?: string;
   objectPosition?: string;
+  avifSrcSet?: string;
 }
 
 const VARIANT_STRIPES: Record<ImageVariant, string> = {
@@ -20,7 +21,7 @@ const VARIANT_STRIPES: Record<ImageVariant, string> = {
   carbon: 'repeating-linear-gradient(135deg, var(--line-soft) 0 14px, transparent 14px 28px)',
 };
 
-export function ImageSlot({ height, label, variant = 'olive', className = '', src, srcSet, sizes, alt, credit, objectPosition }: ImageSlotProps) {
+export function ImageSlot({ height, label, variant = 'olive', className = '', src, srcSet, sizes, alt, credit, objectPosition, avifSrcSet }: ImageSlotProps) {
   const style: CSSProperties = {
     ...(height !== undefined ? { height } : {}),
     background: `${VARIANT_STRIPES[variant]}, var(--bg-warm)`,
@@ -30,17 +31,29 @@ export function ImageSlot({ height, label, variant = 'olive', className = '', sr
     <div className={'image-slot ' + className} style={style}>
       {src ? (
         <>
-          <img src={src} srcSet={srcSet} sizes={sizes} alt={alt ?? label ?? ''} className={'image-slot-img' + (height !== undefined ? '' : ' image-slot-img--auto')} style={{ objectPosition: objectPosition ?? '50% 50%' }} />
+          {avifSrcSet ? (
+            <picture>
+              <source srcSet={avifSrcSet} sizes={sizes} type="image/avif" />
+              <img src={src} srcSet={srcSet} sizes={sizes} alt={alt ?? label ?? ''} className={'image-slot-img' + (height !== undefined ? '' : ' image-slot-img--auto')} style={{ objectPosition: objectPosition ?? '50% 50%' }} />
+            </picture>
+          ) : (
+            <img src={src} srcSet={srcSet} sizes={sizes} alt={alt ?? label ?? ''} className={'image-slot-img' + (height !== undefined ? '' : ' image-slot-img--auto')} style={{ objectPosition: objectPosition ?? '50% 50%' }} />
+          )}
           {credit && (
-            <div className="absolute bottom-3 right-3 z-10 flex flex-col items-end">
-              <button
-                type="button"
-                className="bg-black/40 hover:bg-black/70 backdrop-blur-md border border-white/10 text-white/70 text-[10px] px-2 py-0.5 rounded-md font-mono"
-                title={credit}
-                aria-label={credit}
-              >
-                ©
-              </button>
+            <div style={{
+              position: 'absolute',
+              bottom: 0,
+              left: 0,
+              right: 0,
+              background: 'rgba(139, 29, 34, 0.92)',
+              color: '#fff7f1',
+              padding: '6px 10px',
+              fontSize: '10px',
+              fontFamily: 'JetBrains Mono, ui-monospace, monospace',
+              lineHeight: 1.4,
+              zIndex: 15,
+            }}>
+              © {credit}
             </div>
           )}
         </>

@@ -1397,6 +1397,7 @@
     height: auto !important;
     display: block !important;
   }
+  .image-slot picture { display: block; width: 100%; height: 100%; }
 
   /* ── ImageBook · Trigger + Modal viewer ── */
   .image-book { width: 100%; }
@@ -2012,6 +2013,7 @@
   .archive-grid .proj .author { margin-top: 2px; }
   .proj { padding: 14px; }
   .proj-thumb { height: 120px; margin-bottom: 12px; }
+  .proj-thumb .kind-num { top: auto; bottom: 12px; right: 14px; }
   .proj h4, .proj h3 { font-size: 18px; }
   .proj .author { font-size: 13.5px; }
   .proj .meta { font-size: 12px; }
@@ -2020,7 +2022,7 @@
 
   .proj-row { grid-template-columns: 56px 1fr; gap: 14px; padding: 14px 16px; }
   .proj-row .proj-thumb { height: 48px; }
-  .proj-row .proj-thumb .kind-num { font-size: 10px; top: 3px; right: 5px; }
+  .proj-row .proj-thumb .kind-num { font-size: 10px; top: auto; bottom: 3px; right: 5px; }
   .proj-row .proj-kind-chip,
   .proj-row .proj-arrow { display: none; }
   .proj-row .proj-body h4, .proj-row .proj-body h3 { font-size: 16px; }
@@ -3321,6 +3323,7 @@ html[data-theme="dark"] .voces-cij-footer {
 }
 
 @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes fadeSlideIn { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes pulse {
   0%, 100% { box-shadow: 0 0 0 4px color-mix(in srgb, var(--terracotta) 30%, transparent); }
   50%      { box-shadow: 0 0 0 8px color-mix(in srgb, var(--terracotta) 10%, transparent); }
