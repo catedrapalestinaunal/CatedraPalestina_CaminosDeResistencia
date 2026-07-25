@@ -1325,6 +1325,9 @@
     font-size: 14.5px;
     line-height: 1.65;
   }
+  .simbo-card-head {
+    display: flex; flex-direction: column;
+  }
 
   .card .stat-strip.is-blockade { border-top-color: var(--terracotta); border-top-style: solid; border-top-width: 1px; padding-top: 22px; }
   .card .stat-strip.is-blockade .v { color: var(--terracotta); font-size: 28px; }
@@ -1611,14 +1614,14 @@
   .biblio-item > :nth-child(3) { display: none; }
   .footer .wrap > .top { grid-template-columns: 1fr; }
   .grid-2 { grid-template-columns: 1fr; }
-  .simbo-head { grid-template-columns: 1fr; gap: 32px; }
+  .simbo-head { grid-template-columns: 1fr; gap: 32px; margin-bottom: 28px; }
   .footer-brands { grid-template-columns: 1fr; }
 
   .reading-note { padding: 32px 24px; grid-template-columns: 1fr; gap: 20px; }
   .cta-strip { grid-template-columns: 1fr; gap: 20px; }
   .sticky-story { grid-template-columns: 1fr; gap: 28px; }
   .sticky-story .stick { position: relative; top: 0; }
-  .simbo-grid { grid-template-columns: 1fr; gap: 16px; }
+  .simbo-grid { grid-template-columns: 1fr; gap: 12px; }
   .simbo-card { border-right: none; border-bottom: 1px solid var(--line); }
   .hero-foot { grid-template-columns: 1fr 1fr; gap: 20px; }
   .poetica-grid { grid-template-columns: 1fr; gap: 56px; min-width: 0; }
@@ -1828,10 +1831,12 @@
   .audio-playlist-item > div { min-width: 0; overflow: hidden; }
 
   /* SIMBO */
-  .simbo-card { padding: 28px 22px 24px; }
-  .simbo-card-glyph { width: 48px; height: 48px; margin-bottom: 20px; }
-  .simbo-card-body { font-size: 14px; }
-  .simbo-card-meaning { font-size: 10.5px; letter-spacing: 0.14em; }
+  .simbo-card { padding: 20px 16px; border-radius: 14px; }
+  .simbo-card-glyph { position: absolute; top: 16px; right: 16px; width: 28px; height: 28px; margin-bottom: 0; }
+  .simbo-card-head { flex-direction: row; align-items: baseline; gap: 8px; }
+  .simbo-card-term { font-size: clamp(20px, 5vw, 26px); margin-top: 0; }
+  .simbo-card-meaning { margin-top: 6px; padding-bottom: 10px; }
+  .simbo-card-body { font-size: 13.5px; line-height: 1.55; margin-top: 10px; }
 
 
 
@@ -2113,8 +2118,13 @@
 
 @media (max-width: 920px) and (min-width: 701px) {
   .simbo-grid { grid-template-columns: repeat(2, 1fr); }
-  .simbo-card { border-right: 1px solid var(--line); }
+  .simbo-card { border-right: 1px solid var(--line); padding: 20px 16px; border-radius: 14px; }
   .simbo-card:last-child { border-right: none; }
+  .simbo-card-glyph { position: absolute; top: 16px; right: 16px; width: 28px; height: 28px; margin-bottom: 0; }
+  .simbo-card-head { flex-direction: row; align-items: baseline; gap: 8px; }
+  .simbo-card-term { font-size: clamp(20px, 5vw, 26px); margin-top: 0; }
+  .simbo-card-meaning { margin-top: 6px; padding-bottom: 10px; }
+  .simbo-card-body { font-size: 13.5px; line-height: 1.55; margin-top: 10px; }
 }
 
 @media (max-width: 960px) and (min-width: 701px) {

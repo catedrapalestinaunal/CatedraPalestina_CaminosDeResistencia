@@ -465,8 +465,10 @@ function SimboCard({ n, term, meaning, body, glyph, accent }: SimboCardProps) {
   return (
     <Reveal as="article" className={'simbo-card card-base ' + (accent ? 'is-accent' : '')}>
       <div className="simbo-card-glyph" aria-hidden="true">{glyph}</div>
-      <div className="simbo-card-n">/ {n}</div>
-      <h3 className="simbo-card-term">{term}</h3>
+      <div className="simbo-card-head">
+        <div className="simbo-card-n">/ {n}</div>
+        <h3 className="simbo-card-term">{term}</h3>
+      </div>
       <div className="simbo-card-meaning">{meaning}</div>
       <p className="simbo-card-body">{body}</p>
     </Reveal>
