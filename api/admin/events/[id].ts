@@ -24,6 +24,24 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(400).json({ error: 'ID debe ser un número' });
   }
 
+  if (req.method === 'GET') {
+    const { data, error: fetchError } = await supabase
+      .from('events')
+      .select('*')
+      .eq('id', eventId)
+      .single();
+
+    if (fetchError) {
+      console.error('Fetch error:', fetchError);
+      return res.status(500).json({ error: 'Error al obtener el evento' });
+    }
+    if (!data) {
+      return res.status(404).json({ error: 'Evento no encontrado' });
+    }
+
+    return res.status(200).json(data);
+  }
+
   if (req.method === 'PUT') {
     const body = req.body;
 
