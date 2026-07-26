@@ -1,6 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useScrollY } from '../lib/hooks';
+import { useEvents } from '../lib/useEvents';
 import { Icon } from '../lib/icons';
 import { PAGES, PATH_TO_PAGE, type Theme } from '../lib/types';
 
@@ -15,6 +16,14 @@ export function Nav({ theme, toggleTheme }: NavProps) {
   const [menuOpen, setMenuOpen] = useState(false);
   const { pathname } = useLocation();
   const activePage = PATH_TO_PAGE[pathname] ?? 'home';
+  const { events } = useEvents({ defer: true });
+  const hasEvents = events.length > 0;
+  const scrollToEvents = useCallback(() => {
+    const el = document.getElementById('eventos');
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, []);
 
   useEffect(() => { setMenuOpen(false); }, [pathname]);
 
@@ -48,6 +57,23 @@ export function Nav({ theme, toggleTheme }: NavProps) {
                 {p.label}
               </Link>
             ))}
+            {hasEvents && (
+              <Link
+                to="/"
+                className="nav-link"
+                onClick={(e) => {
+                  if (pathname === '/') {
+                    e.preventDefault();
+                    scrollToEvents();
+                  }
+                }}
+              >
+                <span className="relative inline-flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse" />
+                  Eventos
+                </span>
+              </Link>
+            )}
           </div>
 
           <div className="nav-meta">
@@ -84,6 +110,19 @@ export function Nav({ theme, toggleTheme }: NavProps) {
             <small>0{i + 1}</small>
           </Link>
         ))}
+        {hasEvents && (
+          <Link to="/" className={pathname === '/' ? 'is-active' : ''} onClick={() => {
+            if (pathname === '/') {
+              scrollToEvents();
+            }
+          }}>
+            <span className="flex items-center gap-2">
+              <span className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse" />
+              Eventos
+            </span>
+            <small>0{PAGES.length + 1}</small>
+          </Link>
+        )}
       </div>
     </>
   );

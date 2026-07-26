@@ -29,6 +29,18 @@ export type Theme = 'light' | 'dark';
 
 export type ImageVariant = 'olive' | 'terra' | 'carbon';
 
+export interface Event {
+  id: number;
+  title: string;
+  description?: string;
+  place?: string;
+  eventDate: string;
+  eventTime?: string;
+  organizer?: string;
+  category?: string;
+  images: string[];
+}
+
 export interface Project {
   id: number;
   kind: ProjectKind;

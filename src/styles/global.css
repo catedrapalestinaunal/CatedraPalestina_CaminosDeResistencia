@@ -953,6 +953,9 @@
   html.dark .btn.terra:hover,
   html[data-theme="dark"] .btn.terra:hover { background: color-mix(in srgb, var(--terracotta) 70%, #000); border-color: transparent; }
 
+  .btn svg { width: 14px; height: 14px; flex-shrink: 0; }
+  @media (max-width: 480px) { .btn svg { display: none; } }
+
   .kicker { font-family: var(--mono); font-size: 11px; letter-spacing: .18em; text-transform: uppercase; color: var(--terracotta); }
 
   .poetica {

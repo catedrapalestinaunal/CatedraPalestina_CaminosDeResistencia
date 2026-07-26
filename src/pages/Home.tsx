@@ -13,6 +13,8 @@ import { CONFIG } from '../lib/config';
 
 const FeaturedProjects = lazy(() => import('../components/FeaturedProjects').then(m => ({ default: m.FeaturedProjects })));
 
+import { EventsBanner } from '../components/EventsBanner';
+
 export function Home() {
   const projectsRef = useRef<HTMLDivElement>(null);
   const [showProjects, setShowProjects] = useState(false);
@@ -116,6 +118,9 @@ export function Home() {
           </div>
         </div>
       </section>
+
+      {/* ============ EVENTS ============ */}
+      <EventsBanner />
 
       {/* ============ QUOTE ============ */}
       <section className="quote-section section">

@@ -19,6 +19,8 @@ const NotFound = lazy(() => import('./pages/NotFound').then(m => ({ default: m.N
 const AdminLogin = lazy(() => import('./pages/admin/Login').then(m => ({ default: m.AdminLogin })));
 const AdminDashboard = lazy(() => import('./pages/admin/Dashboard').then(m => ({ default: m.AdminDashboard })));
 const AdminProjectForm = lazy(() => import('./pages/admin/ProjectForm').then(m => ({ default: m.AdminProjectForm })));
+const AdminEventsDashboard = lazy(() => import('./pages/admin/EventsDashboard').then(m => ({ default: m.EventsDashboard })));
+const AdminEventForm = lazy(() => import('./pages/admin/EventForm').then(m => ({ default: m.EventForm })));
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -90,6 +92,9 @@ export function App() {
                 <Route path="/admin" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
                 <Route path="/admin/projects/new" element={<ProtectedRoute><AdminProjectForm /></ProtectedRoute>} />
                 <Route path="/admin/projects/:id/edit" element={<ProtectedRoute><AdminProjectForm /></ProtectedRoute>} />
+                <Route path="/admin/events" element={<ProtectedRoute><AdminEventsDashboard /></ProtectedRoute>} />
+                <Route path="/admin/events/new" element={<ProtectedRoute><AdminEventForm /></ProtectedRoute>} />
+                <Route path="/admin/events/:id/edit" element={<ProtectedRoute><AdminEventForm /></ProtectedRoute>} />
                 <Route index element={<Home />} />
                 <Route path="historia" element={<History />} />
                 <Route path="ongs" element={<ONGs />} />

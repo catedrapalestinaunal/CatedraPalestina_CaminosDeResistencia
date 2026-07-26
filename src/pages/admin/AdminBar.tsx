@@ -1,52 +1,91 @@
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../lib/auth';
-import { ArrowLeft, Plus, LogOut, Layers } from 'lucide-react';
+import { ArrowLeft, Plus, LogOut, Layers, Calendar } from 'lucide-react';
 
-export function AdminBar({ onSemestersClick }: { onSemestersClick?: () => void }) {
+interface AdminBarProps {
+  onSemestersClick?: () => void;
+  onNewClick?: () => void;
+  context?: 'projects' | 'events';
+}
+
+export function AdminBar({ onSemestersClick, onNewClick, context = 'projects' }: AdminBarProps) {
   const navigate = useNavigate();
   const location = useLocation();
   const { signOut } = useAuth();
   const isDashboard = location.pathname === '/admin';
-  const isNew = location.pathname === '/admin/projects/new';
-  const isEdit = location.pathname.startsWith('/admin/projects/') && location.pathname.endsWith('/edit');
+  const isEventsDashboard = location.pathname === '/admin/events';
+  const isNew = location.pathname.includes('/new');
+  const isEdit = location.pathname.includes('/edit');
+  const isEventsSection = context === 'events';
+
+  const getTitle = () => {
+    if (isDashboard) return 'Proyectos';
+    if (isEventsDashboard) return 'Eventos';
+    if (isNew) return isEventsSection ? 'Nuevo evento' : 'Nuevo proyecto';
+    if (isEdit) return isEventsSection ? 'Editar evento' : 'Editar proyecto';
+    return isEventsSection ? 'Eventos' : 'Proyectos';
+  };
+
+  const getBackPath = () => {
+    if (isEventsSection) return '/admin/events';
+    return '/admin';
+  };
 
   return (
     <div className="flex items-center justify-between gap-4 py-3 px-5 rounded-xl border border-[var(--line)] bg-[var(--bg-warm)]">
       <div className="flex items-center gap-3 min-w-0">
-        {!isDashboard && (
+        {!isDashboard && !isEventsDashboard && (
           <button
-            onClick={() => navigate('/admin')}
+            onClick={() => navigate(getBackPath())}
             className="flex items-center gap-1.5 font-mono text-[11px] tracking-[0.12em] uppercase text-fg-mute hover:text-accent transition-colors shrink-0"
           >
             <ArrowLeft size={14} />
-            Proyectos
+            {isEventsSection ? 'Eventos' : 'Proyectos'}
           </button>
         )}
         <span className="hidden sm:block w-px h-5 bg-[var(--line)]" />
         <span className="font-mono text-[11px] tracking-[0.14em] uppercase text-fg truncate">
-          {isDashboard && 'Proyectos'}
-          {isNew && 'Nuevo proyecto'}
-          {isEdit && 'Editar proyecto'}
+          {getTitle()}
         </span>
       </div>
 
       <div className="flex items-center gap-2">
-        {isDashboard && (
+        {(isDashboard || isEventsDashboard) && (
           <>
+            {isDashboard && onSemestersClick && (
+              <button
+                onClick={onSemestersClick}
+                className="flex items-center gap-1.5 font-mono text-[11px] tracking-[0.12em] uppercase text-fg-mute hover:text-accent transition-colors"
+              >
+                <Layers size={14} />
+                Semestres
+              </button>
+            )}
+            {isDashboard && (
+              <button
+                onClick={() => navigate('/admin/events')}
+                className="flex items-center gap-1.5 font-mono text-[11px] tracking-[0.12em] uppercase text-fg-mute hover:text-accent transition-colors"
+              >
+                <Calendar size={14} />
+                Eventos
+              </button>
+            )}
+            {isEventsDashboard && (
+              <button
+                onClick={() => navigate('/admin')}
+                className="flex items-center gap-1.5 font-mono text-[11px] tracking-[0.12em] uppercase text-fg-mute hover:text-accent transition-colors"
+              >
+                <ArrowLeft size={14} />
+                Proyectos
+              </button>
+            )}
             <button
-              onClick={onSemestersClick}
-              className="flex items-center gap-1.5 font-mono text-[11px] tracking-[0.12em] uppercase text-fg-mute hover:text-accent transition-colors"
-            >
-              <Layers size={14} />
-              Semestres
-            </button>
-            <button
-              onClick={() => navigate('/admin/projects/new')}
+              onClick={onNewClick ?? (() => navigate(isEventsSection ? '/admin/events/new' : '/admin/projects/new'))}
               className="btn terra"
               style={{ padding: '7px 14px', fontSize: 11, letterSpacing: '0.12em', textTransform: 'uppercase', fontFamily: 'var(--mono)' }}
             >
               <Plus size={14} />
-              Nuevo
+              {isEventsSection ? 'Nuevo evento' : 'Nuevo proyecto'}
             </button>
             <button
               onClick={signOut}

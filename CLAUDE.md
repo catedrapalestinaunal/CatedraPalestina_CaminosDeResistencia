@@ -57,6 +57,8 @@ Palestina-frontend/
 │   ├── upload.ts                     # POST: firma Cloudinary (signed upload)
 │   └── admin/
 │       ├── projects.ts               # POST: crear proyecto (admin)
+│       ├── events.ts                 # GET/POST: listar/crear eventos (admin)
+│       ├── events/[id].ts            # PUT/DELETE: editar/eliminar evento (admin)
 │       └── [id].ts                   # PUT/DELETE: editar/eliminar proyecto (admin)
 ├── src/
 │   ├── main.tsx
@@ -67,10 +69,11 @@ Palestina-frontend/
 │   │   ├── supabase.ts               # Cliente Supabase tipado
 │   │   ├── auth.tsx                   # AuthProvider + useAuth + ProtectedRoute
 │   │   ├── useProjects.ts             # Hook: fetch proyectos desde Supabase
+│   │   ├── useEvents.ts               # Hook: fetch eventos activos desde Supabase
 │   │   ├── mapper.ts                  # snake_case DB → camelCase frontend
-│   │   ├── types.ts                   # Interfaces de dominio (Project, Page, ...)
+│   │   ├── types.ts                   # Interfaces de dominio (Project, Page, Event, ...)
 │   │   └── icons.tsx                  # Icon.* (SVG propios)
-│   ├── types/database.ts             # Tipos de filas DB (ProjectRow)
+│   ├── types/database.ts             # Tipos de filas DB (ProjectRow, EventRow)
 │   ├── data/
 │   │   ├── archive.ts                # BIBLIOGRAPHY, KIND_GLYPH, buildKindFilters()
 │   │   ├── history.ts                # TIMELINE, GLOSSARY
@@ -80,7 +83,8 @@ Palestina-frontend/
 │   │   ├── Nav.tsx
 │   │   ├── Footer.tsx
 │   │   ├── ImageSlot.tsx
-│   │   └── Reveal.tsx                # Wrapper Framer Motion
+│   │   ├── Reveal.tsx                # Wrapper Framer Motion
+│   │   └── EventsBanner.tsx          # Carrusel de eventos activos
 │   └── pages/
 │       ├── Home.tsx
 │       ├── History.tsx
@@ -92,9 +96,15 @@ Palestina-frontend/
 │       └── admin/
 │           ├── Login.tsx             # Inicio de sesión
 │           ├── Dashboard.tsx         # Lista de proyectos
-│           └── ProjectForm.tsx       # Crear/editar proyecto
+│           ├── ProjectForm.tsx       # Crear/editar proyecto
+│           ├── EventsDashboard.tsx   # Lista de eventos
+│           └── EventForm.tsx         # Crear/editar evento
+├── supabase/
+│   └── migrations/
+│       └── 20260726_create_events.sql  # Tabla events + RLS + trigger updated_at
 ├── scripts/
 │   ├── seed-projects.mjs             # Seed inicial de 26 proyectos
+│   ├── seed-events.mjs               # Insertar eventos de prueba en Supabase
 │   ├── upload-thumbnails.mjs         # Subir imágenes a Cloudinary
 │   ├── fix-descriptions.mjs          # Corrección de descripciones
 │   ├── prerender.mjs                 # Prerender para SEO
@@ -122,6 +132,9 @@ Rutas definidas en `App.tsx` con `<BrowserRouter>`. Las rutas públicas están d
 | `/admin` | AdminDashboard | Sí (ProtectedRoute) |
 | `/admin/projects/new` | AdminProjectForm | Sí |
 | `/admin/projects/:id/edit` | AdminProjectForm | Sí |
+| `/admin/events` | EventsDashboard | Sí (ProtectedRoute) |
+| `/admin/events/new` | EventForm | Sí |
+| `/admin/events/:id/edit` | EventForm | Sí |
 | `*` | NotFound | No |
 
 Para agregar una página pública:
@@ -172,6 +185,11 @@ export function MiPagina() {
 ### 6. Imágenes placeholder
 `<ImageSlot>` con `label` y `variant` (olive/terra/carbon).
 
+### 7. Eventos (EventsBanner + Nav indicator)
+- `<EventsBanner>` en Home: carrusel con fade transition, auto-play cada 6s, navegación con flechas y dots. Solo se renderiza cuando hay eventos activos.
+- `<Nav>`: cuando `events.length > 0`, muestra un punto rojo animado + texto "Eventos" en la barra de navegación y el menú móvil. Al hacer clic, navega a Home y scrollea a la sección.
+- La query pública (`useEvents`) filtra con `event_date >= today`. El evento deja de ser visible automáticamente al día siguiente de su fecha.
+
 ## Capa de datos
 
 ### Datos dinámicos (proyectos)
@@ -187,6 +205,46 @@ El hook:
 - Cachea la respuesta en `localStorage('cdr-projects-cache')` como fallback offline
 - Expone estados: `loading`, `error`, `refetch`
 
+### Datos dinámicos (eventos)
+Los eventos se almacenan en **Supabase** y se consultan con el hook `useEvents()`:
+
+```tsx
+const { events, loading, error, refetch } = useEvents();
+```
+
+El hook:
+- Consulta solo eventos con `event_date >= today` (visibles desde su creación hasta el día del evento)
+- Convierte snake_case DB → camelCase frontend vía `toEvent()` mapper
+- Cachea la respuesta en `localStorage('cdr-events-cache')` como fallback offline
+- Expone estados: `loading`, `error`, `refetch`
+- Cuando no hay eventos activos, el banner en Home y el indicador en Nav se ocultan automáticamente
+
+### Tabla `events` (Supabase)
+
+| Columna | Tipo | Descripción |
+|---------|------|-------------|
+| `id` | `int8` PK | Auto-incremental |
+| `title` | `text` NOT NULL | Título del evento |
+| `description` | `text` | Descripción |
+| `place` | `text` | Lugar |
+| `event_date` | `date` NOT NULL | Fecha real del evento; visibilidad expira al día siguiente |
+| `event_time` | `text` | Horario (ej. "10:00 - 12:00") |
+| `organizer` | `text` | Organizador / autor |
+| `category` | `text` | Tipo: conferencia, taller, proyección, performance... |
+| `images` | `jsonb` DEFAULT `'[]'` | Array de URLs de Cloudinary |
+| `created_at` | `timestamptz` | |
+| `updated_at` | `timestamptz` | |
+
+**RLS**: Habilitado con 4 políticas:
+- `Events public read` — SELECT público (cliente anónimo)
+- `Events admin insert` — INSERT solo autenticado
+- `Events admin update` — UPDATE solo autenticado
+- `Events admin delete` — DELETE solo autenticado
+
+**Trigger**: `set_events_updated_at` en `BEFORE UPDATE` — auto-actualiza `updated_at` vía `update_updated_at_column()`
+
+**Índice**: `idx_events_event_date` sobre `event_date` (usado en la query `gte` del hook público)
+
 ### Datos estáticos (bibliografía, líneas de tiempo, ONGs)
 Archivos en `src/data/*.ts`: `BIBLIOGRAPHY`, `TIMELINE`, `GLOSSARY`, `ONGS_LOGISTICAS`, etc.
 Se importan directamente en los componentes que los usan.
@@ -197,7 +255,15 @@ Operaciones CRUD viajan a las Vercel Functions en `api/admin/`:
 - `POST /api/admin/projects` — crear proyecto
 - `PUT /api/admin/[id]` — actualizar
 - `DELETE /api/admin/[id]` — eliminar
+- `GET /api/admin/events` — listar todos los eventos (admin)
+- `POST /api/admin/events` — crear evento
+- `PUT /api/admin/events/[id]` — actualizar evento
+- `DELETE /api/admin/events/[id]` — eliminar evento
 - `POST /api/upload` — generar firma para Cloudinary signed upload
+
+### Categorías de eventos
+El formulario de eventos (`EventForm`) ofrece categorías predefinidas:
+`conferencia`, `taller`, `proyeccion`, `performance`, `conversatorio`, `exposicion`, `otro`.
 
 ### Imágenes
 Las miniaturas se alojan en **Cloudinary** con estructura de carpetas:
@@ -228,6 +294,7 @@ Las variables sin prefijo `VITE_` solo están disponibles en Vercel Functions (n
 | `npm run dev` | Desarrollo local (Vite) |
 | `npm run build` | Build de producción |
 | `node scripts/seed-projects.mjs` | Insertar proyectos en Supabase desde datos locales |
+| `node scripts/seed-events.mjs` | Insertar eventos de prueba en Supabase |
 | `node scripts/upload-thumbnails.mjs` | Subir imágenes locales a Cloudinary y actualizar DB |
 | `node scripts/prerender.mjs` | Generar HTML estático de rutas para SEO |
 
