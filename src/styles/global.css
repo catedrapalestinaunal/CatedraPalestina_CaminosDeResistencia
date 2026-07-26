@@ -1660,6 +1660,14 @@
    Bumps small UI text (eyebrows, kickers, meta) to ≥12px on mobile so
    it remains legible, reduces card paddings, stacks crowded layouts.
    ============================================================ */
+@media (max-width: 830px) and (min-width: 769px) {
+  .nav { gap: 12px; padding: 10px 10px 10px 16px; }
+  .nav-link { padding: 6px 10px; font-size: 13px; }
+  .nav-links { gap: 0; }
+  .brand { font-size: 15px; }
+  .brand small { font-size: 8.5px; }
+}
+
 @media (max-width: 768px) {
   :root { --pad: 18px; }
 

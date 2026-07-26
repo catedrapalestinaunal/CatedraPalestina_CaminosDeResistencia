@@ -7,12 +7,37 @@ import { Reveal } from '../../components/Reveal';
 import { AdminBar } from './AdminBar';
 import type { EventRow } from '../../types/database';
 
+function getBogotaDate(): string {
+  const now = new Date();
+  const formatter = new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'America/Bogota',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  });
+  return formatter.format(now);
+}
+
+function parseEventTime(timeStr: string): { start: string; end: string } {
+  if (!timeStr) return { start: '', end: '' };
+  const parts = timeStr.split('-').map(s => s.trim());
+  if (parts.length === 0) return { start: '', end: '' };
+  if (parts.length === 1) return { start: parts[0], end: '' };
+  return { start: parts[0], end: parts[1] };
+}
+
+function formatEventTime(start: string, end: string): string {
+  if (!start) return '';
+  return end ? `${start} - ${end}` : start;
+}
+
 interface FormData {
   title: string;
   description: string;
   place: string;
   eventDate: string;
-  eventTime: string;
+  startTime: string;
+  endTime: string;
   organizer: string;
   category: string;
   images: string[];
@@ -23,7 +48,8 @@ const INITIAL: FormData = {
   description: '',
   place: '',
   eventDate: '',
-  eventTime: '',
+  startTime: '',
+  endTime: '',
   organizer: '',
   category: '',
   images: [],
@@ -63,12 +89,14 @@ export function EventForm() {
           return;
         }
         const data = raw as EventRow;
+        const { start, end } = parseEventTime(data.event_time ?? '');
         setForm({
           title: data.title,
           description: data.description ?? '',
           place: data.place ?? '',
           eventDate: data.event_date,
-          eventTime: data.event_time ?? '',
+          startTime: start,
+          endTime: end,
           organizer: data.organizer ?? '',
           category: data.category ?? '',
           images: data.images ?? [],
@@ -167,7 +195,7 @@ export function EventForm() {
       description: form.description.trim() || null,
       place: form.place.trim() || null,
       event_date: form.eventDate,
-      event_time: form.eventTime.trim() || null,
+      event_time: formatEventTime(form.startTime, form.endTime) || null,
       organizer: form.organizer.trim() || null,
       category: form.category || null,
       images: form.images,
@@ -229,14 +257,18 @@ export function EventForm() {
                   <input id="title" name="title" value={form.title} onChange={handleChange} required className="admin-input" placeholder="Nombre del evento" />
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-3 gap-4">
                   <div>
                     <label htmlFor="eventDate" className="admin-field-label">Fecha del evento *</label>
-                    <input id="eventDate" name="eventDate" type="date" value={form.eventDate} onChange={handleChange} required className="admin-input" />
+                    <input id="eventDate" name="eventDate" type="date" value={form.eventDate} onChange={handleChange} required className="admin-input" min={getBogotaDate()} />
                   </div>
                   <div>
-                    <label htmlFor="eventTime" className="admin-field-label">Hora</label>
-                    <input id="eventTime" name="eventTime" type="text" value={form.eventTime} onChange={handleChange} className="admin-input" placeholder="10:00 - 12:00" />
+                    <label htmlFor="startTime" className="admin-field-label">Hora inicio</label>
+                    <input id="startTime" name="startTime" type="time" value={form.startTime} onChange={handleChange} className="admin-input" />
+                  </div>
+                  <div>
+                    <label htmlFor="endTime" className="admin-field-label">Hora final</label>
+                    <input id="endTime" name="endTime" type="time" value={form.endTime} onChange={handleChange} className="admin-input" />
                   </div>
                 </div>
 
