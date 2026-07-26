@@ -60,7 +60,7 @@ export interface Project {
   group?: string;
 }
 
-export type ProjectKind = 'ensayo' | 'cartografia' | 'video' | 'podcast' | 'fanzine' | 'mural' | 'collage' | 'grabado';
+export type ProjectKind = 'ensayo' | 'cartografia' | 'video' | 'podcast' | 'fanzine' | 'mural' | 'collage' | 'grabado' | 'otro';
 
 export interface Book {
   author: string;

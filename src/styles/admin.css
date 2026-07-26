@@ -220,3 +220,70 @@ html.dark .admin-input {
 .admin-link-row + .admin-link-row {
   margin-top: 8px;
 }
+
+/* ============ Responsive ============ */
+@media (max-width: 640px) {
+  .admin-card {
+    padding: 20px 16px;
+    border-radius: 12px;
+  }
+
+  .admin-card + .admin-card {
+    margin-top: 14px;
+  }
+
+  .admin-card-title {
+    margin-bottom: 14px;
+    padding-bottom: 10px;
+  }
+
+  .admin-input {
+    padding: 12px 14px;
+    min-height: 44px;
+  }
+
+  textarea.admin-input {
+    min-height: 80px;
+  }
+
+  .upload-zone {
+    padding: 28px 16px;
+  }
+
+  .upload-zone-icon {
+    width: 32px;
+    height: 32px;
+  }
+
+  .upload-zone-label {
+    font-size: 16px;
+  }
+
+  .upload-preview {
+    max-height: 180px;
+  }
+
+  .upload-preview-overlay {
+    opacity: 1;
+    background: linear-gradient(to top, rgba(0,0,0,0.6) 0%, transparent 50%);
+    top: auto;
+    bottom: 0;
+    height: auto;
+    padding: 8px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: flex-start;
+  }
+
+  .upload-preview-btn {
+    padding: 6px 12px;
+    font-size: 9px;
+  }
+}
+
+@media (max-width: 480px) {
+  .admin-card {
+    padding: 16px 12px;
+    border-radius: 10px;
+  }
+}

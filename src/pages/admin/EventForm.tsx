@@ -259,7 +259,7 @@ export function EventForm() {
                   <input id="title" name="title" value={form.title} onChange={handleChange} required className="admin-input" placeholder="Nombre del evento" />
                 </div>
 
-                <div className="grid grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                   <div>
                     <label htmlFor="eventDate" className="admin-field-label">Fecha del evento *</label>
                     <input id="eventDate" name="eventDate" type="date" value={form.eventDate} onChange={handleChange} required className="admin-input" min={getTodayLocal()} />
@@ -274,7 +274,7 @@ export function EventForm() {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label htmlFor="place" className="admin-field-label">Lugar</label>
                     <input id="place" name="place" value={form.place} onChange={handleChange} className="admin-input" placeholder="Auditorio principal" />
@@ -369,12 +369,12 @@ export function EventForm() {
 
             {error && <div className="admin-error">{error}</div>}
 
-            <div className="flex gap-4 pt-2">
-              <button type="submit" disabled={saving} className="btn terra">
-                {saving ? 'Guardando…' : isEdit ? 'Actualizar evento' : 'Crear evento'}
-              </button>
-              <button type="button" className="btn" onClick={() => navigate('/admin/events')}>
+            <div className="flex flex-col-reverse sm:flex-row gap-4 pt-2">
+              <button type="button" className="btn w-full sm:w-auto justify-center" onClick={() => navigate('/admin/events')}>
                 Cancelar
+              </button>
+              <button type="submit" disabled={saving} className="btn terra w-full sm:w-auto justify-center">
+                {saving ? 'Guardando…' : isEdit ? 'Actualizar evento' : 'Crear evento'}
               </button>
             </div>
           </form>

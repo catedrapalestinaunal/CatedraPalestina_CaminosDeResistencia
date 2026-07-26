@@ -12,13 +12,13 @@ interface ProjectModalProps {
 
 const KIND_GLYPH: Record<string, string> = {
   ensayo: 'E', cartografia: 'C', video: 'V', podcast: 'P',
-  fanzine: 'F', mural: 'M', collage: 'CL', grabado: 'G',
+  fanzine: 'F', mural: 'M', collage: 'CL', grabado: 'G', otro: '?',
 };
 
 const KIND_LABEL: Record<string, string> = {
   ensayo: 'Leer ensayo', cartografia: 'Explorar mapa', video: 'Ver video',
   podcast: 'Escuchar podcast', fanzine: 'Ver fanzine', mural: 'Ver mural',
-  collage: 'Ver collage', grabado: 'Ver grabado',
+  collage: 'Ver collage', grabado: 'Ver grabado', otro: 'Abrir documento',
 };
 
 export function ProjectModal({ project, onClose, hideArchiveLink }: ProjectModalProps) {

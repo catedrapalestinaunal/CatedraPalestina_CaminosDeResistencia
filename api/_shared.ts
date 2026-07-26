@@ -4,7 +4,7 @@ import type { User } from '@supabase/supabase-js';
 
 export const VALID_KINDS = [
   'ensayo', 'cartografia', 'video', 'podcast',
-  'fanzine', 'mural', 'collage', 'grabado',
+  'fanzine', 'mural', 'collage', 'grabado', 'otro',
 ] as const;
 
 export function requireEnv(name: string): string {

@@ -12,9 +12,22 @@ interface Semester {
   name: string;
 }
 
+const KIND_OPTIONS = [
+  { value: 'ensayo', label: 'Ensayo' },
+  { value: 'cartografia', label: 'Cartografía' },
+  { value: 'video', label: 'Video' },
+  { value: 'podcast', label: 'Podcast' },
+  { value: 'fanzine', label: 'Fanzine' },
+  { value: 'mural', label: 'Mural' },
+  { value: 'collage', label: 'Collage' },
+  { value: 'grabado', label: 'Grabado' },
+  { value: 'otro', label: 'Otro' },
+];
+
 interface FormData {
   title: string;
   kind: string;
+  customKind: string;
   author: string;
   year: string;
   n: string;
@@ -27,12 +40,12 @@ interface FormData {
   thumbnail: string;
   aiThumbnail: boolean;
   members: string;
-  groupName: string;
 }
 
 const INITIAL: FormData = {
   title: '',
   kind: 'ensayo',
+  customKind: '',
   author: '',
   year: '',
   n: '',
@@ -45,19 +58,7 @@ const INITIAL: FormData = {
   thumbnail: '',
   aiThumbnail: false,
   members: '',
-  groupName: '',
 };
-
-const KIND_OPTIONS = [
-  { value: 'ensayo', label: 'Ensayo' },
-  { value: 'cartografia', label: 'Cartografía' },
-  { value: 'video', label: 'Video' },
-  { value: 'podcast', label: 'Podcast' },
-  { value: 'fanzine', label: 'Fanzine' },
-  { value: 'mural', label: 'Mural' },
-  { value: 'collage', label: 'Collage' },
-  { value: 'grabado', label: 'Grabado' },
-];
 
 export function AdminProjectForm() {
   const { id } = useParams();
@@ -98,9 +99,12 @@ export function AdminProjectForm() {
           return;
         }
         const data = raw as ProjectRow;
+        const dbKind = data.kind ?? '';
+        const isPredefined = KIND_OPTIONS.some(o => o.value === dbKind);
         setForm({
           title: data.title,
-          kind: data.kind,
+          kind: isPredefined ? dbKind : 'otro',
+          customKind: isPredefined ? '' : dbKind,
           author: data.author,
           year: data.year,
           n: data.n,
@@ -113,7 +117,6 @@ export function AdminProjectForm() {
           thumbnail: data.thumbnail ?? '',
           aiThumbnail: data.ai_thumbnail,
           members: (data.members ?? []).join('\n'),
-          groupName: data.group_name ?? '',
         });
       });
   }, [id, navigate]);
@@ -235,11 +238,26 @@ export function AdminProjectForm() {
       return;
     }
 
+    const resolvedKind = form.kind === 'otro'
+      ? (form.customKind.trim() || 'otro')
+      : form.kind;
+
     const body = {
-      ...form,
+      title: form.title,
+      kind: resolvedKind,
+      author: form.author,
+      groupName: form.author,
+      year: form.year,
+      n: form.n,
       tags: form.tags.split(',').map((t) => t.trim()).filter(Boolean),
-      members: form.members.split('\n').map((m) => m.trim()).filter(Boolean),
+      description: form.description,
+      url: form.url,
+      urlAlt: form.urlAlt,
+      linkLabel: form.linkLabel,
       links: form.links.filter((l) => l.label || l.url),
+      thumbnail: form.thumbnail,
+      aiThumbnail: form.aiThumbnail,
+      members: form.members.split('\n').map((m) => m.trim()).filter(Boolean),
     };
 
     const url = isEdit ? `/api/admin/projects?id=${id}` : '/api/admin/projects';
@@ -293,7 +311,7 @@ export function AdminProjectForm() {
             <fieldset className="admin-card">
               <legend className="admin-card-title">Información básica</legend>
               <div className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label htmlFor="title" className="admin-field-label">Título *</label>
                     <input id="title" name="title" value={form.title} onChange={handleChange} required className="admin-input" />
@@ -304,18 +322,11 @@ export function AdminProjectForm() {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label htmlFor="author" className="admin-field-label">Autor / Grupo</label>
-                    <input id="author" name="author" value={form.author} onChange={handleChange} className="admin-input" placeholder="Grupo 1" />
+                    <label htmlFor="author" className="admin-field-label">Autor o grupo *</label>
+                    <input id="author" name="author" value={form.author} onChange={handleChange} required className="admin-input" placeholder="Grupo 1" />
                   </div>
-                  <div>
-                    <label htmlFor="groupName" className="admin-field-label">Nombre del grupo</label>
-                    <input id="groupName" name="groupName" value={form.groupName} onChange={handleChange} className="admin-input" placeholder="Grupo 1" />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label htmlFor="kind" className="admin-field-label">Tipo</label>
                     <select id="kind" name="kind" value={form.kind} onChange={handleChange} className="admin-input">
@@ -323,19 +334,31 @@ export function AdminProjectForm() {
                         <option key={o.value} value={o.value}>{o.label}</option>
                       ))}
                     </select>
+                    {form.kind === 'otro' && (
+                      <input
+                        id="customKind"
+                        name="customKind"
+                        type="text"
+                        value={form.customKind}
+                        onChange={handleChange}
+                        className="admin-input mt-2"
+                        placeholder="Especificar tipo"
+                      />
+                    )}
                   </div>
-                  <div>
-                    <label htmlFor="year" className="admin-field-label">Semestre *</label>
-                    <select id="year" name="year" value={form.year} onChange={handleChange} required className="admin-input">
-                      <option value="">Seleccionar semestre</option>
-                      {semesters.map((s) => (
-                        <option key={s.id} value={s.name}>{s.name}</option>
-                      ))}
-                      {isEdit && form.year && !semesters.some((s) => s.name === form.year) && (
-                        <option value={form.year}>{form.year}</option>
-                      )}
-                    </select>
-                  </div>
+                </div>
+
+                <div>
+                  <label htmlFor="year" className="admin-field-label">Semestre *</label>
+                  <select id="year" name="year" value={form.year} onChange={handleChange} required className="admin-input">
+                    <option value="">Seleccionar semestre</option>
+                    {semesters.map((s) => (
+                      <option key={s.id} value={s.name}>{s.name}</option>
+                    ))}
+                    {isEdit && form.year && !semesters.some((s) => s.name === form.year) && (
+                      <option value={form.year}>{form.year}</option>
+                    )}
+                  </select>
                 </div>
 
                 <div>
@@ -412,61 +435,78 @@ export function AdminProjectForm() {
                   </span>
                 </label>
 
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 items-start">
+                  <div className="flex flex-col">
                     <label htmlFor="url" className="admin-field-label">URL del proyecto</label>
-                    <input id="url" name="url" value={form.url} onChange={handleChange} className="admin-input" />
+                    <p className="font-mono text-[9px] tracking-[0.1em] text-fg-mute/60 mb-1.5 min-h-[2.5em]">
+                      Enlace principal (YouTube, Spotify, PDF, etc.)
+                    </p>
+                    <input id="url" name="url" type="url" value={form.url} onChange={handleChange} className="admin-input" placeholder="https://" />
                   </div>
-                  <div>
+                  <div className="flex flex-col">
                     <label htmlFor="urlAlt" className="admin-field-label">URL alternativa</label>
-                    <input id="urlAlt" name="urlAlt" value={form.urlAlt} onChange={handleChange} className="admin-input" />
+                    <p className="font-mono text-[9px] tracking-[0.1em] text-fg-mute/60 mb-1.5 min-h-[2.5em]">
+                      Enlace secundario (transcripción, materiales complementarios)
+                    </p>
+                    <input id="urlAlt" name="urlAlt" type="url" value={form.urlAlt} onChange={handleChange} className="admin-input" placeholder="https://" />
                   </div>
                 </div>
               </div>
             </fieldset>
 
-            {/* ======== Enlaces ======== */}
+            {/* ======== Enlaces múltiples ======== */}
             <fieldset className="admin-card">
-              <legend className="admin-card-title">Enlaces</legend>
+              <legend className="admin-card-title">Enlaces múltiples</legend>
+              <p className="font-mono text-[9px] tracking-[0.1em] text-fg-mute/60 mb-4 -mt-3">
+                Solo si el proyecto tiene varios recursos (serie de episodios, múltiples evidencias).
+              </p>
               <div className="space-y-4">
-                <div>
-                  <label htmlFor="linkLabel" className="admin-field-label">Etiqueta del enlace</label>
-                  <input id="linkLabel" name="linkLabel" value={form.linkLabel} onChange={handleChange} className="admin-input" placeholder="Episodios" />
-                </div>
+                {form.links.length > 0 && (
+                  <>
+                    <div>
+                      <label htmlFor="linkLabel" className="admin-field-label">Etiqueta del grupo de enlaces</label>
+                      <p className="font-mono text-[9px] tracking-[0.1em] text-fg-mute/60 mb-1.5 -mt-1">
+                        Texto del botón principal que los agrupa (ej: Episodios, Ver collages, Recursos)
+                      </p>
+                      <input id="linkLabel" name="linkLabel" value={form.linkLabel} onChange={handleChange} className="admin-input" placeholder="Episodios" />
+                    </div>
 
-                <div>
-                  <label className="admin-field-label">Enlaces adicionales</label>
-                  <div className="space-y-2">
-                    {form.links.map((link, i) => (
-                      <div key={i} className="admin-link-row">
-                        <input
-                          aria-label={`Etiqueta del enlace ${i + 1}`}
-                          placeholder="Etiqueta"
-                          value={link.label}
-                          onChange={(e) => handleLinkChange(i, 'label', e.target.value)}
-                          className="admin-input"
-                          style={{ borderRadius: 6, padding: '8px 10px', fontSize: 13 }}
-                        />
-                        <input
-                          aria-label={`URL del enlace ${i + 1}`}
-                          placeholder="URL"
-                          value={link.url}
-                          onChange={(e) => handleLinkChange(i, 'url', e.target.value)}
-                          className="admin-input"
-                          style={{ borderRadius: 6, padding: '8px 10px', fontSize: 13 }}
-                        />
-                        <button type="button" onClick={() => handleRemoveLink(i)} aria-label={`Eliminar enlace ${i + 1}`}
-                          className="flex items-center justify-center w-8 h-8 rounded-lg border border-[var(--line)] bg-transparent text-fg-mute hover:text-accent hover:border-accent transition-colors shrink-0">
-                          <X size={14} />
-                        </button>
+                    <div>
+                      <label className="admin-field-label">Enlaces</label>
+                      <div className="space-y-2">
+                        {form.links.map((link, i) => (
+                          <div key={i} className="admin-link-row">
+                            <input
+                              aria-label={`Etiqueta del enlace ${i + 1}`}
+                              placeholder="Etiqueta"
+                              value={link.label}
+                              onChange={(e) => handleLinkChange(i, 'label', e.target.value)}
+                              className="admin-input"
+                              style={{ borderRadius: 6, padding: '8px 10px', fontSize: 13 }}
+                            />
+                            <input
+                              aria-label={`URL del enlace ${i + 1}`}
+                              placeholder="URL"
+                              type="url"
+                              value={link.url}
+                              onChange={(e) => handleLinkChange(i, 'url', e.target.value)}
+                              className="admin-input"
+                              style={{ borderRadius: 6, padding: '8px 10px', fontSize: 13 }}
+                            />
+                            <button type="button" onClick={() => handleRemoveLink(i)} aria-label={`Eliminar enlace ${i + 1}`}
+                              className="flex items-center justify-center w-8 h-8 rounded-lg border border-[var(--line)] bg-transparent text-fg-mute hover:text-accent hover:border-accent transition-colors shrink-0">
+                              <X size={14} />
+                            </button>
+                          </div>
+                        ))}
                       </div>
-                    ))}
-                    <button type="button" onClick={handleAddLink}
-                      className="font-mono text-[11px] tracking-[0.12em] uppercase text-fg-mute hover:text-fg transition-colors">
-                      + Añadir enlace
-                    </button>
-                  </div>
-                </div>
+                    </div>
+                  </>
+                )}
+                <button type="button" onClick={handleAddLink}
+                  className="font-mono text-[11px] tracking-[0.12em] uppercase text-fg-mute hover:text-fg transition-colors">
+                  {form.links.length > 0 ? '+ Añadir otro enlace' : '+ Añadir enlaces múltiples'}
+                </button>
               </div>
             </fieldset>
 
@@ -481,13 +521,13 @@ export function AdminProjectForm() {
 
             {error && <div className="admin-error">{error}</div>}
 
-            <div className="flex gap-4 pt-2">
-              <button type="submit" disabled={saving}
-                className="btn terra">
-                {saving ? 'Guardando…' : isEdit ? 'Actualizar proyecto' : 'Crear proyecto'}
-              </button>
-              <button type="button" className="btn" onClick={() => navigate('/admin')}>
+            <div className="flex flex-col-reverse sm:flex-row gap-4 pt-2">
+              <button type="button" className="btn w-full sm:w-auto justify-center" onClick={() => navigate('/admin')}>
                 Cancelar
+              </button>
+              <button type="submit" disabled={saving}
+                className="btn terra w-full sm:w-auto justify-center">
+                {saving ? 'Guardando…' : isEdit ? 'Actualizar proyecto' : 'Crear proyecto'}
               </button>
             </div>
           </form>
