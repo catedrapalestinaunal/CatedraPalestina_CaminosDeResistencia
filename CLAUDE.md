@@ -57,8 +57,7 @@ Palestina-frontend/
 │   ├── upload.ts                     # POST: firma Cloudinary (signed upload)
 │   └── admin/
 │       ├── projects.ts               # POST: crear proyecto (admin)
-│       ├── events.ts                 # GET/POST: listar/crear eventos (admin)
-│       ├── events/[id].ts            # PUT/DELETE: editar/eliminar evento (admin)
+│       ├── events.ts                 # GET/POST/PUT/DELETE: CRUD eventos (admin) con ?id=
 │       └── [id].ts                   # PUT/DELETE: editar/eliminar proyecto (admin)
 ├── src/
 │   ├── main.tsx
@@ -257,8 +256,8 @@ Operaciones CRUD viajan a las Vercel Functions en `api/admin/`:
 - `DELETE /api/admin/[id]` — eliminar
 - `GET /api/admin/events` — listar todos los eventos (admin)
 - `POST /api/admin/events` — crear evento
-- `PUT /api/admin/events/[id]` — actualizar evento
-- `DELETE /api/admin/events/[id]` — eliminar evento
+- `PUT /api/admin/events?id=2` — actualizar evento
+- `DELETE /api/admin/events?id=2` — eliminar evento
 - `POST /api/upload` — generar firma para Cloudinary signed upload
 
 ### Categorías de eventos

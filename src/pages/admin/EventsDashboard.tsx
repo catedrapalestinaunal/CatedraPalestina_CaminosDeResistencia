@@ -37,7 +37,7 @@ export function EventsDashboard() {
     const { data: { session } } = await supabase.auth.getSession();
     const token = session?.access_token;
     if (!token) { setDeleting(null); navigate('/admin/login', { replace: true }); return; }
-    const res = await fetch(`/api/admin/events/${id}`, {
+    const res = await fetch(`/api/admin/events?id=${id}`, {
       method: 'DELETE',
       headers: { Authorization: `Bearer ${token}` },
     });

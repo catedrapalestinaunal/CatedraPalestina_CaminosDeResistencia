@@ -173,7 +173,7 @@ export function EventForm() {
       images: form.images,
     };
 
-    const url = isEdit ? `/api/admin/events/${id}` : '/api/admin/events';
+    const url = isEdit ? `/api/admin/events?id=${id}` : '/api/admin/events';
     const method = isEdit ? 'PUT' : 'POST';
 
     const res = await fetch(url, {

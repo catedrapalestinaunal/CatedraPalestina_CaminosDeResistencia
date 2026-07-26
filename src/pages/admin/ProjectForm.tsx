@@ -260,8 +260,12 @@ export function AdminProjectForm() {
     }
 
     if (!res.ok) {
-      const err = await res.json();
-      setError(err.error ?? 'Error al guardar');
+      try {
+        const err = await res.json();
+        setError(err.error ?? 'Error al guardar');
+      } catch {
+        setError('Error al guardar (servidor no responde)');
+      }
       setSaving(false);
       return;
     }
