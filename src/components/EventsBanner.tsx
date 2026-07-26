@@ -42,7 +42,7 @@ export function EventsBanner() {
     <>
       <section id="eventos" className="section md:py-[clamp(60px,10vh,120px)]">
         <div className="wrap">
-          <div className="md:max-w-3xl md:mx-auto">
+          <div className="md:max-w-5xl md:mx-auto">
             <div
               className="relative overflow-hidden rounded-2xl bg-[var(--carbon)] min-h-[300px] md:min-h-[380px] cursor-pointer group"
               onClick={() => setModalEvent(current!)}

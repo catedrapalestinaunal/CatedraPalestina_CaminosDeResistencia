@@ -7,15 +7,8 @@ import { Reveal } from '../../components/Reveal';
 import { AdminBar } from './AdminBar';
 import type { EventRow } from '../../types/database';
 
-function getBogotaDate(): string {
-  const now = new Date();
-  const formatter = new Intl.DateTimeFormat('en-CA', {
-    timeZone: 'America/Bogota',
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-  });
-  return formatter.format(now);
+function getTodayLocal(): string {
+  return new Date().toLocaleDateString('en-CA');
 }
 
 function parseEventTime(timeStr: string): { start: string; end: string } {
@@ -40,6 +33,7 @@ interface FormData {
   endTime: string;
   organizer: string;
   category: string;
+  customCategory: string;
   images: string[];
 }
 
@@ -52,6 +46,7 @@ const INITIAL: FormData = {
   endTime: '',
   organizer: '',
   category: '',
+  customCategory: '',
   images: [],
 };
 
@@ -90,6 +85,8 @@ export function EventForm() {
         }
         const data = raw as EventRow;
         const { start, end } = parseEventTime(data.event_time ?? '');
+        const dbCategory = data.category ?? '';
+        const isPredefined = CATEGORY_OPTIONS.some(o => o.value === dbCategory);
         setForm({
           title: data.title,
           description: data.description ?? '',
@@ -98,7 +95,8 @@ export function EventForm() {
           startTime: start,
           endTime: end,
           organizer: data.organizer ?? '',
-          category: data.category ?? '',
+          category: isPredefined ? dbCategory : 'otro',
+          customCategory: isPredefined ? '' : dbCategory,
           images: data.images ?? [],
         });
       });
@@ -190,6 +188,10 @@ export function EventForm() {
       return;
     }
 
+    const resolvedCategory = form.category === 'otro'
+      ? (form.customCategory.trim() || null)
+      : (form.category || null);
+
     const body = {
       title: form.title.trim(),
       description: form.description.trim() || null,
@@ -197,7 +199,7 @@ export function EventForm() {
       event_date: form.eventDate,
       event_time: formatEventTime(form.startTime, form.endTime) || null,
       organizer: form.organizer.trim() || null,
-      category: form.category || null,
+      category: resolvedCategory,
       images: form.images,
     };
 
@@ -260,7 +262,7 @@ export function EventForm() {
                 <div className="grid grid-cols-3 gap-4">
                   <div>
                     <label htmlFor="eventDate" className="admin-field-label">Fecha del evento *</label>
-                    <input id="eventDate" name="eventDate" type="date" value={form.eventDate} onChange={handleChange} required className="admin-input" min={getBogotaDate()} />
+                    <input id="eventDate" name="eventDate" type="date" value={form.eventDate} onChange={handleChange} required className="admin-input" min={getTodayLocal()} />
                   </div>
                   <div>
                     <label htmlFor="startTime" className="admin-field-label">Hora inicio</label>
@@ -268,7 +270,7 @@ export function EventForm() {
                   </div>
                   <div>
                     <label htmlFor="endTime" className="admin-field-label">Hora final</label>
-                    <input id="endTime" name="endTime" type="time" value={form.endTime} onChange={handleChange} className="admin-input" />
+                    <input id="endTime" name="endTime" type="time" value={form.endTime} onChange={handleChange} className="admin-input" disabled={!form.startTime} min={form.startTime || undefined} />
                   </div>
                 </div>
 
@@ -285,6 +287,17 @@ export function EventForm() {
                         <option key={o.value} value={o.value}>{o.label}</option>
                       ))}
                     </select>
+                    {form.category === 'otro' && (
+                      <input
+                        id="customCategory"
+                        name="customCategory"
+                        type="text"
+                        value={form.customCategory}
+                        onChange={handleChange}
+                        className="admin-input mt-2"
+                        placeholder="Especificar categoría"
+                      />
+                    )}
                   </div>
                 </div>
 
