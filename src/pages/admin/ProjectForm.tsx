@@ -242,7 +242,7 @@ export function AdminProjectForm() {
       links: form.links.filter((l) => l.label || l.url),
     };
 
-    const url = isEdit ? `/api/admin/${id}` : '/api/admin/projects';
+    const url = isEdit ? `/api/admin/projects?id=${id}` : '/api/admin/projects';
     const method = isEdit ? 'PUT' : 'POST';
 
     const res = await fetch(url, {

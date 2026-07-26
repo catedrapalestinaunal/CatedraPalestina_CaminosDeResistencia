@@ -56,9 +56,8 @@ Palestina-frontend/
 ├── api/
 │   ├── upload.ts                     # POST: firma Cloudinary (signed upload)
 │   └── admin/
-│       ├── projects.ts               # POST: crear proyecto (admin)
+│       ├── projects.ts               # GET/POST/PUT/DELETE: CRUD proyectos (admin) con ?id=
 │       ├── events.ts                 # GET/POST/PUT/DELETE: CRUD eventos (admin) con ?id=
-│       └── [id].ts                   # PUT/DELETE: editar/eliminar proyecto (admin)
 ├── src/
 │   ├── main.tsx
 │   ├── App.tsx                       # Shell: React Router, tema, AuthProvider
@@ -252,8 +251,8 @@ Se importan directamente en los componentes que los usan.
 Accesible en `/admin/login` con credenciales de Supabase Auth.
 Operaciones CRUD viajan a las Vercel Functions en `api/admin/`:
 - `POST /api/admin/projects` — crear proyecto
-- `PUT /api/admin/[id]` — actualizar
-- `DELETE /api/admin/[id]` — eliminar
+- `PUT /api/admin/projects?id=1` — actualizar
+- `DELETE /api/admin/projects?id=1` — eliminar
 - `GET /api/admin/events` — listar todos los eventos (admin)
 - `POST /api/admin/events` — crear evento
 - `PUT /api/admin/events?id=2` — actualizar evento
