@@ -13,6 +13,7 @@ interface ImageSlotProps {
   credit?: string;
   objectPosition?: string;
   avifSrcSet?: string;
+  loading?: 'lazy' | 'eager';
 }
 
 const VARIANT_STRIPES: Record<ImageVariant, string> = {
@@ -21,7 +22,7 @@ const VARIANT_STRIPES: Record<ImageVariant, string> = {
   carbon: 'repeating-linear-gradient(135deg, var(--line-soft) 0 14px, transparent 14px 28px)',
 };
 
-export function ImageSlot({ height, label, variant = 'olive', className = '', src, srcSet, sizes, alt, credit, objectPosition, avifSrcSet }: ImageSlotProps) {
+export function ImageSlot({ height, label, variant = 'olive', className = '', src, srcSet, sizes, alt, credit, objectPosition, avifSrcSet, loading = 'lazy' }: ImageSlotProps) {
   const style: CSSProperties = {
     ...(height !== undefined ? { height } : {}),
     background: `${VARIANT_STRIPES[variant]}, var(--bg-warm)`,
@@ -34,10 +35,10 @@ export function ImageSlot({ height, label, variant = 'olive', className = '', sr
           {avifSrcSet ? (
             <picture>
               <source srcSet={avifSrcSet} sizes={sizes} type="image/avif" />
-              <img src={src} srcSet={srcSet} sizes={sizes} alt={alt ?? label ?? ''} className={'image-slot-img' + (height !== undefined ? '' : ' image-slot-img--auto')} style={{ objectPosition: objectPosition ?? '50% 50%' }} />
+              <img src={src} srcSet={srcSet} sizes={sizes} alt={alt ?? label ?? ''} loading={loading} className={'image-slot-img' + (height !== undefined ? '' : ' image-slot-img--auto')} style={{ objectPosition: objectPosition ?? '50% 50%' }} />
             </picture>
           ) : (
-            <img src={src} srcSet={srcSet} sizes={sizes} alt={alt ?? label ?? ''} className={'image-slot-img' + (height !== undefined ? '' : ' image-slot-img--auto')} style={{ objectPosition: objectPosition ?? '50% 50%' }} />
+            <img src={src} srcSet={srcSet} sizes={sizes} alt={alt ?? label ?? ''} loading={loading} className={'image-slot-img' + (height !== undefined ? '' : ' image-slot-img--auto')} style={{ objectPosition: objectPosition ?? '50% 50%' }} />
           )}
           {credit && (
             <div style={{

@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../../styles/admin.css';
-import { supabase } from '../../lib/supabase';
+import { getSupabase } from '../../lib/getSupabase';
 import { Reveal } from '../../components/Reveal';
 import { ConfirmDialog } from '../../components/ConfirmDialog';
 import { AdminBar } from './AdminBar';
@@ -18,7 +18,8 @@ export function EventsDashboard() {
 
   const loadEvents = useCallback(async () => {
     setLoading(true);
-    const token = (await supabase.auth.getSession()).data.session?.access_token;
+    const sb = await getSupabase();
+    const token = (await sb.auth.getSession()).data.session?.access_token;
     if (!token) { navigate('/admin/login', { replace: true }); return; }
     const res = await fetch('/api/admin/events', {
       headers: { Authorization: `Bearer ${token}` },
@@ -35,7 +36,8 @@ export function EventsDashboard() {
   const handleDelete = async (id: number) => {
     setDeleting(id);
     setDeleteError(null);
-    const { data: { session } } = await supabase.auth.getSession();
+    const sb = await getSupabase();
+    const { data: { session } } = await sb.auth.getSession();
     const token = session?.access_token;
     if (!token) { setDeleting(null); navigate('/admin/login', { replace: true }); return; }
     const res = await fetch(`/api/admin/events?id=${id}`, {

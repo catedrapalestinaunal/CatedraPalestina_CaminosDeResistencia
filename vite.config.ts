@@ -20,7 +20,7 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks(id: string) {
-          if (id.includes('\\pages\\admin\\') || id.includes('/pages/admin/')) return 'admin';
+          if (id.includes('/pages/admin/') || id.includes('\\pages\\admin\\')) return 'admin';
         },
       },
     },

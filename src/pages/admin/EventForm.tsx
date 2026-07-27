@@ -2,7 +2,7 @@ import { useEffect, useState, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import '../../styles/admin.css';
 import { X, ImageIcon } from 'lucide-react';
-import { supabase } from '../../lib/supabase';
+import { getSupabase } from '../../lib/getSupabase';
 import { Reveal } from '../../components/Reveal';
 import { AdminBar } from './AdminBar';
 import type { EventRow } from '../../types/database';
@@ -73,33 +73,34 @@ export function EventForm() {
 
   useEffect(() => {
     if (!id) return;
-    supabase
-      .from('events')
-      .select('*')
-      .eq('id', Number(id))
-      .single()
-      .then(({ data: raw, error: err }) => {
-        if (err || !raw) {
-          navigate('/admin/events');
-          return;
-        }
-        const data = raw as EventRow;
-        const { start, end } = parseEventTime(data.event_time ?? '');
-        const dbCategory = data.category ?? '';
-        const isPredefined = CATEGORY_OPTIONS.some(o => o.value === dbCategory);
-        setForm({
-          title: data.title,
-          description: data.description ?? '',
-          place: data.place ?? '',
-          eventDate: data.event_date,
-          startTime: start,
-          endTime: end,
-          organizer: data.organizer ?? '',
-          category: isPredefined ? dbCategory : 'otro',
-          customCategory: isPredefined ? '' : dbCategory,
-          images: data.images ?? [],
-        });
+    (async () => {
+      const sb = await getSupabase();
+      const { data: raw, error: err } = await sb
+        .from('events')
+        .select('*')
+        .eq('id', Number(id))
+        .single();
+      if (err || !raw) {
+        navigate('/admin/events');
+        return;
+      }
+      const data = raw as EventRow;
+      const { start, end } = parseEventTime(data.event_time ?? '');
+      const dbCategory = data.category ?? '';
+      const isPredefined = CATEGORY_OPTIONS.some(o => o.value === dbCategory);
+      setForm({
+        title: data.title,
+        description: data.description ?? '',
+        place: data.place ?? '',
+        eventDate: data.event_date,
+        startTime: start,
+        endTime: end,
+        organizer: data.organizer ?? '',
+        category: isPredefined ? dbCategory : 'otro',
+        customCategory: isPredefined ? '' : dbCategory,
+        images: data.images ?? [],
       });
+    })();
   }, [id, navigate]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -117,7 +118,8 @@ export function EventForm() {
     setUploadError(null);
 
     try {
-      const token = (await supabase.auth.getSession()).data.session?.access_token;
+      const sb = await getSupabase();
+      const token = (await sb.auth.getSession()).data.session?.access_token;
       if (!token) { navigate('/admin/login', { replace: true }); return; }
 
       const sigRes = await fetch('/api/upload', {
@@ -180,7 +182,8 @@ export function EventForm() {
 
     setSaving(true);
 
-    const { data: { session } } = await supabase.auth.getSession();
+    const sb = await getSupabase();
+    const { data: { session } } = await sb.auth.getSession();
     const token = session?.access_token;
 
     if (!token) {

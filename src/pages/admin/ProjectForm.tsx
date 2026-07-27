@@ -2,7 +2,7 @@ import { useEffect, useState, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import '../../styles/admin.css';
 import { X, ImageIcon } from 'lucide-react';
-import { supabase } from '../../lib/supabase';
+import { getSupabase } from '../../lib/getSupabase';
 import { Reveal } from '../../components/Reveal';
 import { AdminBar } from './AdminBar';
 import type { ProjectRow } from '../../types/database';
@@ -74,7 +74,8 @@ export function AdminProjectForm() {
 
   useEffect(() => {
     (async () => {
-      const token = (await supabase.auth.getSession()).data.session?.access_token;
+      const sb = await getSupabase();
+      const token = (await sb.auth.getSession()).data.session?.access_token;
       if (!token) return;
       const res = await fetch('/api/admin/semesters', {
         headers: { Authorization: `Bearer ${token}` },
@@ -88,37 +89,38 @@ export function AdminProjectForm() {
 
   useEffect(() => {
     if (!id) return;
-    supabase
-      .from('projects')
-      .select('*')
-      .eq('id', Number(id))
-      .single()
-      .then(({ data: raw, error: err }) => {
-        if (err || !raw) {
-          navigate('/admin');
-          return;
-        }
-        const data = raw as ProjectRow;
-        const dbKind = data.kind ?? '';
-        const isPredefined = KIND_OPTIONS.some(o => o.value === dbKind);
-        setForm({
-          title: data.title,
-          kind: isPredefined ? dbKind : 'otro',
-          customKind: isPredefined ? '' : dbKind,
-          author: data.author,
-          year: data.year,
-          n: data.n,
-          tags: (data.tags ?? []).join(', '),
-          description: data.description ?? '',
-          url: data.url ?? '',
-          urlAlt: data.url_alt ?? '',
-          linkLabel: data.link_label ?? '',
-          links: data.links ?? [],
-          thumbnail: data.thumbnail ?? '',
-          aiThumbnail: data.ai_thumbnail,
-          members: (data.members ?? []).join('\n'),
-        });
+    (async () => {
+      const sb = await getSupabase();
+      const { data: raw, error: err } = await sb
+        .from('projects')
+        .select('*')
+        .eq('id', Number(id))
+        .single();
+      if (err || !raw) {
+        navigate('/admin');
+        return;
+      }
+      const data = raw as ProjectRow;
+      const dbKind = data.kind ?? '';
+      const isPredefined = KIND_OPTIONS.some(o => o.value === dbKind);
+      setForm({
+        title: data.title,
+        kind: isPredefined ? dbKind : 'otro',
+        customKind: isPredefined ? '' : dbKind,
+        author: data.author,
+        year: data.year,
+        n: data.n,
+        tags: (data.tags ?? []).join(', '),
+        description: data.description ?? '',
+        url: data.url ?? '',
+        urlAlt: data.url_alt ?? '',
+        linkLabel: data.link_label ?? '',
+        links: data.links ?? [],
+        thumbnail: data.thumbnail ?? '',
+        aiThumbnail: data.ai_thumbnail,
+        members: (data.members ?? []).join('\n'),
       });
+    })();
   }, [id, navigate]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -159,7 +161,8 @@ export function AdminProjectForm() {
     setUploadError(null);
 
     try {
-      const token = (await supabase.auth.getSession()).data.session?.access_token;
+      const sb = await getSupabase();
+      const token = (await sb.auth.getSession()).data.session?.access_token;
       if (!token) { navigate('/admin/login', { replace: true }); return; }
 
       const sigRes = await fetch('/api/upload', {
@@ -230,7 +233,8 @@ export function AdminProjectForm() {
 
     setSaving(true);
 
-    const { data: { session } } = await supabase.auth.getSession();
+    const sb = await getSupabase();
+    const { data: { session } } = await sb.auth.getSession();
     const token = session?.access_token;
 
     if (!token) {

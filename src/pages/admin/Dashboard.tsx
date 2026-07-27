@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../../styles/admin.css';
-import { supabase } from '../../lib/supabase';
+import { getSupabase } from '../../lib/getSupabase';
 import { Reveal } from '../../components/Reveal';
 import { ConfirmDialog } from '../../components/ConfirmDialog';
 import { AdminBar } from './AdminBar';
@@ -26,7 +26,8 @@ export function AdminDashboard() {
 
   const loadProjects = useCallback(async () => {
     setLoading(true);
-    const { data } = await supabase
+    const sb = await getSupabase();
+    const { data } = await sb
       .from('projects')
       .select('*')
       .order('id', { ascending: true });
@@ -35,7 +36,8 @@ export function AdminDashboard() {
   }, []);
 
   const loadSemesters = useCallback(async () => {
-    const token = (await supabase.auth.getSession()).data.session?.access_token;
+    const sb = await getSupabase();
+    const token = (await sb.auth.getSession()).data.session?.access_token;
     if (!token) return;
     const res = await fetch('/api/admin/semesters', {
       headers: { Authorization: `Bearer ${token}` },
@@ -57,7 +59,8 @@ export function AdminDashboard() {
   const handleDelete = async (id: number) => {
     setDeleting(id);
     setDeleteError(null);
-    const { data: { session } } = await supabase.auth.getSession();
+    const sb = await getSupabase();
+    const { data: { session } } = await sb.auth.getSession();
     const token = session?.access_token;
     if (!token) { setDeleting(null); navigate('/admin/login', { replace: true }); return; }
     const res = await fetch(`/api/admin/projects?id=${id}`, {

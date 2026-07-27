@@ -139,14 +139,16 @@ export function EventsBanner() {
                   >
                     <ChevronRight size={16} />
                   </button>
-                  <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-20 flex gap-1.5">
+                  <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-20 flex gap-0">
                     {events.map((e, i) => (
                       <button
                         key={e.id}
                         onClick={(ev) => { ev.stopPropagation(); go(i); }}
-                        className={`w-1.5 h-1.5 md:w-2 md:h-2 rounded-full transition-all ${i === index ? 'bg-white w-3 md:w-5' : 'bg-white/40 hover:bg-white/60'}`}
+                        className="p-3 flex items-center justify-center min-w-[44px] min-h-[44px]"
                         aria-label={`Evento ${i + 1}`}
-                      />
+                      >
+                        <span className={`w-1.5 h-1.5 md:w-2 md:h-2 rounded-full transition-all ${i === index ? 'bg-white w-3 md:w-5' : 'bg-white/40 hover:bg-white/60'}`} />
+                      </button>
                     ))}
                   </div>
                 </>

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { X, Plus, Trash2, AlertTriangle } from 'lucide-react';
-import { supabase } from '../../lib/supabase';
+import { getSupabase } from '../../lib/getSupabase';
 import { ConfirmDialog } from '../../components/ConfirmDialog';
 
 interface Semester {
@@ -27,7 +27,8 @@ export function SemesterModal({ open, onClose, onChanged }: SemesterModalProps) 
     setLoading(true);
     setError(null);
     try {
-      const { data: { session } } = await supabase.auth.getSession();
+      const sb = await getSupabase();
+      const { data: { session } } = await sb.auth.getSession();
       const res = await fetch('/api/admin/semesters', {
         headers: { Authorization: `Bearer ${session?.access_token}` },
       });
@@ -51,7 +52,8 @@ export function SemesterModal({ open, onClose, onChanged }: SemesterModalProps) 
     setCreating(true);
     setError(null);
     try {
-      const { data: { session } } = await supabase.auth.getSession();
+      const sb = await getSupabase();
+      const { data: { session } } = await sb.auth.getSession();
       const res = await fetch('/api/admin/semesters', {
         method: 'POST',
         headers: {
@@ -78,7 +80,8 @@ export function SemesterModal({ open, onClose, onChanged }: SemesterModalProps) 
     setDeletingId(semester.id);
     setError(null);
     try {
-      const { data: { session } } = await supabase.auth.getSession();
+      const sb = await getSupabase();
+      const { data: { session } } = await sb.auth.getSession();
       const res = await fetch(`/api/admin/semesters?id=${semester.id}`, {
         method: 'DELETE',
         headers: { Authorization: `Bearer ${session?.access_token}` },
