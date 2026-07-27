@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import '../../styles/admin.css';
 import { supabase } from '../../lib/supabase';
 import { Reveal } from '../../components/Reveal';
+import { ConfirmDialog } from '../../components/ConfirmDialog';
 import { AdminBar } from './AdminBar';
 import { Calendar, Clock, MapPin } from 'lucide-react';
 import type { EventRow } from '../../types/database';
@@ -13,6 +14,7 @@ export function EventsDashboard() {
   const [loading, setLoading] = useState(true);
   const [deleting, setDeleting] = useState<number | null>(null);
   const [deleteError, setDeleteError] = useState<string | null>(null);
+  const [confirmDelete, setConfirmDelete] = useState<EventRow | null>(null);
 
   const loadEvents = useCallback(async () => {
     setLoading(true);
@@ -30,8 +32,7 @@ export function EventsDashboard() {
 
   useEffect(() => { loadEvents(); }, [loadEvents]);
 
-  const handleDelete = async (id: number, title: string) => {
-    if (!window.confirm(`¿Eliminar "${title}"?`)) return;
+  const handleDelete = async (id: number) => {
     setDeleting(id);
     setDeleteError(null);
     const { data: { session } } = await supabase.auth.getSession();
@@ -115,7 +116,7 @@ export function EventsDashboard() {
                     <button
                       className="font-mono text-[11px] tracking-[0.12em] uppercase text-accent hover:text-accent/70 transition-colors disabled:opacity-40"
                       disabled={deleting === e.id}
-                      onClick={() => handleDelete(e.id, e.title)}
+                      onClick={() => setConfirmDelete(e)}
                     >
                       {deleting === e.id ? 'Eliminando...' : 'Eliminar'}
                     </button>
@@ -125,6 +126,14 @@ export function EventsDashboard() {
             </div>
           )}
         </Reveal>
+
+        <ConfirmDialog
+          open={confirmDelete !== null}
+          title="Eliminar evento"
+          message={`¿Eliminar "${confirmDelete?.title}"?`}
+          onConfirm={() => { if (confirmDelete) { handleDelete(confirmDelete.id); setConfirmDelete(null); } }}
+          onCancel={() => setConfirmDelete(null)}
+        />
       </div>
     </div>
   );

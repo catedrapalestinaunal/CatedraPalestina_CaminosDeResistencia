@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import '../../styles/admin.css';
 import { supabase } from '../../lib/supabase';
 import { Reveal } from '../../components/Reveal';
+import { ConfirmDialog } from '../../components/ConfirmDialog';
 import { AdminBar } from './AdminBar';
 import { SemesterModal } from './SemesterModal';
 import type { ProjectRow } from '../../types/database';
@@ -20,6 +21,7 @@ export function AdminDashboard() {
   const [filterSemester, setFilterSemester] = useState<string | null>(null);
   const [deleting, setDeleting] = useState<number | null>(null);
   const [deleteError, setDeleteError] = useState<string | null>(null);
+  const [confirmDelete, setConfirmDelete] = useState<ProjectRow | null>(null);
   const [semesterModalOpen, setSemesterModalOpen] = useState(false);
 
   const loadProjects = useCallback(async () => {
@@ -52,8 +54,7 @@ export function AdminDashboard() {
     [projects, filterSemester],
   );
 
-  const handleDelete = async (id: number, title: string) => {
-    if (!window.confirm(`¿Eliminar "${title}"?`)) return;
+  const handleDelete = async (id: number) => {
     setDeleting(id);
     setDeleteError(null);
     const { data: { session } } = await supabase.auth.getSession();
@@ -160,12 +161,12 @@ export function AdminDashboard() {
                             Editar
                           </button>
                           <button
-                            className="font-mono text-[11px] tracking-[0.12em] uppercase text-accent hover:text-accent/70 transition-colors disabled:opacity-40"
-                            disabled={deleting === p.id}
-                            onClick={() => handleDelete(p.id, p.title)}
-                          >
-                            {deleting === p.id ? 'Eliminando...' : 'Eliminar'}
-                          </button>
+                             className="font-mono text-[11px] tracking-[0.12em] uppercase text-accent hover:text-accent/70 transition-colors disabled:opacity-40"
+                             disabled={deleting === p.id}
+                             onClick={() => setConfirmDelete(p)}
+                           >
+                             {deleting === p.id ? 'Eliminando...' : 'Eliminar'}
+                           </button>
                         </div>
                       </td>
                     </tr>
@@ -176,6 +177,14 @@ export function AdminDashboard() {
           )}
         </Reveal>
       </div>
+
+      <ConfirmDialog
+        open={confirmDelete !== null}
+        title="Eliminar proyecto"
+        message={`¿Eliminar "${confirmDelete?.title}"?`}
+        onConfirm={() => { if (confirmDelete) { handleDelete(confirmDelete.id); setConfirmDelete(null); } }}
+        onCancel={() => setConfirmDelete(null)}
+      />
 
       <SemesterModal
         open={semesterModalOpen}

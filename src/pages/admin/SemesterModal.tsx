@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { X, Plus, Trash2, AlertTriangle } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
+import { ConfirmDialog } from '../../components/ConfirmDialog';
 
 interface Semester {
   id: number;
@@ -20,6 +21,7 @@ export function SemesterModal({ open, onClose, onChanged }: SemesterModalProps) 
   const [creating, setCreating] = useState(false);
   const [deletingId, setDeletingId] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [confirmDelete, setConfirmDelete] = useState<Semester | null>(null);
 
   const fetchSemesters = async () => {
     setLoading(true);
@@ -73,7 +75,6 @@ export function SemesterModal({ open, onClose, onChanged }: SemesterModalProps) 
   };
 
   const handleDelete = async (semester: Semester) => {
-    if (!window.confirm(`¿Eliminar el semestre "${semester.name}"?\nNo se puede eliminar si tiene proyectos asignados.`)) return;
     setDeletingId(semester.id);
     setError(null);
     try {
@@ -158,7 +159,7 @@ export function SemesterModal({ open, onClose, onChanged }: SemesterModalProps) 
               >
                 <span className="font-mono text-sm tracking-[0.05em]">{s.name}</span>
                 <button
-                  onClick={() => handleDelete(s)}
+                  onClick={() => setConfirmDelete(s)}
                   disabled={deletingId === s.id}
                   className="flex items-center gap-1.5 font-mono text-[10px] tracking-[0.12em] uppercase text-accent hover:text-accent/70 transition-colors disabled:opacity-40"
                 >
@@ -169,6 +170,14 @@ export function SemesterModal({ open, onClose, onChanged }: SemesterModalProps) 
           </div>
         )}
       </div>
+
+      <ConfirmDialog
+        open={confirmDelete !== null}
+        title="Eliminar semestre"
+        message={`¿Eliminar el semestre "${confirmDelete?.name}"? No se puede eliminar si tiene proyectos asignados.`}
+        onConfirm={() => { if (confirmDelete) { handleDelete(confirmDelete); setConfirmDelete(null); } }}
+        onCancel={() => setConfirmDelete(null)}
+      />
     </div>
   );
 }
