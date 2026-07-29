@@ -2,10 +2,36 @@ import { ImageResponse } from '@vercel/og';
 
 export const config = { runtime: 'edge' };
 
+interface FontData {
+  name: string;
+  data: ArrayBuffer;
+  weight: number;
+  style: 'normal';
+}
+
+async function loadFont(weight: number): Promise<FontData> {
+  const css = await fetch(
+    `https://fonts.googleapis.com/css2?family=Inter:wght@${weight}&display=swap`,
+    { headers: { 'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36' } },
+  ).then(r => r.text());
+  const match = css.match(/url\(([^)]+?)\)/);
+  if (!match) throw new Error('Font URL not found');
+  const fontUrl = match[1].replace(/['"]/g, '');
+  const data = await fetch(fontUrl).then(r => r.arrayBuffer());
+  return { name: 'Inter', data, weight, style: 'normal' as const };
+}
+
 export default async function handler(req: Request): Promise<Response> {
   const { searchParams } = new URL(req.url);
   const title = searchParams.get('title') || 'Cátedra Caminos de Resistencia';
   const sub = searchParams.get('sub') || undefined;
+
+  let fonts: FontData[];
+  try {
+    fonts = await Promise.all([loadFont(600), loadFont(400)]);
+  } catch {
+    fonts = [];
+  }
 
   return new ImageResponse(
     (
@@ -46,7 +72,7 @@ export default async function handler(req: Request): Promise<Response> {
 
         <div
           style={{
-            fontFamily: '"Georgia", "Times New Roman", serif',
+            fontFamily: 'Inter',
             fontSize: sub ? 56 : 72,
             fontWeight: 600,
             color: '#f1ede4',
@@ -70,8 +96,9 @@ export default async function handler(req: Request): Promise<Response> {
             <div style={{ width: 36, height: 2, background: '#d45a5e' }} />
             <span
               style={{
-                fontFamily: '"Courier New", "Consolas", monospace',
+                fontFamily: 'Inter',
                 fontSize: 13,
+                fontWeight: 400,
                 letterSpacing: '0.18em',
                 textTransform: 'uppercase',
                 color: '#d45a5e',
@@ -91,20 +118,31 @@ export default async function handler(req: Request): Promise<Response> {
             alignItems: 'center',
             paddingTop: 24,
             borderTop: '1px solid rgba(241,237,228,0.1)',
-            fontFamily: '"Georgia", serif',
+            fontFamily: 'Inter',
             fontSize: 15,
+            fontWeight: 400,
             color: 'rgba(241,237,228,0.5)',
             letterSpacing: '-0.01em',
           }}
         >
           <span>Cátedra Caminos de Resistencia · UNAL</span>
-          <span style={{ fontFamily: '"Courier New", monospace', fontSize: 18, color: 'rgba(241,237,228,0.25)' }}>+</span>
+          <span
+            style={{
+              fontFamily: 'Inter',
+              fontSize: 18,
+              fontWeight: 400,
+              color: 'rgba(241,237,228,0.25)',
+            }}
+          >
+            +
+          </span>
         </div>
       </div>
     ),
     {
       width: 1200,
       height: 630,
+      fonts,
       headers: {
         'Cache-Control': 'public, max-age=31536000, immutable',
       },
