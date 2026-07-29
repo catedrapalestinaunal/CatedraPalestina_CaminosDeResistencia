@@ -50,12 +50,16 @@ function cleanModulePreloads(html) {
 
 function killPort(port) {
   try {
-    const result = execSync(`netstat -ano | findstr :${port}`, { encoding: 'utf-8', timeout: 3000 });
-    for (const line of result.split('\n').filter(Boolean)) {
-      const match = line.trim().match(/(\d+)\s*$/);
-      if (match) {
-        try { execSync(`taskkill /F /PID ${match[1]}`, { stdio: 'ignore', timeout: 2000 }); } catch {}
+    if (process.platform === 'win32') {
+      const result = execSync(`netstat -ano | findstr :${port}`, { encoding: 'utf-8', timeout: 3000 });
+      for (const line of result.split('\n').filter(Boolean)) {
+        const match = line.trim().match(/(\d+)\s*$/);
+        if (match) {
+          try { execSync(`taskkill /F /PID ${match[1]}`, { stdio: 'ignore', timeout: 2000 }); } catch {}
+        }
       }
+    } else {
+      try { execSync(`lsof -ti :${port} | xargs kill -9`, { stdio: 'ignore', timeout: 3000 }); } catch {}
     }
   } catch {}
 }
@@ -75,10 +79,10 @@ async function waitForServer(url, timeout = 15000) {
 async function prerender() {
   killPort(PORT);
 
-  const server = spawn('npx vite preview --port ' + PORT, [], {
+  const server = spawn('npx', ['vite', 'preview', '--port', String(PORT)], {
     cwd: ROOT,
     stdio: 'pipe',
-    shell: 'cmd.exe',
+    shell: true,
   });
 
   server.stdout.on('data', d => process.stdout.write(d));
@@ -93,7 +97,10 @@ async function prerender() {
   const BASE = `http://localhost:${PORT}`;
   await waitForServer(BASE);
 
-  const browser = await puppeteer.launch({ headless: true });
+  const browser = await puppeteer.launch({
+    headless: true,
+    args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'],
+  });
   let ok = 0;
   let fail = 0;
 
