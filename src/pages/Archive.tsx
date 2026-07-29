@@ -9,8 +9,7 @@ import { useMediaQuery } from '../lib/hooks';
 import { BIBLIOGRAPHY, KIND_GLYPH, buildKindFilters } from '../data/archive';
 import { useProjects } from '../lib/useProjects';
 import type { Project } from '../lib/types';
-import { SITE_URL, ogPageUrl, toPngUrl } from '../lib/seo';
-import { OgMeta } from '../components/OgMeta';
+import { OG_IMAGE, SITE_URL, SITE_NAME, SITE_LOCALE } from '../lib/seo';
 import { collectionPageSchema, bookSchema, breadcrumbSchema } from '../lib/seo-schema';
 
 /* ============================================================
@@ -111,13 +110,20 @@ export function Archive() {
 
   return (
     <>
-      <OgMeta
-        title="Archivo · Cátedra Caminos de Resistencia"
-        description="Cosecha de Saberes: bibliografía sobre Palestina, proyectos académicos Palestina y ensayos curados por la Cátedra Caminos de Resistencia. Proyectos estudiantiles desde la UNAL."
-        url={`${SITE_URL}/archivo`}
-        image={projects.length > 0 && projects[0].thumbnail ? toPngUrl(projects[0].thumbnail) : ogPageUrl('Archivo', 'Cosecha de Saberes')}
-      />
       <Helmet>
+        <title>Archivo · Cátedra Caminos de Resistencia</title>
+        <meta name="description" content="Cosecha de Saberes: bibliografía sobre Palestina, proyectos académicos Palestina y ensayos curados por la Cátedra Caminos de Resistencia. Proyectos estudiantiles desde la UNAL." />
+        <meta property="og:title" content="Archivo · Cátedra Caminos de Resistencia" />
+        <meta property="og:description" content="Cosecha de Saberes: bibliografía sobre Palestina, proyectos académicos Palestina y ensayos. Archivo vivo de la Cátedra Caminos de Resistencia UNAL." />
+        <meta property="og:image" content={OG_IMAGE} />
+        <meta property="og:url" content={`${SITE_URL}/archivo`} />
+        <meta property="og:type" content="website" />
+        <meta property="og:locale" content={SITE_LOCALE} />
+        <meta property="og:site_name" content={SITE_NAME} />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Archivo · Cátedra Caminos de Resistencia" />
+        <meta name="twitter:description" content="Cosecha de Saberes: bibliografía sobre Palestina y proyectos académicos Palestina. Archivo vivo de la Cátedra Caminos de Resistencia UNAL." />
+        <link rel="canonical" href={`${SITE_URL}/archivo`} />
         <script type="application/ld+json">
           {JSON.stringify([
             breadcrumbSchema([
