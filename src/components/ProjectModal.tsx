@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Icon } from '../lib/icons';
-import { generateAPA } from '../lib/citation';
+import { generateAPA, generateChicago } from '../lib/citation';
 import type { Project } from '../lib/types';
 
 interface ProjectModalProps {
@@ -24,6 +24,7 @@ const KIND_LABEL: Record<string, string> = {
 export function ProjectModal({ project, onClose, hideArchiveLink }: ProjectModalProps) {
   const [open, setOpen] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [citationStyle, setCitationStyle] = useState<'apa' | 'chicago'>('apa');
   const [expandedLinks, setExpandedLinks] = useState(false);
   const modalRef = useRef<HTMLDivElement>(null);
 
@@ -43,6 +44,39 @@ export function ProjectModal({ project, onClose, hideArchiveLink }: ProjectModal
   if (!project) return null;
 
   const p = project;
+
+  const citationText = citationStyle === 'apa' ? generateAPA(p) : generateChicago(p);
+
+  function CitationControls() {
+    return (
+      <div className="flex items-center gap-2">
+        <div className="flex bg-[var(--line)] rounded-lg p-0.5">
+          <button
+            className={`text-[11px] font-mono tracking-[0.1em] px-2 py-1 rounded-md transition-colors ${citationStyle === 'apa' ? 'bg-white dark:bg-dark text-fg shadow-sm' : 'text-fg-mute hover:text-fg'}`}
+            onClick={() => { setCitationStyle('apa'); setCopied(false); }}
+          >
+            APA
+          </button>
+          <button
+            className={`text-[11px] font-mono tracking-[0.1em] px-2 py-1 rounded-md transition-colors ${citationStyle === 'chicago' ? 'bg-white dark:bg-dark text-fg shadow-sm' : 'text-fg-mute hover:text-fg'}`}
+            onClick={() => { setCitationStyle('chicago'); setCopied(false); }}
+          >
+            Chicago
+          </button>
+        </div>
+        <button
+          className="btn"
+          onClick={() => {
+            navigator.clipboard.writeText(citationText);
+            setCopied(true);
+            setTimeout(() => setCopied(false), 2200);
+          }}
+        >
+          {copied ? 'Copiado ✓' : 'Copiar cita'}
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div
@@ -124,16 +158,7 @@ export function ProjectModal({ project, onClose, hideArchiveLink }: ProjectModal
                   {p.linkLabel}
                   <span className={'inline-block transition-transform duration-200 ' + (expandedLinks ? 'rotate-180' : '')}>▾</span>
                 </button>
-                <button
-                  className="btn"
-                  onClick={() => {
-                    navigator.clipboard.writeText(generateAPA(p));
-                    setCopied(true);
-                    setTimeout(() => setCopied(false), 2200);
-                  }}
-                >
-                  {copied ? 'Copiado ✓' : 'Copiar cita APA'}
-                </button>
+                <CitationControls />
               </div>
               <div
                 className="flex flex-col overflow-hidden"
@@ -161,16 +186,7 @@ export function ProjectModal({ project, onClose, hideArchiveLink }: ProjectModal
                   {l.label} <Icon.External />
                 </a>
               ))}
-              <button
-                className="btn"
-                onClick={() => {
-                  navigator.clipboard.writeText(generateAPA(p));
-                  setCopied(true);
-                  setTimeout(() => setCopied(false), 2200);
-                }}
-              >
-                {copied ? 'Copiado ✓' : 'Copiar cita APA'}
-              </button>
+              <CitationControls />
             </>
           ) : p.url ? (
             <>
@@ -182,30 +198,12 @@ export function ProjectModal({ project, onClose, hideArchiveLink }: ProjectModal
                   Ver transcripción <Icon.External />
                 </a>
               )}
-              <button
-                className="btn"
-                onClick={() => {
-                  navigator.clipboard.writeText(generateAPA(p));
-                  setCopied(true);
-                  setTimeout(() => setCopied(false), 2200);
-                }}
-              >
-                {copied ? 'Copiado ✓' : 'Copiar cita APA'}
-              </button>
+              <CitationControls />
             </>
           ) : (
             <>
               <button className="btn" disabled>Próximamente</button>
-              <button
-                className="btn"
-                onClick={() => {
-                  navigator.clipboard.writeText(generateAPA(p));
-                  setCopied(true);
-                  setTimeout(() => setCopied(false), 2200);
-                }}
-              >
-                {copied ? 'Copiado ✓' : 'Copiar cita APA'}
-              </button>
+              <CitationControls />
             </>
           )}
           {!hideArchiveLink && (

@@ -15,6 +15,7 @@ const urls = [
   { loc: '/genero', priority: 0.8, changefreq: 'monthly' },
   { loc: '/voces', priority: 0.8, changefreq: 'monthly' },
   { loc: '/archivo', priority: 0.9, changefreq: 'weekly' },
+  { loc: '/admin/login', priority: 0.1, changefreq: 'monthly' },
 ];
 
 const xml = `<?xml version="1.0" encoding="UTF-8"?>

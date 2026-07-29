@@ -12,7 +12,8 @@
     "audit:all": "echo \"Ejecuta manualmente en OpenCode: /audit-responsive, /fix-colors, /humanize-text\"",
     "generate:favicons": "node scripts/generate-favicons.mjs",
     "prerender": "node scripts/prerender.mjs",
-    "build:seo": "npm run build && npm run prerender"
+    "ping:indexnow": "node scripts/ping-indexnow.mjs",
+    "build:seo": "npm run build && npm run prerender && npm run ping:indexnow"
   },
   "devDependencies": {
     "@types/node": "^26.1.1",
