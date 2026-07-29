@@ -31,3 +31,7 @@ ${urls.map(u => `  <url>
 
 writeFileSync(join(__dirname, '..', 'public', 'sitemap.xml'), xml, 'utf-8');
 console.log(`\u2713 sitemap.xml generated (${today})`);
+
+const INDEXNOW_KEY = 'a3d2c8e1b4f70926';
+writeFileSync(join(__dirname, '..', 'public', `${INDEXNOW_KEY}.txt`), INDEXNOW_KEY, 'utf-8');
+console.log(`\u2713 ${INDEXNOW_KEY}.txt generated`);

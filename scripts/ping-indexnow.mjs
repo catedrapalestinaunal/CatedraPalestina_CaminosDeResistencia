@@ -1,9 +1,4 @@
 import 'dotenv/config';
-import { writeFileSync } from 'fs';
-import { join, dirname } from 'path';
-import { fileURLToPath } from 'url';
-
-const __dirname = dirname(fileURLToPath(import.meta.url));
 const SITE_URL = process.env.VITE_SITE_URL || 'https://catedrapalestinacaminosderesistencia.com';
 const INDEXNOW_KEY = 'a3d2c8e1b4f70926';
 const HOST = new URL(SITE_URL).host;
@@ -52,8 +47,6 @@ async function pingIndexNow() {
     console.warn(`  WARN Bing IndexNow notification failed:`, err.message);
   }
 
-  writeFileSync(join(__dirname, '..', 'public', `${INDEXNOW_KEY}.txt`), INDEXNOW_KEY, 'utf-8');
-  console.log(`  OK  ${INDEXNOW_KEY}.txt written to public/`);
 }
 
 pingIndexNow();
