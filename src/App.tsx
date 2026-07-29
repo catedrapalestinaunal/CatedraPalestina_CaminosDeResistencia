@@ -6,6 +6,17 @@ import { Footer } from './components/Footer';
 import { AuthProvider, ProtectedRoute } from './lib/auth';
 import type { Theme } from './lib/types';
 
+const KEEPALIVE_INTERVAL = 24 * 60 * 60 * 1000;
+
+async function pingSupabase() {
+  try {
+    const { supabase } = await import('./lib/supabase');
+    await supabase.from('projects').select('count', { count: 'exact', head: true });
+  } catch {
+    /* silencioso — no mostrar errores al usuario */
+  }
+}
+
 const SpeedInsights = lazy(() => import("@vercel/speed-insights/react").then(m => ({ default: m.SpeedInsights })));
 const Analytics = lazy(() => import("@vercel/analytics/react").then(m => ({ default: m.Analytics })));
 
@@ -66,6 +77,12 @@ export function App() {
         }, 350);
       });
     });
+  }, []);
+
+  useEffect(() => {
+    pingSupabase();
+    const id = setInterval(pingSupabase, KEEPALIVE_INTERVAL);
+    return () => clearInterval(id);
   }, []);
 
   const toggleTheme = () => {

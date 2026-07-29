@@ -17,6 +17,8 @@ interface CacheMeta {
   timestamp: number;
 }
 
+const RETRY_DELAY = 2000;
+
 function loadCache(): Event[] | null {
   try {
     const metaRaw = localStorage.getItem(CACHE_META_KEY);
@@ -64,6 +66,20 @@ export function useEvents({ defer }: { defer?: boolean } = {}): UseEventsResult 
   const [error, setError] = useState<string | null>(null);
   const fetchCount = useRef(0);
 
+  async function query(): Promise<{ data: Event[] | null; error: string | null }> {
+    const sb = await getSupabase();
+    const today = new Date().toISOString().split('T')[0];
+    const { data, error: err } = await sb
+      .from('events')
+      .select('*')
+      .gte('event_date', today)
+      .order('event_date', { ascending: true });
+
+    if (err) return { data: null, error: err.message };
+    const mapped = (data ?? []).map(toEvent);
+    return { data: mapped, error: null };
+  }
+
   const fetch = useCallback(async (force = false) => {
     if (!force) {
       const cached = loadCache();
@@ -79,25 +95,28 @@ export function useEvents({ defer }: { defer?: boolean } = {}): UseEventsResult 
     setLoading(true);
     setError(null);
 
-    const sb = await getSupabase();
-    const today = new Date().toISOString().split('T')[0];
-    const { data, error: err } = await sb
-      .from('events')
-      .select('*')
-      .gte('event_date', today)
-      .order('event_date', { ascending: true });
+    let { data, error: err } = await query();
 
     if (currentFetch !== fetchCount.current) return;
 
     if (err) {
-      setError(err.message);
+      await new Promise(r => setTimeout(r, RETRY_DELAY));
+      if (currentFetch !== fetchCount.current) return;
+      const retry = await query();
+      data = retry.data;
+      err = retry.error;
+    }
+
+    if (currentFetch !== fetchCount.current) return;
+
+    if (err) {
+      setError(err);
       setLoading(false);
       return;
     }
 
-    const mapped = (data ?? []).map(toEvent);
-    setEvents(mapped);
-    saveCache(mapped);
+    setEvents(data!);
+    saveCache(data!);
     setLoading(false);
   }, []);
 

@@ -8,7 +8,7 @@ import { Icon } from '../lib/icons';
 import { LazyYouTube } from '../components/LazyYouTube';
 
 import { OG_IMAGE, SITE_URL, SITE_NAME, SITE_LOCALE } from '../lib/seo';
-import { orgSchema, websiteSchema, courseSchema } from '../lib/seo-schema';
+import { orgSchema, websiteSchema, courseSchema, faqForHome } from '../lib/seo-schema';
 import { CONFIG } from '../lib/config';
 
 const FeaturedProjects = lazy(() => import('../components/FeaturedProjects').then(m => ({ default: m.FeaturedProjects })));
@@ -38,21 +38,21 @@ export function Home() {
   return (
     <>
       <Helmet>
-        <title>Cátedra Caminos de Resistencia · UNAL</title>
-        <meta name="description" content="Cátedra Caminos de Resistencia · UNAL: plataforma de memoria y solidaridad académica Palestina Colombia. Espacio sentipensante de educación pública sobre Palestina desde Colombia. Repositorio de la Facultad de Derecho y Ciencias Políticas." />
-        <meta property="og:title" content="Cátedra Caminos de Resistencia · UNAL" />
-        <meta property="og:description" content="Cátedra Caminos de Resistencia · UNAL: plataforma de memoria y solidaridad académica Palestina Colombia. Espacio sentipensante de educación pública sobre Palestina." />
+        <title>{`Inicio · ${SITE_NAME}`}</title>
+        <meta name="description" content="Cátedra Caminos de Resistencia: curso UNAL sobre Palestina en Bogotá (cód. 2029655). Genocidio en Gaza, derecho internacional humanitario, resistencia palestina." />
+        <meta property="og:title" content={SITE_NAME} />
+        <meta property="og:description" content="Cátedra Caminos de Resistencia: curso UNAL sobre Palestina en Bogotá (cód. 2029655). Genocidio en Gaza, derecho internacional humanitario, resistencia palestina." />
         <meta property="og:image" content={OG_IMAGE} />
         <meta property="og:url" content={SITE_URL} />
         <meta property="og:type" content="website" />
         <meta property="og:locale" content={SITE_LOCALE} />
         <meta property="og:site_name" content={SITE_NAME} />
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="Cátedra Caminos de Resistencia · UNAL" />
-        <meta name="twitter:description" content="Cátedra Caminos de Resistencia · UNAL: plataforma de memoria y solidaridad académica Palestina Colombia." />
+        <meta name="twitter:title" content={SITE_NAME} />
+        <meta name="twitter:description" content="Cátedra Caminos de Resistencia: curso UNAL sobre Palestina en Bogotá (cód. 2029655). Genocidio en Gaza, derecho internacional humanitario, resistencia palestina." />
         <link rel="canonical" href={SITE_URL} />
         <script type="application/ld+json">
-          {JSON.stringify([orgSchema(), websiteSchema(), courseSchema()])}
+          {JSON.stringify([orgSchema(), websiteSchema(), courseSchema(), faqForHome()])}
         </script>
       </Helmet>
       {/* ============ HERO ============ */}
@@ -88,7 +88,7 @@ export function Home() {
 
           <div className="order-4 md:col-start-1 md:row-start-2">
             <div className="font-mono text-[13px] md:text-xs text-fg-mute tracking-[0.1em] leading-relaxed">
-              Repositorio permanente · Facultad de Derecho y Ciencias Políticas
+              Curso Dpto. Ciencia Política · UNAL Bogotá, Colombia
             </div>
           </div>
 
@@ -153,6 +153,61 @@ export function Home() {
                 que el aula sea también territorio en disputa.
               </div>
             </Reveal>
+          </div>
+        </div>
+      </section>
+
+      {/* ============ SOBRE LA CÁTEDRA ============ */}
+      <section className="section bg-[var(--bg-warm)]" id="acerca">
+        <div className="wrap">
+          <Reveal>
+            <h2 className="eyebrow mb-10">
+              <span className="dot" /><span>Sobre la Cátedra</span>
+            </h2>
+          </Reveal>
+
+          <div className="grid md:grid-cols-2 gap-6 mb-12">
+            <Reveal delay={0.1} as="article" className="card-base !p-6">
+              <div className="font-mono text-[11px] tracking-[0.18em] uppercase text-fg-mute mb-2">Curso universitario</div>
+              <p className="text-base leading-relaxed">
+                <b>Cátedra Caminos de Resistencia: Palestina en el contexto actual</b>.
+                Código <b>2029655</b> · Departamento de Ciencia Política.
+                IV Edición · Semestre {CONFIG.SEMESTRE}.
+                Universidad Nacional de Colombia, sede Bogotá.<br />
+                Docente: Alexander Montero.
+              </p>
+            </Reveal>
+
+            <Reveal delay={0.15} as="article" className="card-base !p-6">
+              <div className="font-mono text-[11px] tracking-[0.18em] uppercase text-fg-mute mb-2">Organiza</div>
+              <p className="text-base leading-relaxed">
+                Colectividad Estudiantil Autónoma.<br />
+                Acompañamiento: Facultad de Derecho y Ciencias Políticas.<br />
+                Apoyo: Embajada del Estado de Palestina.
+              </p>
+              <div className="font-mono text-[12px] tracking-[0.05em] mt-3 text-fg-mute">
+                Contacto: ctpalestina_bog@unal.edu.co
+              </div>
+            </Reveal>
+          </div>
+
+          <div className="max-w-2xl">
+            <Reveal delay={0.2}>
+              <h3 className="font-mono text-[13px] tracking-[0.12em] uppercase text-fg-mute mb-6">Preguntas frecuentes</h3>
+            </Reveal>
+            <div className="divide-y divide-[var(--line)]">
+              {FAQ_HOME.map((item, i) => (
+                <Reveal key={i} delay={0.08 * (i + 1)}>
+                  <details className="group py-4 cursor-pointer">
+                    <summary className="font-serif text-lg font-medium text-fg list-none flex items-center justify-between group-open:mb-3 transition-colors hover:text-accent">
+                      {item.q}
+                      <span className="font-mono text-xs text-fg-mute transition-transform duration-200 group-open:rotate-45 flex-shrink-0 ml-4">+</span>
+                    </summary>
+                    <p className="text-fg-mute text-base leading-relaxed">{item.a}</p>
+                  </details>
+                </Reveal>
+              ))}
+            </div>
           </div>
         </div>
       </section>
@@ -398,6 +453,14 @@ export function Home() {
     </>
   );
 }
+
+const FAQ_HOME = [
+  { q: '¿Qué es la Cátedra Caminos de Resistencia?', a: 'Es un curso del Departamento de Ciencia Política de la Universidad Nacional de Colombia (código 2029655), un espacio sentipensante de educación pública sobre Palestina desde el sur global, que aborda el genocidio en Gaza, el derecho internacional humanitario y la resistencia palestina.' },
+  { q: '¿Dónde se imparte?', a: 'En la Universidad Nacional de Colombia, sede Bogotá — Facultad de Derecho y Ciencias Políticas. Es parte de la oferta académica del Departamento de Ciencia Política de la UNAL.' },
+  { q: '¿Cuál es el código de la materia?', a: 'El código de inscripción es 2029655, perteneciente al Departamento de Ciencia Política. IV edición, semestre 2025-I.' },
+  { q: '¿Cómo inscribirse?', a: 'A través del sistema de matrículas de la UNAL. La materia tiene el código 2029655 del Departamento de Ciencia Política. Contacto: ctpalestina_bog@unal.edu.co.' },
+  { q: '¿Quién la organiza?', a: 'Es una iniciativa de la Colectividad Estudiantil Autónoma, con acompañamiento de la Facultad de Derecho y Ciencias Políticas y apoyo de la Embajada del Estado de Palestina.' },
+];
 
 const MISSION_POINTS = [
   { n: '01', title: 'Investigar', body: 'con rigor histórico el caso palestino desde las orillas del sur global, sin neutralidades cómplices ni eufemismos académicos.' },

@@ -634,9 +634,9 @@ export function Voces() {
     <>
       <Helmet>
         <title>Voces · Cátedra Caminos de Resistencia</title>
-        <meta name="description" content="Voces de la Resistencia: Mahmoud Darwish poemas, arte mural palestino, Handala de Naji al-Ali, muro de Belén grafiti, periodismo en Gaza y fallo CIJ Palestina 2024. Memoria viva desde la Cátedra Caminos de Resistencia." />
+        <meta name="description" content="Voces de la Resistencia: Mahmoud Darwish poemas, arte mural palestino, Handala de Naji al-Ali, muro de Belén grafiti, periodismo en Gaza y fallo CIJ Palestina 2024. Memoria viva desde la Cátedra Caminos de Resistencia · UNAL Bogotá." />
         <meta property="og:title" content="Voces · Cátedra Caminos de Resistencia" />
-        <meta property="og:description" content="Voces de la Resistencia: Mahmoud Darwish poemas, arte mural con Handala Naji al-Ali, muro de Belén grafiti, periodismo en Gaza y fallo CIJ Palestina 2024." />
+        <meta property="og:description" content="Voces de la Resistencia: Mahmoud Darwish poemas, arte mural con Handala Naji al-Ali, muro de Belén grafiti, periodismo en Gaza y fallo CIJ Palestina 2024 · UNAL Bogotá, Colombia." />
         <meta property="og:image" content={OG_IMAGE} />
         <meta property="og:url" content={`${SITE_URL}/voces`} />
         <meta property="og:type" content="article" />
@@ -644,7 +644,7 @@ export function Voces() {
         <meta property="og:site_name" content={SITE_NAME} />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="Voces · Cátedra Caminos de Resistencia" />
-        <meta name="twitter:description" content="Voces de la Resistencia: Mahmoud Darwish poemas, arte mural palestino, Handala Naji al-Ali y muro de Belén grafiti." />
+        <meta name="twitter:description" content="Voces de la Resistencia: Mahmoud Darwish poemas, arte mural palestino, Handala Naji al-Ali y muro de Belén grafiti · UNAL Bogotá." />
         <link rel="canonical" href={`${SITE_URL}/voces`} />
         <script type="application/ld+json">
           {JSON.stringify([

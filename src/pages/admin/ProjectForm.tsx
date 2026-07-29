@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import '../../styles/admin.css';
 import { X, ImageIcon } from 'lucide-react';
 import { getSupabase } from '../../lib/getSupabase';
+import { apiFetch } from '../../lib/apiFetch';
 import { Reveal } from '../../components/Reveal';
 import { AdminBar } from './AdminBar';
 import type { ProjectRow } from '../../types/database';
@@ -74,16 +75,8 @@ export function AdminProjectForm() {
 
   useEffect(() => {
     (async () => {
-      const sb = await getSupabase();
-      const token = (await sb.auth.getSession()).data.session?.access_token;
-      if (!token) return;
-      const res = await fetch('/api/admin/semesters', {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      if (res.ok) {
-        const data = await res.json();
-        setSemesters(data);
-      }
+      const { ok, data } = await apiFetch<Semester[]>('/api/admin/semesters');
+      if (ok && data) setSemesters(data);
     })();
   }, []);
 
@@ -233,15 +226,6 @@ export function AdminProjectForm() {
 
     setSaving(true);
 
-    const sb = await getSupabase();
-    const { data: { session } } = await sb.auth.getSession();
-    const token = session?.access_token;
-
-    if (!token) {
-      navigate('/admin/login', { replace: true });
-      return;
-    }
-
     const resolvedKind = form.kind === 'otro'
       ? (form.customKind.trim() || 'otro')
       : form.kind;
@@ -267,27 +251,14 @@ export function AdminProjectForm() {
     const url = isEdit ? `/api/admin/projects?id=${id}` : '/api/admin/projects';
     const method = isEdit ? 'PUT' : 'POST';
 
-    const res = await fetch(url, {
-      method,
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(body),
-    });
+    const { error: err } = await apiFetch(url, { method, body });
 
-    if (res.status === 401) {
-      navigate('/admin/login', { replace: true });
-      return;
-    }
-
-    if (!res.ok) {
-      try {
-        const err = await res.json();
-        setError(err.error ?? 'Error al guardar');
-      } catch {
-        setError('Error al guardar (servidor no responde)');
+    if (err) {
+      if (err === 'Sesión expirada') {
+        navigate('/admin/login', { replace: true });
+        return;
       }
+      setError(err);
       setSaving(false);
       return;
     }

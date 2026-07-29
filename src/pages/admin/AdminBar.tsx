@@ -1,6 +1,7 @@
+import { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../lib/auth';
-import { ArrowLeft, Plus, LogOut, Layers, Calendar } from 'lucide-react';
+import { ArrowLeft, Plus, LogOut, Layers, Calendar, AlertTriangle } from 'lucide-react';
 
 interface AdminBarProps {
   onSemestersClick?: () => void;
@@ -12,11 +13,18 @@ export function AdminBar({ onSemestersClick, onNewClick, context = 'projects' }:
   const navigate = useNavigate();
   const location = useLocation();
   const { signOut } = useAuth();
+  const [healthError, setHealthError] = useState(false);
   const isDashboard = location.pathname === '/admin';
   const isEventsDashboard = location.pathname === '/admin/events';
   const isNew = location.pathname.includes('/new');
   const isEdit = location.pathname.includes('/edit');
   const isEventsSection = context === 'events';
+
+  useEffect(() => {
+    fetch('/api/ping', { method: 'GET' })
+      .then(r => { if (!r.ok) setHealthError(true); })
+      .catch(() => setHealthError(true));
+  }, []);
 
   const getTitle = () => {
     if (isDashboard) return 'Proyectos';
@@ -32,7 +40,14 @@ export function AdminBar({ onSemestersClick, onNewClick, context = 'projects' }:
   };
 
   return (
-    <div className="flex items-center justify-between gap-4 py-3 px-5 rounded-xl border border-[var(--line)] bg-[var(--bg-warm)]">
+    <>
+      {healthError && (
+        <div className="flex items-center gap-2 px-5 py-2 rounded-xl border border-accent/30 bg-accent/5 text-accent font-mono text-[10px] tracking-[0.12em] uppercase">
+          <AlertTriangle size={12} />
+          El servicio de base de datos no responde. Si el problema persiste, restaura el proyecto en Supabase Dashboard.
+        </div>
+      )}
+      <div className="flex items-center justify-between gap-4 py-3 px-5 rounded-xl border border-[var(--line)] bg-[var(--bg-warm)]">
       <div className="flex items-center gap-3 min-w-0">
         {!isDashboard && !isEventsDashboard && (
           <button
@@ -98,5 +113,6 @@ export function AdminBar({ onSemestersClick, onNewClick, context = 'projects' }:
         )}
       </div>
     </div>
+    </>
   );
 }

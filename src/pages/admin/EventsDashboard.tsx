@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../../styles/admin.css';
-import { getSupabase } from '../../lib/getSupabase';
+import { apiFetch } from '../../lib/apiFetch';
 import { Reveal } from '../../components/Reveal';
 import { ConfirmDialog } from '../../components/ConfirmDialog';
 import { AdminBar } from './AdminBar';
@@ -18,36 +18,20 @@ export function EventsDashboard() {
 
   const loadEvents = useCallback(async () => {
     setLoading(true);
-    const sb = await getSupabase();
-    const token = (await sb.auth.getSession()).data.session?.access_token;
-    if (!token) { navigate('/admin/login', { replace: true }); return; }
-    const res = await fetch('/api/admin/events', {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    if (res.ok) {
-      const data = await res.json();
-      setEvents(data);
-    }
+    const { ok, data } = await apiFetch<EventRow[]>('/api/admin/events');
+    if (ok && data) setEvents(data);
     setLoading(false);
-  }, [navigate]);
+  }, []);
 
   useEffect(() => { loadEvents(); }, [loadEvents]);
 
   const handleDelete = async (id: number) => {
     setDeleting(id);
     setDeleteError(null);
-    const sb = await getSupabase();
-    const { data: { session } } = await sb.auth.getSession();
-    const token = session?.access_token;
-    if (!token) { setDeleting(null); navigate('/admin/login', { replace: true }); return; }
-    const res = await fetch(`/api/admin/events?id=${id}`, {
-      method: 'DELETE',
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    if (res.status === 401) { setDeleting(null); navigate('/admin/login', { replace: true }); return; }
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({ error: 'Error al eliminar' }));
-      setDeleteError(err.error ?? 'Error al eliminar');
+    const { error: err } = await apiFetch(`/api/admin/events?id=${id}`, { method: 'DELETE' });
+    if (err) {
+      if (err === 'Sesión expirada') { setDeleting(null); navigate('/admin/login', { replace: true }); return; }
+      setDeleteError(err);
       setDeleting(null);
       return;
     }

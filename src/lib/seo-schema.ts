@@ -1,10 +1,11 @@
-import { SITE_URL, SITE_NAME, SITE_DESCRIPTION } from './seo';
+import { SITE_URL, SITE_NAME, SITE_DESCRIPTION, SITE_NAME_SHORT } from './seo';
 
 export function orgSchema() {
   return {
     '@context': 'https://schema.org',
     '@type': 'Organization',
     name: SITE_NAME,
+    alternateName: SITE_NAME_SHORT,
     url: SITE_URL,
     logo: `${SITE_URL}/og-image.png`,
     description: SITE_DESCRIPTION,
@@ -26,6 +27,11 @@ export function orgSchema() {
       '@type': 'CollegeOrUniversity',
       name: 'Universidad Nacional de Colombia',
       url: 'https://unal.edu.co',
+    },
+    department: {
+      '@type': 'Department',
+      name: 'Departamento de Ciencia Política',
+      url: 'https://cienciapolitica.unal.edu.co',
     },
     contactPoint: {
       '@type': 'ContactPoint',
@@ -140,16 +146,48 @@ export function courseSchema() {
   return {
     '@context': 'https://schema.org',
     '@type': 'Course',
-    name: 'Cátedra Caminos de Resistencia',
-    description: 'Espacio sentipensante de educación pública sobre Palestina desde Colombia. Repositorio de la Facultad de Derecho y Ciencias Políticas.',
+    name: 'Cátedra Caminos de Resistencia: Palestina en el contexto actual',
+    description: 'Curso del Departamento de Ciencia Política de la Universidad Nacional de Colombia, sede Bogotá (cód. 2029655). Genocidio en Gaza, derecho internacional humanitario y resistencia palestina.',
+    courseCode: '2029655',
     provider: {
       '@type': 'CollegeOrUniversity',
       name: 'Universidad Nacional de Colombia',
       url: 'https://unal.edu.co',
     },
+    department: {
+      '@type': 'Department',
+      name: 'Departamento de Ciencia Política',
+      url: 'https://cienciapolitica.unal.edu.co',
+    },
     educationalLevel: 'University',
     inLanguage: 'es-CO',
     url: SITE_URL,
+    location: {
+      '@type': 'Place',
+      name: 'Universidad Nacional de Colombia, Sede Bogotá',
+      address: {
+        '@type': 'PostalAddress',
+        addressLocality: 'Bogotá',
+        addressRegion: 'Bogotá D.C.',
+        addressCountry: 'CO',
+      },
+    },
+    hasCourseInstance: {
+      '@type': 'CourseInstance',
+      courseMode: 'Onsite',
+      courseWorkload: 'PT3H',
+      inLanguage: 'es-CO',
+      location: {
+        '@type': 'Place',
+        name: 'Universidad Nacional de Colombia, Sede Bogotá',
+        address: {
+          '@type': 'PostalAddress',
+          addressLocality: 'Bogotá',
+          addressRegion: 'Bogotá D.C.',
+          addressCountry: 'CO',
+        },
+      },
+    },
   };
 }
 
@@ -180,5 +218,46 @@ export function podcastEpisodeSchema(name: string, description: string, url: str
       '@type': 'PodcastSeries',
       name: 'Cátedra Caminos de Resistencia · Podcast',
     },
+  };
+}
+
+export function faqForHome() {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: [
+      {
+        '@type': 'Question',
+        name: '¿Qué es la Cátedra Caminos de Resistencia?',
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: 'Es un curso del Departamento de Ciencia Política de la Universidad Nacional de Colombia (código 2029655), un espacio sentipensante de educación pública sobre Palestina desde el sur global.',
+        },
+      },
+      {
+        '@type': 'Question',
+        name: '¿Dónde se imparte la Cátedra Caminos de Resistencia?',
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: 'En la Universidad Nacional de Colombia, sede Bogotá, en la Facultad de Derecho y Ciencias Políticas.',
+        },
+      },
+      {
+        '@type': 'Question',
+        name: '¿Cuál es el código de la materia?',
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: 'El código de la materia es 2029655, perteneciente al Departamento de Ciencia Política de la UNAL.',
+        },
+      },
+      {
+        '@type': 'Question',
+        name: '¿Quién organiza la Cátedra Caminos de Resistencia?',
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: 'Es una iniciativa de la Colectividad Estudiantil Autónoma, con acompañamiento de la Facultad de Derecho y Ciencias Políticas y apoyo de la Embajada del Estado de Palestina.',
+        },
+      },
+    ],
   };
 }

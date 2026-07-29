@@ -112,9 +112,9 @@ export function Archive() {
     <>
       <Helmet>
         <title>Archivo · Cátedra Caminos de Resistencia</title>
-        <meta name="description" content="Cosecha de Saberes: bibliografía sobre Palestina, proyectos académicos Palestina y ensayos curados por la Cátedra Caminos de Resistencia. Proyectos estudiantiles desde la UNAL." />
+        <meta name="description" content="Cosecha de Saberes: bibliografía sobre Palestina, proyectos académicos Palestina y ensayos curados por la Cátedra Caminos de Resistencia. Proyectos estudiantiles desde la UNAL Bogotá, Colombia." />
         <meta property="og:title" content="Archivo · Cátedra Caminos de Resistencia" />
-        <meta property="og:description" content="Cosecha de Saberes: bibliografía sobre Palestina, proyectos académicos Palestina y ensayos. Archivo vivo de la Cátedra Caminos de Resistencia UNAL." />
+        <meta property="og:description" content="Cosecha de Saberes: bibliografía sobre Palestina, proyectos académicos Palestina y ensayos. Archivo vivo de la Cátedra Caminos de Resistencia UNAL Bogotá." />
         <meta property="og:image" content={OG_IMAGE} />
         <meta property="og:url" content={`${SITE_URL}/archivo`} />
         <meta property="og:type" content="website" />
@@ -122,7 +122,7 @@ export function Archive() {
         <meta property="og:site_name" content={SITE_NAME} />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="Archivo · Cátedra Caminos de Resistencia" />
-        <meta name="twitter:description" content="Cosecha de Saberes: bibliografía sobre Palestina y proyectos académicos Palestina. Archivo vivo de la Cátedra Caminos de Resistencia UNAL." />
+        <meta name="twitter:description" content="Cosecha de Saberes: bibliografía sobre Palestina y proyectos académicos Palestina. Archivo vivo de la Cátedra Caminos de Resistencia UNAL Bogotá." />
         <link rel="canonical" href={`${SITE_URL}/archivo`} />
         <script type="application/ld+json">
           {JSON.stringify([

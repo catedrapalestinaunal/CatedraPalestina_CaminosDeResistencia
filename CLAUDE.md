@@ -53,21 +53,28 @@ Fuentes cargadas desde Google Fonts en `index.html`. Para reducir repetición, l
 
 ```
 Palestina-frontend/
+├── .github/
+│   └── workflows/
+│       └── keepalive.yml             # GitHub Actions: ping Supabase cada 3 días
 ├── api/
+│   ├── ping.ts                       # GET: keep-alive Supabase (consulta count, head)
 │   ├── upload.ts                     # POST: firma Cloudinary (signed upload)
 │   └── admin/
 │       ├── projects.ts               # GET/POST/PUT/DELETE: CRUD proyectos (admin) con ?id=
 │       ├── events.ts                 # GET/POST/PUT/DELETE: CRUD eventos (admin) con ?id=
+│       └── semesters.ts              # GET/POST/DELETE: CRUD semestres
 ├── src/
 │   ├── main.tsx
-│   ├── App.tsx                       # Shell: React Router, tema, AuthProvider
+│   ├── App.tsx                       # Shell: React Router, tema, AuthProvider + keep-alive 24h
 │   ├── vite-env.d.ts                 # Tipos para import.meta.env
 │   ├── styles/global.css             # @tailwind + @layer + reglas globales
 │   ├── lib/
 │   │   ├── supabase.ts               # Cliente Supabase tipado
+│   │   ├── getSupabase.ts            # Singleton lazy-load para admin
+│   │   ├── apiFetch.ts               # Wrapper fetch con auth + retry 5xx + errores
 │   │   ├── auth.tsx                   # AuthProvider + useAuth + ProtectedRoute
-│   │   ├── useProjects.ts             # Hook: fetch proyectos desde Supabase
-│   │   ├── useEvents.ts               # Hook: fetch eventos activos desde Supabase
+│   │   ├── useProjects.ts             # Hook: fetch proyectos + cache + retry
+│   │   ├── useEvents.ts               # Hook: fetch eventos activos + cache + retry
 │   │   ├── mapper.ts                  # snake_case DB → camelCase frontend
 │   │   ├── types.ts                   # Interfaces de dominio (Project, Page, Event, ...)
 │   │   └── icons.tsx                  # Icon.* (SVG propios)
@@ -201,6 +208,7 @@ El hook:
 - Consulta todos los registros de la tabla `projects` mediante el cliente Supabase anónimo
 - Convierte snake_case DB → camelCase frontend vía `toProject()` mapper
 - Cachea la respuesta en `localStorage('cdr-projects-cache')` como fallback offline
+- Si el primer fetch falla, espera 2s y reintenta 1 vez antes de mostrar error
 - Expone estados: `loading`, `error`, `refetch`
 
 ### Datos dinámicos (eventos)
@@ -214,6 +222,7 @@ El hook:
 - Consulta solo eventos con `event_date >= today` (visibles desde su creación hasta el día del evento)
 - Convierte snake_case DB → camelCase frontend vía `toEvent()` mapper
 - Cachea la respuesta en `localStorage('cdr-events-cache')` como fallback offline
+- Si el primer fetch falla, espera 2s y reintenta 1 vez antes de mostrar error
 - Expone estados: `loading`, `error`, `refetch`
 - Cuando no hay eventos activos, el banner en Home y el indicador en Nav se ocultan automáticamente
 
@@ -259,6 +268,33 @@ Operaciones CRUD viajan a las Vercel Functions en `api/admin/`:
 - `DELETE /api/admin/events?id=2` — eliminar evento
 - `POST /api/upload` — generar firma para Cloudinary signed upload
 
+## Keep-alive (prevención de pausa de Supabase)
+
+El plan gratuito de Supabase pausa los proyectos tras **7 días sin actividad**. Para evitarlo, existen 3 mecanismos redundantes:
+
+### 1. Frontend keep-alive (automático, silencioso)
+En `App.tsx`, un `useEffect` ejecuta `supabase.from('projects').select('count', { head: true })` cada **24h** mientras la página esté abierta en el navegador. No muestra nada al usuario, no logea errores.
+
+### 2. Endpoint `api/ping.ts` (via cron externo)
+Endpoint público que ejecuta la consulta más liviana posible (`SELECT count(*)` con `head: true`). Debe ser llamado por un **cron-job externo** cada 2-3 días:
+
+- **cron-job.org** (recomendado, gratuito): configurar GET a `https://catedrapalestinacaminosderesistencia.com/api/ping` cada 3 días
+- **UptimeRobot** (alternativa gratuita, cada 5 min)
+
+### 3. GitHub Actions (redundancia)
+Workflow en `.github/workflows/keepalive.yml` que ejecuta cada 3 días:
+- **Ping directo a la REST API de Supabase** (usa `VITE_SUPABASE_URL` + `VITE_SUPABASE_ANON_KEY` como secrets de GitHub)
+- **Ping al endpoint `api/ping` de Vercel**
+
+Este workflow es gratuito (usa ~2 min de los 2000 min/mes del tier gratuito de GitHub Actions).
+
+### 4. Retry automático en queries
+- `useProjects` y `useEvents`: si el primer fetch a Supabase falla, esperan 2s y reintentan 1 vez antes de mostrar error. El cache en `localStorage` asegura que la UI muestre datos previos mientras tanto.
+- `apiFetch.ts`: todas las llamadas a los endpoints admin reintentan 1 vez en caso de error 5xx. En 401, redirigen automáticamente a `/admin/login` con mensaje claro.
+
+### Health check visual
+En `AdminBar.tsx`, al montar el panel admin se verifica el estado de Supabase via `/api/ping`. Si falla, muestra un aviso no obstructivo con instrucciones para restaurar el proyecto.
+
 ### Categorías de eventos
 El formulario de eventos (`EventForm`) ofrece categorías predefinidas:
 `conferencia`, `taller`, `proyeccion`, `performance`, `conversatorio`, `exposicion`, `otro`.
@@ -284,6 +320,13 @@ Copiar `.env.example` → `.env` y llenar:
 | `CLOUDINARY_API_SECRET` | Cloudinary Dashboard → Account Details |
 
 Las variables sin prefijo `VITE_` solo están disponibles en Vercel Functions (nunca se exponen al frontend).
+
+### GitHub Actions secrets
+
+Para que el workflow `keepalive.yml` funcione, agregar en GitHub:
+1. Ir a repositorio → **Settings** → **Secrets and variables** → **Actions**
+2. Agregar `VITE_SUPABASE_URL` y `VITE_SUPABASE_ANON_KEY` como secrets (mismos valores que en `.env`)
+3. Estos secrets se usan para hacer ping directo a la REST API de Supabase (sin pasar por Vercel)
 
 ## Scripts de mantenimiento
 

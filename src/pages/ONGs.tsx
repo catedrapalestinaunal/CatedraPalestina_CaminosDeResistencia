@@ -81,9 +81,9 @@ export function ONGs() {
     <>
       <Helmet>
         <title>ONGs · Cátedra Caminos de Resistencia</title>
-        <meta name="description" content="Savia y Sumud: ONG Palestina, ayuda humanitaria Gaza y organizaciones de derechos humanos. Logística de la vida, aliadas y trabajo de campo desde la Cátedra Caminos de Resistencia." />
+        <meta name="description" content="Savia y Sumud: ONG Palestina, ayuda humanitaria Gaza y organizaciones de derechos humanos. Logística de la vida, aliadas y trabajo de campo desde la Cátedra Caminos de Resistencia · UNAL Bogotá, Colombia." />
         <meta property="og:title" content="ONGs · Cátedra Caminos de Resistencia" />
-        <meta property="og:description" content="Savia y Sumud: ONG Palestina, ayuda humanitaria Gaza y organizaciones de derechos humanos. Logística humanitaria, aliadas y brigadas de trabajo en Palestina." />
+        <meta property="og:description" content="Savia y Sumud: ONG Palestina, ayuda humanitaria Gaza y organizaciones de derechos humanos. Logística humanitaria, aliadas y brigadas de trabajo en Palestina · UNAL Bogotá." />
         <meta property="og:image" content={OG_IMAGE} />
         <meta property="og:url" content={`${SITE_URL}/ongs`} />
         <meta property="og:type" content="website" />
@@ -91,7 +91,7 @@ export function ONGs() {
         <meta property="og:site_name" content={SITE_NAME} />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="ONGs · Cátedra Caminos de Resistencia" />
-        <meta name="twitter:description" content="Savia y Sumud: ONG Palestina, ayuda humanitaria Gaza y organizaciones de derechos humanos. MAP, Al-Haq, PCRF, MSF." />
+        <meta name="twitter:description" content="Savia y Sumud: ONG Palestina, ayuda humanitaria Gaza y organizaciones de derechos humanos. MAP, Al-Haq, PCRF, MSF · UNAL Bogotá." />
         <link rel="canonical" href={`${SITE_URL}/ongs`} />
         <script type="application/ld+json">
           {JSON.stringify([

@@ -1,12 +1,33 @@
-# Cátedra Caminos de Resistencia · UNAL
+# Cátedra Caminos de Resistencia: Palestina en el contexto actual
 
-Plataforma de Memoria y Solidaridad Académica · UNAL + Embajada del Estado de Palestina. Espacio sentipensante de educación pública sobre Palestina desde Colombia. Facultad de Derecho y Ciencias Políticas, Universidad Nacional de Colombia.
+Curso del Departamento de Ciencia Política de la Universidad Nacional de Colombia (UNAL), sede Bogotá, Colombia.
+Código de materia: 2029655. IV Edición (2025-I).
+
+Espacio sentipensante de educación pública sobre Palestina desde el sur global. Aborda el genocidio en Gaza, la Nakba, el derecho internacional humanitario, la resistencia palestina y la solidaridad desde América Latina.
+
+Organiza: Colectividad Estudiantil Autónoma.
+Acompañamiento: Facultad de Derecho y Ciencias Políticas.
+Apoyo: Embajada del Estado de Palestina.
+Contacto: ctpalestina_bog@unal.edu.co
+
+## Sobre la Cátedra
+
+La Cátedra Caminos de Resistencia es una iniciativa académica pionera en Colombia. Investiga, documenta, siembra redes y publica material sobre la causa palestina desde una perspectiva crítica y sentipensante. El repositorio incluye proyectos estudiantiles, bibliografía curada, cartografías, podcast, videos, murales y fanzines.
+
+Se desarrolla en sesiones presenciales con enfoque interdisciplinario que combina conferencias, talleres, cine foros y producción colectiva.
+
+## Preguntas frecuentes
+
+- ¿Qué es? Curso de la UNAL (cód. 2029655) sobre la causa palestina desde el sur global.
+- ¿Dónde? Universidad Nacional de Colombia, sede Bogotá — Facultad de Derecho y Ciencias Políticas.
+- ¿Quién organiza? Colectividad Estudiantil Autónoma + Embajada del Estado de Palestina.
+- ¿Cómo inscribirse? A través del sistema de matrículas de la UNAL, código 2029655.
 
 ## Navegación
 
 - [Inicio](https://catedrapalestinacaminosderesistencia.com/)
-- [Historia](https://catedrapalestinacaminosderesistencia.com/historia)
-- [ONGs](https://catedrapalestinacaminosderesistencia.com/ongs)
-- [Género](https://catedrapalestinacaminosderesistencia.com/genero)
-- [Voces](https://catedrapalestinacaminosderesistencia.com/voces)
-- [Archivo](https://catedrapalestinacaminosderesistencia.com/archivo)
+- [Historia](https://catedrapalestinacaminosderesistencia.com/historia) — Línea de tiempo 1917-presente
+- [ONGs](https://catedrapalestinacaminosderesistencia.com/ongs) — Organizaciones humanitarias en Palestina
+- [Género](https://catedrapalestinacaminosderesistencia.com/genero) — Feminismo palestino y resistencia
+- [Voces](https://catedrapalestinacaminosderesistencia.com/voces) — Arte, poesía y periodismo
+- [Archivo](https://catedrapalestinacaminosderesistencia.com/archivo) — Proyectos y bibliografía

@@ -265,9 +265,9 @@ export function Genero() {
     <>
       <Helmet>
         <title>Género · Cátedra Caminos de Resistencia</title>
-        <meta name="description" content="Palestina de Todas: feminismo palestino, salud mental infantil en Gaza, violencia sistémica y resistencia de las mujeres palestinas bajo ocupación israelí. 96% de la niñez en Gaza en crisis psicosocial." />
+        <meta name="description" content="Palestina de Todas: feminismo palestino, salud mental infantil en Gaza, violencia sistémica y resistencia de las mujeres palestinas bajo ocupación israelí. 96% de la niñez en Gaza en crisis psicosocial · Cátedra UNAL, Bogotá." />
         <meta property="og:title" content="Género · Cátedra Caminos de Resistencia" />
-        <meta property="og:description" content="Palestina de Todas: feminismo palestino, salud mental infantil Gaza, violencia sistémica y liderazgo de las mujeres palestinas bajo ocupación." />
+        <meta property="og:description" content="Palestina de Todas: feminismo palestino, salud mental infantil Gaza, violencia sistémica y liderazgo de las mujeres palestinas bajo ocupación · UNAL Bogotá, Colombia." />
         <meta property="og:image" content={OG_IMAGE} />
         <meta property="og:url" content={`${SITE_URL}/genero`} />
         <meta property="og:type" content="article" />
@@ -275,7 +275,7 @@ export function Genero() {
         <meta property="og:site_name" content={SITE_NAME} />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="Género · Cátedra Caminos de Resistencia" />
-        <meta name="twitter:description" content="Palestina de Todas: feminismo palestino, salud mental infantil Gaza y liderazgo de las mujeres palestinas." />
+        <meta name="twitter:description" content="Palestina de Todas: feminismo palestino, salud mental infantil Gaza y liderazgo de las mujeres palestinas · UNAL Bogotá." />
         <link rel="canonical" href={`${SITE_URL}/genero`} />
         <script type="application/ld+json">
           {JSON.stringify([

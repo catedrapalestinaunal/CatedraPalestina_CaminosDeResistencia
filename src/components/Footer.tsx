@@ -22,15 +22,17 @@ export function Footer() {
 
           <div>
             <h2>Acompañamiento</h2>
-            <ul className="footer-inst">
-              <li>Cátedra Caminos De Resistencia</li>
-              <li>Iniciativa Y Gestión Colectiva Estudiantil</li>
-              <li>Apoyo: Facultad De Ciencias Políticas Anfitriona</li>
-              <li>Acompañamiento Cultural: Delegaciones Internacionales Aliadas</li>
-            </ul>
-            <div className="font-mono text-[12px] tracking-[0.05em] mt-3" style={{ color: 'var(--on-dark-legal)' }}>
-              Contacto: ctpalestina_bog@unal.edu.co
-            </div>
+            <address className="not-italic">
+              <ul className="footer-inst">
+                <li>Cátedra Caminos de Resistencia</li>
+                <li>Iniciativa y Gestión Colectiva Estudiantil</li>
+                <li>Apoyo: Facultad de Ciencias Políticas Anfitriona · UNAL</li>
+                <li>Acompañamiento Cultural: Delegaciones Internacionales Aliadas</li>
+              </ul>
+              <div className="font-mono text-[12px] tracking-[0.05em] mt-3" style={{ color: 'var(--on-dark-legal)' }}>
+                Bogotá, Colombia · Contacto: ctpalestina_bog@unal.edu.co
+              </div>
+            </address>
           </div>
         </div>
 

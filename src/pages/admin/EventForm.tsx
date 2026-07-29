@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import '../../styles/admin.css';
 import { X, ImageIcon } from 'lucide-react';
 import { getSupabase } from '../../lib/getSupabase';
+import { apiFetch } from '../../lib/apiFetch';
 import { Reveal } from '../../components/Reveal';
 import { AdminBar } from './AdminBar';
 import type { EventRow } from '../../types/database';
@@ -182,15 +183,6 @@ export function EventForm() {
 
     setSaving(true);
 
-    const sb = await getSupabase();
-    const { data: { session } } = await sb.auth.getSession();
-    const token = session?.access_token;
-
-    if (!token) {
-      navigate('/admin/login', { replace: true });
-      return;
-    }
-
     const resolvedCategory = form.category === 'otro'
       ? (form.customCategory.trim() || null)
       : (form.category || null);
@@ -209,27 +201,14 @@ export function EventForm() {
     const url = isEdit ? `/api/admin/events?id=${id}` : '/api/admin/events';
     const method = isEdit ? 'PUT' : 'POST';
 
-    const res = await fetch(url, {
-      method,
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(body),
-    });
+    const { error: err } = await apiFetch(url, { method, body });
 
-    if (res.status === 401) {
-      navigate('/admin/login', { replace: true });
-      return;
-    }
-
-    if (!res.ok) {
-      try {
-        const err = await res.json();
-        setError(err.error ?? 'Error al guardar');
-      } catch {
-        setError('Error al guardar (servidor no responde)');
+    if (err) {
+      if (err === 'Sesión expirada') {
+        navigate('/admin/login', { replace: true });
+        return;
       }
+      setError(err);
       setSaving(false);
       return;
     }
