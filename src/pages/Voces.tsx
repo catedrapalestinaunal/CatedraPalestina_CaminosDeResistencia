@@ -9,7 +9,8 @@ import { ProjectModal } from '../components/ProjectModal';
 import { Icon } from '../lib/icons';
 import { PODCAST_SERIES } from '../data/podcast-series';
 import { useProjects } from '../lib/useProjects';
-import { OG_IMAGE, SITE_URL, SITE_NAME, SITE_LOCALE } from '../lib/seo';
+import { SITE_URL, OG_IMAGE } from '../lib/seo';
+import { OgMeta } from '../components/OgMeta';
 import { articleSchema, breadcrumbSchema, videoObjectSchema, podcastEpisodeSchema } from '../lib/seo-schema';
 import { LazyYouTube } from '../components/LazyYouTube';
 import { CONFIG } from '../lib/config';
@@ -632,20 +633,13 @@ export function Voces() {
 
   return (
     <>
+      <OgMeta
+        title="Voces · Cátedra Caminos de Resistencia"
+        description="Voces de la Resistencia: Mahmoud Darwish poemas, arte mural palestino, Handala de Naji al-Ali, muro de Belén grafiti, periodismo en Gaza y fallo CIJ Palestina 2024. Memoria viva desde la Cátedra Caminos de Resistencia."
+        url={`${SITE_URL}/voces`}
+        type="article"
+      />
       <Helmet>
-        <title>Voces · Cátedra Caminos de Resistencia</title>
-        <meta name="description" content="Voces de la Resistencia: Mahmoud Darwish poemas, arte mural palestino, Handala de Naji al-Ali, muro de Belén grafiti, periodismo en Gaza y fallo CIJ Palestina 2024. Memoria viva desde la Cátedra Caminos de Resistencia." />
-        <meta property="og:title" content="Voces · Cátedra Caminos de Resistencia" />
-        <meta property="og:description" content="Voces de la Resistencia: Mahmoud Darwish poemas, arte mural con Handala Naji al-Ali, muro de Belén grafiti, periodismo en Gaza y fallo CIJ Palestina 2024." />
-        <meta property="og:image" content={OG_IMAGE} />
-        <meta property="og:url" content={`${SITE_URL}/voces`} />
-        <meta property="og:type" content="article" />
-        <meta property="og:locale" content={SITE_LOCALE} />
-        <meta property="og:site_name" content={SITE_NAME} />
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="Voces · Cátedra Caminos de Resistencia" />
-        <meta name="twitter:description" content="Voces de la Resistencia: Mahmoud Darwish poemas, arte mural palestino, Handala Naji al-Ali y muro de Belén grafiti." />
-        <link rel="canonical" href={`${SITE_URL}/voces`} />
         <script type="application/ld+json">
           {JSON.stringify([
             breadcrumbSchema([

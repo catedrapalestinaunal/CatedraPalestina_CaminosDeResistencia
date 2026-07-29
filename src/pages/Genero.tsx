@@ -10,7 +10,8 @@ import { FANZINE_G12 } from '../data/fanzine-g12';
 import { useProjects } from '../lib/useProjects';
 import { Icon } from '../lib/icons';
 import type { Project } from '../lib/types';
-import { OG_IMAGE, SITE_URL, SITE_NAME, SITE_LOCALE } from '../lib/seo';
+import { SITE_URL, OG_IMAGE_GENERO, OG_W_GENERO, OG_H_GENERO } from '../lib/seo';
+import { OgMeta } from '../components/OgMeta';
 import { CONFIG } from '../lib/config';
 import { articleSchema, breadcrumbSchema } from '../lib/seo-schema';
 
@@ -263,20 +264,17 @@ export function Genero() {
   const [openProj, setOpenProj] = useState<Project | null>(null);
   return (
     <>
+      <OgMeta
+        title="Género · Cátedra Caminos de Resistencia"
+        description="Palestina de Todas: feminismo palestino, salud mental infantil en Gaza, violencia sistémica y resistencia de las mujeres palestinas bajo ocupación israelí. 96% de la niñez en Gaza en crisis psicosocial."
+        url={`${SITE_URL}/genero`}
+        type="article"
+        image={OG_IMAGE_GENERO}
+        imageWidth={OG_W_GENERO}
+        imageHeight={OG_H_GENERO}
+        imageAlt="Fanzine · Mujeres Palestinas — producción estudiantil de la Cátedra"
+      />
       <Helmet>
-        <title>Género · Cátedra Caminos de Resistencia</title>
-        <meta name="description" content="Palestina de Todas: feminismo palestino, salud mental infantil en Gaza, violencia sistémica y resistencia de las mujeres palestinas bajo ocupación israelí. 96% de la niñez en Gaza en crisis psicosocial." />
-        <meta property="og:title" content="Género · Cátedra Caminos de Resistencia" />
-        <meta property="og:description" content="Palestina de Todas: feminismo palestino, salud mental infantil Gaza, violencia sistémica y liderazgo de las mujeres palestinas bajo ocupación." />
-        <meta property="og:image" content={OG_IMAGE} />
-        <meta property="og:url" content={`${SITE_URL}/genero`} />
-        <meta property="og:type" content="article" />
-        <meta property="og:locale" content={SITE_LOCALE} />
-        <meta property="og:site_name" content={SITE_NAME} />
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="Género · Cátedra Caminos de Resistencia" />
-        <meta name="twitter:description" content="Palestina de Todas: feminismo palestino, salud mental infantil Gaza y liderazgo de las mujeres palestinas." />
-        <link rel="canonical" href={`${SITE_URL}/genero`} />
         <script type="application/ld+json">
           {JSON.stringify([
             breadcrumbSchema([

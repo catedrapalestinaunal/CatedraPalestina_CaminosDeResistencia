@@ -6,8 +6,9 @@ import { Reveal } from '../components/Reveal';
 import { ImageSlot } from '../components/ImageSlot';
 import { Icon } from '../lib/icons';
 import { LazyYouTube } from '../components/LazyYouTube';
+import { OgMeta } from '../components/OgMeta';
 
-import { OG_IMAGE, SITE_URL, SITE_NAME, SITE_LOCALE } from '../lib/seo';
+import { SITE_URL } from '../lib/seo';
 import { orgSchema, websiteSchema, courseSchema } from '../lib/seo-schema';
 import { CONFIG } from '../lib/config';
 
@@ -37,20 +38,12 @@ export function Home() {
 
   return (
     <>
+      <OgMeta
+        title="Cátedra Caminos de Resistencia · UNAL"
+        description="Cátedra Caminos de Resistencia · UNAL: plataforma de memoria y solidaridad académica Palestina Colombia. Espacio sentipensante de educación pública sobre Palestina desde Colombia. Repositorio de la Facultad de Derecho y Ciencias Políticas."
+        url={SITE_URL}
+      />
       <Helmet>
-        <title>Cátedra Caminos de Resistencia · UNAL</title>
-        <meta name="description" content="Cátedra Caminos de Resistencia · UNAL: plataforma de memoria y solidaridad académica Palestina Colombia. Espacio sentipensante de educación pública sobre Palestina desde Colombia. Repositorio de la Facultad de Derecho y Ciencias Políticas." />
-        <meta property="og:title" content="Cátedra Caminos de Resistencia · UNAL" />
-        <meta property="og:description" content="Cátedra Caminos de Resistencia · UNAL: plataforma de memoria y solidaridad académica Palestina Colombia. Espacio sentipensante de educación pública sobre Palestina." />
-        <meta property="og:image" content={OG_IMAGE} />
-        <meta property="og:url" content={SITE_URL} />
-        <meta property="og:type" content="website" />
-        <meta property="og:locale" content={SITE_LOCALE} />
-        <meta property="og:site_name" content={SITE_NAME} />
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="Cátedra Caminos de Resistencia · UNAL" />
-        <meta name="twitter:description" content="Cátedra Caminos de Resistencia · UNAL: plataforma de memoria y solidaridad académica Palestina Colombia." />
-        <link rel="canonical" href={SITE_URL} />
         <script type="application/ld+json">
           {JSON.stringify([orgSchema(), websiteSchema(), courseSchema()])}
         </script>

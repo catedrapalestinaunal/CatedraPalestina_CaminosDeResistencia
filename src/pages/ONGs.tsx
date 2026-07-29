@@ -10,7 +10,8 @@ import { ONG_CARDS, ONG_PARTNERS } from '../data/ongs';
 import { useProjects } from '../lib/useProjects';
 import { ExternalOrgs } from '../components/ExternalOrgs';
 import type { ImageVariant, Project } from '../lib/types';
-import { OG_IMAGE, SITE_URL, SITE_NAME, SITE_LOCALE } from '../lib/seo';
+import { SITE_URL, OG_IMAGE_ONGS, OG_W_ONGS, OG_H_ONGS } from '../lib/seo';
+import { OgMeta } from '../components/OgMeta';
 import { websiteSchema, breadcrumbSchema } from '../lib/seo-schema';
 
 type Tab = 'vida' | 'partners' | 'field';
@@ -79,20 +80,16 @@ export function ONGs() {
 
   return (
     <>
+      <OgMeta
+        title="ONGs · Cátedra Caminos de Resistencia"
+        description="Savia y Sumud: ONG Palestina, ayuda humanitaria Gaza y organizaciones de derechos humanos. Logística de la vida, aliadas y trabajo de campo desde la Cátedra Caminos de Resistencia."
+        url={`${SITE_URL}/ongs`}
+        image={OG_IMAGE_ONGS}
+        imageWidth={OG_W_ONGS}
+        imageHeight={OG_H_ONGS}
+        imageAlt="Tanques de agua en Jenin — infraestructura humanitaria en Palestina"
+      />
       <Helmet>
-        <title>ONGs · Cátedra Caminos de Resistencia</title>
-        <meta name="description" content="Savia y Sumud: ONG Palestina, ayuda humanitaria Gaza y organizaciones de derechos humanos. Logística de la vida, aliadas y trabajo de campo desde la Cátedra Caminos de Resistencia." />
-        <meta property="og:title" content="ONGs · Cátedra Caminos de Resistencia" />
-        <meta property="og:description" content="Savia y Sumud: ONG Palestina, ayuda humanitaria Gaza y organizaciones de derechos humanos. Logística humanitaria, aliadas y brigadas de trabajo en Palestina." />
-        <meta property="og:image" content={OG_IMAGE} />
-        <meta property="og:url" content={`${SITE_URL}/ongs`} />
-        <meta property="og:type" content="website" />
-        <meta property="og:locale" content={SITE_LOCALE} />
-        <meta property="og:site_name" content={SITE_NAME} />
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="ONGs · Cátedra Caminos de Resistencia" />
-        <meta name="twitter:description" content="Savia y Sumud: ONG Palestina, ayuda humanitaria Gaza y organizaciones de derechos humanos. MAP, Al-Haq, PCRF, MSF." />
-        <link rel="canonical" href={`${SITE_URL}/ongs`} />
         <script type="application/ld+json">
           {JSON.stringify([
             breadcrumbSchema([
