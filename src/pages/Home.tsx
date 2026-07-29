@@ -8,7 +8,7 @@ import { Icon } from '../lib/icons';
 import { LazyYouTube } from '../components/LazyYouTube';
 import { OgMeta } from '../components/OgMeta';
 
-import { SITE_URL } from '../lib/seo';
+import { SITE_URL, ogPageUrl } from '../lib/seo';
 import { orgSchema, websiteSchema, courseSchema } from '../lib/seo-schema';
 import { CONFIG } from '../lib/config';
 
@@ -42,6 +42,7 @@ export function Home() {
         title="Cátedra Caminos de Resistencia · UNAL"
         description="Cátedra Caminos de Resistencia · UNAL: plataforma de memoria y solidaridad académica Palestina Colombia. Espacio sentipensante de educación pública sobre Palestina desde Colombia. Repositorio de la Facultad de Derecho y Ciencias Políticas."
         url={SITE_URL}
+        image={ogPageUrl('Cátedra Caminos de Resistencia', 'El Surco de la Memoria')}
       />
       <Helmet>
         <script type="application/ld+json">

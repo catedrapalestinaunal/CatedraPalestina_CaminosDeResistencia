@@ -1,5 +1,5 @@
 import { Helmet } from 'react-helmet-async';
-import { SITE_NAME, SITE_LOCALE, TWITTER_SITE, OG_IMAGE_DEFAULT } from '../lib/seo';
+import { SITE_NAME, SITE_LOCALE, TWITTER_SITE, OG_IMAGE } from '../lib/seo';
 
 interface OgMetaProps {
   title: string;
@@ -19,7 +19,7 @@ const OG_H = 630;
 export function OgMeta({
   title,
   description,
-  image = OG_IMAGE_DEFAULT,
+  image = OG_IMAGE,
   imageWidth = OG_W,
   imageHeight = OG_H,
   imageAlt = 'Cátedra Caminos de Resistencia · UNAL — Plataforma de Memoria y Solidaridad Académica',

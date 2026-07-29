@@ -10,7 +10,7 @@ import { ImageBook } from '../components/ImageBook';
 import { TIMELINE, GLOSSARY } from '../data/history';
 import { MYTHS_DATA } from '../data/myths';
 import { TIMELINE_G3 } from '../data/timeline-g3';
-import { SITE_URL } from '../lib/seo';
+import { SITE_URL, ogPageUrl } from '../lib/seo';
 import { OgMeta } from '../components/OgMeta';
 import { useProjects } from '../lib/useProjects';
 import { articleSchema, eventSchema, breadcrumbSchema, faqSchema } from '../lib/seo-schema';
@@ -57,6 +57,7 @@ export function History() {
         description="Línea histórica de Palestina desde 1917: Nakba 1948, Declaración Balfour y mitos del conflicto palestino-israelí. Cronología, glosario crítico y cartografía de la Cátedra Caminos de Resistencia."
         url={`${SITE_URL}/historia`}
         type="article"
+        image={ogPageUrl('Historia', 'Raíces Milenarias')}
       />
       <Helmet>
         <script type="application/ld+json">

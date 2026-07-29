@@ -10,7 +10,7 @@ import { FANZINE_G12 } from '../data/fanzine-g12';
 import { useProjects } from '../lib/useProjects';
 import { Icon } from '../lib/icons';
 import type { Project } from '../lib/types';
-import { SITE_URL, OG_IMAGE_GENERO, OG_W_GENERO, OG_H_GENERO } from '../lib/seo';
+import { SITE_URL, ogPageUrl } from '../lib/seo';
 import { OgMeta } from '../components/OgMeta';
 import { CONFIG } from '../lib/config';
 import { articleSchema, breadcrumbSchema } from '../lib/seo-schema';
@@ -269,10 +269,7 @@ export function Genero() {
         description="Palestina de Todas: feminismo palestino, salud mental infantil en Gaza, violencia sistémica y resistencia de las mujeres palestinas bajo ocupación israelí. 96% de la niñez en Gaza en crisis psicosocial."
         url={`${SITE_URL}/genero`}
         type="article"
-        image={OG_IMAGE_GENERO}
-        imageWidth={OG_W_GENERO}
-        imageHeight={OG_H_GENERO}
-        imageAlt="Fanzine · Mujeres Palestinas — producción estudiantil de la Cátedra"
+        image={ogPageUrl('Género', 'Palestina de Todas')}
       />
       <Helmet>
         <script type="application/ld+json">

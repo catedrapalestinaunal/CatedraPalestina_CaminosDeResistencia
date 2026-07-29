@@ -9,7 +9,7 @@ import { ProjectModal } from '../components/ProjectModal';
 import { Icon } from '../lib/icons';
 import { PODCAST_SERIES } from '../data/podcast-series';
 import { useProjects } from '../lib/useProjects';
-import { SITE_URL, OG_IMAGE } from '../lib/seo';
+import { SITE_URL, OG_IMAGE, ogPageUrl } from '../lib/seo';
 import { OgMeta } from '../components/OgMeta';
 import { articleSchema, breadcrumbSchema, videoObjectSchema, podcastEpisodeSchema } from '../lib/seo-schema';
 import { LazyYouTube } from '../components/LazyYouTube';
@@ -638,6 +638,7 @@ export function Voces() {
         description="Voces de la Resistencia: Mahmoud Darwish poemas, arte mural palestino, Handala de Naji al-Ali, muro de Belén grafiti, periodismo en Gaza y fallo CIJ Palestina 2024. Memoria viva desde la Cátedra Caminos de Resistencia."
         url={`${SITE_URL}/voces`}
         type="article"
+        image={ogPageUrl('Voces', 'Cultura y Medios')}
       />
       <Helmet>
         <script type="application/ld+json">

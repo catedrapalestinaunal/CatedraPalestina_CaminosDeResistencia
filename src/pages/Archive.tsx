@@ -9,7 +9,7 @@ import { useMediaQuery } from '../lib/hooks';
 import { BIBLIOGRAPHY, KIND_GLYPH, buildKindFilters } from '../data/archive';
 import { useProjects } from '../lib/useProjects';
 import type { Project } from '../lib/types';
-import { SITE_URL, OG_IMAGE_ARCHIVE, OG_W_ARCHIVE, OG_H_ARCHIVE } from '../lib/seo';
+import { SITE_URL, ogPageUrl, toPngUrl } from '../lib/seo';
 import { OgMeta } from '../components/OgMeta';
 import { collectionPageSchema, bookSchema, breadcrumbSchema } from '../lib/seo-schema';
 
@@ -115,10 +115,7 @@ export function Archive() {
         title="Archivo · Cátedra Caminos de Resistencia"
         description="Cosecha de Saberes: bibliografía sobre Palestina, proyectos académicos Palestina y ensayos curados por la Cátedra Caminos de Resistencia. Proyectos estudiantiles desde la UNAL."
         url={`${SITE_URL}/archivo`}
-        image={OG_IMAGE_ARCHIVE}
-        imageWidth={OG_W_ARCHIVE}
-        imageHeight={OG_H_ARCHIVE}
-        imageAlt="Video Cementerio de Memorias — proyecto estudiantil de la Cátedra"
+        image={projects.length > 0 && projects[0].thumbnail ? toPngUrl(projects[0].thumbnail) : ogPageUrl('Archivo', 'Cosecha de Saberes')}
       />
       <Helmet>
         <script type="application/ld+json">

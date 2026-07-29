@@ -10,7 +10,7 @@ import { ONG_CARDS, ONG_PARTNERS } from '../data/ongs';
 import { useProjects } from '../lib/useProjects';
 import { ExternalOrgs } from '../components/ExternalOrgs';
 import type { ImageVariant, Project } from '../lib/types';
-import { SITE_URL, OG_IMAGE_ONGS, OG_W_ONGS, OG_H_ONGS } from '../lib/seo';
+import { SITE_URL, ogPageUrl } from '../lib/seo';
 import { OgMeta } from '../components/OgMeta';
 import { websiteSchema, breadcrumbSchema } from '../lib/seo-schema';
 
@@ -84,10 +84,7 @@ export function ONGs() {
         title="ONGs · Cátedra Caminos de Resistencia"
         description="Savia y Sumud: ONG Palestina, ayuda humanitaria Gaza y organizaciones de derechos humanos. Logística de la vida, aliadas y trabajo de campo desde la Cátedra Caminos de Resistencia."
         url={`${SITE_URL}/ongs`}
-        image={OG_IMAGE_ONGS}
-        imageWidth={OG_W_ONGS}
-        imageHeight={OG_H_ONGS}
-        imageAlt="Tanques de agua en Jenin — infraestructura humanitaria en Palestina"
+        image={ogPageUrl('ONGs', 'Savia y Sumud')}
       />
       <Helmet>
         <script type="application/ld+json">

@@ -8,16 +8,23 @@ export const SITE_LANG = 'es-CO';
 
 export const TWITTER_SITE = '@ctpalestina';
 
-export const OG_IMAGE_DEFAULT = OG_IMAGE;
+const OG_API = `${SITE_URL}/api/og`;
 
-export const OG_IMAGE_ONGS = `${SITE_URL}/images/ongs/water-tanks-jenin.webp`;
-export const OG_W_ONGS = 960;
-export const OG_H_ONGS = 639;
+export function ogPageUrl(title: string, sub?: string): string {
+  const params = new URLSearchParams({ title });
+  if (sub) params.set('sub', sub);
+  return `${OG_API}?${params.toString()}`;
+}
 
-export const OG_IMAGE_GENERO = `${SITE_URL}/images/genero/fanzine-g12-01.webp`;
-export const OG_W_GENERO = 2340;
-export const OG_H_GENERO = 1654;
+export function ogImageUrl(image: string): string {
+  const url = new URL(image);
+  url.searchParams.set('w', '1200');
+  return url.toString();
+}
 
-export const OG_IMAGE_ARCHIVE = `${SITE_URL}/images/archive/2025-I/thumbs/01_Video_Grupo01_CementerioMemorias.webp`;
-export const OG_W_ARCHIVE = 2752;
-export const OG_H_ARCHIVE = 1536;
+export function toPngUrl(image: string): string {
+  if (image.includes('cloudinary')) {
+    return image.replace('/upload/', '/upload/f_png/');
+  }
+  return image;
+}
