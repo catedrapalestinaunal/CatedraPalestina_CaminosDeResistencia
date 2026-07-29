@@ -1,4 +1,3 @@
-import puppeteer from 'puppeteer';
 import { spawn, execSync } from 'child_process';
 import { mkdirSync, writeFileSync, readFileSync, readdirSync } from 'fs';
 import { join, dirname } from 'path';
@@ -8,6 +7,17 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(__dirname, '..');
 const DIST = join(ROOT, 'dist');
 const PORT = 4199;
+const IS_VERCEL = process.env.VERCEL === '1';
+
+let puppeteer, executablePath;
+
+if (IS_VERCEL) {
+  const chromium = await import('@sparticuz/chromium');
+  puppeteer = await import('puppeteer-core');
+  executablePath = await chromium.default.executablePath();
+} else {
+  puppeteer = await import('puppeteer');
+}
 
 function getFontFaces() {
   const assets = readdirSync(join(DIST, 'assets'));
@@ -34,8 +44,6 @@ const ROUTES = [
   { path: '/archivo',  file: 'archivo/index.html' },
 ];
 
-// Only keep modulepreload for essential runtime chunks; remove for code-split pages,
-// supabase, and framer — they load on demand, not at page start.
 const ESSENTIAL_CHUNK_PATTERNS = ['rolldown-runtime', 'preload-helper', 'vendor', 'index'];
 
 function cleanModulePreloads(html) {
@@ -83,6 +91,7 @@ async function prerender() {
     cwd: ROOT,
     stdio: 'pipe',
     shell: true,
+    env: { ...process.env, BROWSER: 'none', OPEN: 'false' },
   });
 
   server.stdout.on('data', d => process.stdout.write(d));
@@ -97,10 +106,10 @@ async function prerender() {
   const BASE = `http://localhost:${PORT}`;
   await waitForServer(BASE);
 
-  const browser = await puppeteer.launch({
-    headless: true,
-    args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'],
-  });
+  const launchOpts = { headless: true, args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'] };
+  if (executablePath) launchOpts.executablePath = executablePath;
+
+  const browser = await puppeteer.launch(launchOpts);
   let ok = 0;
   let fail = 0;
 
